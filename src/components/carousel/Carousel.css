@@ -1,0 +1,46 @@
+/* Carousel.css */
+.carousel-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  gap: 10px;
+  /* background-color: #00c0e2;  */
+  color: #fff;
+  border-radius: 8px;
+  text-align: center;
+  /* width: 100%; */
+  /* width: 70vw;
+  max-width: 300px; */
+  margin: 0 auto;
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
+}
+
+.winner-image {
+  border-radius: 50%;
+  width: 100%;
+  max-width: 100px;
+  height: 100%;
+}
+
+.slide {
+  background-color: #090f33;
+  width: 100px;
+  border-radius: 10px;
+}
+
+.carousel-container .slide {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.carousel-container .slide.selected {
+  opacity: 1;
+}
+
+@media (max-width: 600px) {
+  .carousel-container {
+    width: 90vw; /* 90% of the viewport width */
+  }
+}

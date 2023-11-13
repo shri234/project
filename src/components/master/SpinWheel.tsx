@@ -1,0 +1,51 @@
+import { Box } from "@mui/material";
+import MasterNavbar from "./Navbar";
+
+const SpinWheel = () => {
+  const handleLoginType = (type: string, path: string) => {
+    window.location.href = `http://localhost:3000${path}`;
+    console.log(`Login as: ${type}`);
+  };
+  return (
+    <Box>
+      <MasterNavbar path="/master" />
+
+      <Box
+        className="login-container"
+        sx={{ maxWidth: { xs: "220px", sm: "350px" } }}
+      >
+        <Box
+          sx={{
+            color: "#210759",
+            fontWeight: "bold",
+            fontSize: "1.75rem",
+            mb: 2,
+          }}
+        >
+          SPIN WHEEL
+        </Box>
+        <div className="button-row">
+          <button
+            className="role-button admin"
+            onClick={() => handleLoginType("Admin", "/master-daily-result")}
+          >
+            Daily
+          </button>
+          <button
+            className="role-button user"
+            onClick={() => handleLoginType("User", "/master-weekly-result")}
+          >
+            Weekly
+          </button>
+          <button
+            className="role-button agent"
+            onClick={() => handleLoginType("Agent", "/master-monthly-result")}
+          >
+            Monthly
+          </button>
+        </div>
+      </Box>
+    </Box>
+  );
+};
+export default SpinWheel;

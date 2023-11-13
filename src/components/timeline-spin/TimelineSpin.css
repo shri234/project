@@ -1,0 +1,86 @@
+.login-container {
+  padding: 30px;
+  margin: 100px auto;
+  border: 1px solid #e1e1e1;
+  border-radius: 5px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
+    rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+  background-color: #fff;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.button-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.role-button {
+  padding: 10px 15px;
+  font-weight: 600;
+  font-size: 1rem;
+  /* background-color: #007bff; */
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.admin {
+  background-image: linear-gradient(
+    295deg,
+    hsl(240deg 100% 20%) 0%,
+    hsl(230deg 100% 19%) 10%,
+    hsl(225deg 100% 17%) 20%,
+    hsl(219deg 100% 15%) 30%,
+    hsl(213deg 100% 12%) 40%,
+    hsl(208deg 81% 10%) 50%,
+    hsl(233deg 34% 13%) 60%,
+    hsl(275deg 29% 12%) 70%,
+    hsl(316deg 31% 11%) 80%,
+    hsl(340deg 35% 11%) 90%,
+    hsl(0deg 33% 11%) 100%
+  );
+}
+.user {
+  background-image: linear-gradient(
+    160deg,
+    hsl(118deg 67% 8%) 0%,
+    hsl(126deg 65% 14%) 10%,
+    hsl(122deg 60% 19%) 20%,
+    hsl(117deg 60% 25%) 30%,
+    hsl(112deg 64% 30%) 40%,
+    hsl(107deg 68% 35%) 50%,
+    hsl(109deg 57% 33%) 60%,
+    hsl(111deg 48% 30%) 70%,
+    hsl(112deg 39% 26%) 80%,
+    hsl(113deg 29% 23%) 90%,
+    hsl(113deg 18% 19%) 100%
+  );
+}
+
+.agent {
+  background-image: linear-gradient(
+    160deg,
+    hsl(321deg 21% 59%) 0%,
+    hsl(310deg 16% 51%) 11%,
+    hsl(296deg 17% 43%) 21%,
+    hsl(281deg 22% 37%) 31%,
+    hsl(267deg 29% 31%) 41%,
+    hsl(251deg 36% 25%) 51%,
+    hsl(297deg 33% 21%) 61%,
+    hsl(329deg 36% 21%) 70%,
+    hsl(350deg 31% 21%) 80%,
+    hsl(8deg 26% 20%) 90%,
+    hsl(21deg 18% 19%) 100%
+  );
+}
+.role-button:hover {
+  background-color: #0056b3;
+}

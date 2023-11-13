@@ -1,0 +1,14 @@
+.contact-us-body {
+  /* background: linear-gradient(to right, #6c1b9a, #3436e7); */
+  background: #3494e6; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #ec6ead,
+    #3494e6
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #ec6ead,
+    #3494e6
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
