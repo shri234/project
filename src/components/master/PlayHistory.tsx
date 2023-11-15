@@ -67,7 +67,7 @@ const PlayHistory = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3002/ticket/getHistory?username=${username}&pageno=${current_page}`,
+        `http://65.2.141.218:3002/ticket/getHistory?username=${username}&pageno=${current_page}`,
         {
           headers: {
             "Content-Type": "application/json",

@@ -97,7 +97,7 @@ const UserDetail = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3002/user/getAllUserData?pageno=${current_page}`,
+        `http://65.2.141.218:3002/user/getAllUserData?pageno=${current_page}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -124,7 +124,7 @@ const UserDetail = () => {
   const fetchSearchData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3002/user/searchUser?username=${search_username}`,
+        `http://65.2.141.218:3002/user/searchUser?username=${search_username}`,
         {
           headers: {
             "Content-Type": "application/json",
