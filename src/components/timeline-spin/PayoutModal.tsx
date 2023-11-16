@@ -46,7 +46,7 @@ export default function PayoutModal({
     const body = { username:sessionStorage.getItem("username"), userId: userId,amount:amount };
     console.log(body);
     await axios
-      .post("http://localhost:3002/payment/redeem", body)
+      .post("http://43.204.150.238:3002/payment/redeem", body)
       .then((res) => {
         if (res.status === 200) {
           window.alert("Success! Redeem request has been submitted");
