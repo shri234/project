@@ -43,7 +43,7 @@ const TicketNavBar: React.FC<{ name: string }> = ({ name }) => {
     let datee=moment(date).format("YYYY-MM-DD")
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3002/ticket/getWallet?userId=${sessionStorage.getItem("userId")}`,{
+        const response = await axios.get(`http://43.204.150.238:3002/ticket/getWallet?userId=${sessionStorage.getItem("userId")}`,{
           headers: {
             'Content-Type':"application/json"
           }

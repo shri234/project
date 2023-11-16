@@ -40,7 +40,7 @@ export default function CustomizedTables() {
           new Date().getMonth() + 1
         }-${new Date().getDate()}`;
         const response = await axios.get(
-          `http://localhost:3002/ticket/getTickets?userId=${sessionStorage.getItem(
+          `http://43.204.150.238:3002/ticket/getTickets?userId=${sessionStorage.getItem(
             "userId"
           )}&&date=${formatteddate}`,
           {
