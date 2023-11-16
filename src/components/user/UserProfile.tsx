@@ -20,7 +20,7 @@ const Profile = () => {
   const initialRendering = async () => {
     await axios
       .get(
-        `http://localhost:3002/user/getUserData?userId=${sessionStorage.getItem(
+        `http://43.204.150.238:3002/user/getUserData?userId=${sessionStorage.getItem(
           "userId"
         )}`
       )

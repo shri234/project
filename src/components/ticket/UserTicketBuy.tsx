@@ -81,7 +81,7 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
     const body = { ticket: ticket,userId:sessionStorage.getItem("userId")};
     console.log(body);
     await axios
-      .post(`http://localhost:3002/ticket/addticket`, body)
+      .post(`http://43.204.150.238:3002/ticket/addticket`, body)
       .then((res) => {
         if(ticketcount>0){
         if (res.status === 200) {
@@ -104,7 +104,7 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
     let datee=moment(date).format("YYYY-MM-DD");
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3002/ticket/getWallet?userId=${sessionStorage.getItem("userId")}`,{
+        const response = await axios.get(`http://43.204.150.238:3002/ticket/getWallet?userId=${sessionStorage.getItem("userId")}`,{
           headers: {
             'Content-Type':"application/json"
           }

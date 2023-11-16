@@ -107,7 +107,7 @@ const SignUpComponent: React.FC = () => {
 
     try {
       const response = await axios
-        .post("http://localhost:3002/user/signup", body)
+        .post("http://43.204.150.238:3002/user/signup", body)
         .then(() => {
           window.location.href = "/";
         });
