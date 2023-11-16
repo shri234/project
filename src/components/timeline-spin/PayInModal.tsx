@@ -57,7 +57,7 @@ export default function PayInModal({
   let date=new Date();
   let datee=moment(date).format("YYYY-MM-DD")
   console.log(datee)
-   const response=await axios.post(`http://localhost:3002/ticket/addWallet`, body);
+   const response=await axios.post(`http://43.204.150.238:3002/ticket/addWallet`, body);
 
    if(response.status==200){
       window.location.href = "/daily";

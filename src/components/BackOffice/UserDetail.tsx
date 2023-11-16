@@ -90,7 +90,7 @@ const BackOfficeUserDetail = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3002/user/getAllUserData?pageno=${current_page}`,
+        `http://43.204.150.238:3002/user/getAllUserData?pageno=${current_page}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -117,7 +117,7 @@ const BackOfficeUserDetail = () => {
   const fetchSearchData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3002/user/searchUser?username=${search_username}`,
+        `http://43.204.150.238:3002/user/searchUser?username=${search_username}`,
         {
           headers: {
             "Content-Type": "application/json",

@@ -56,7 +56,7 @@ const BackOfficeRedeemHistory = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3002/ticket/getWalletHistory?userId=${sessionStorage.getItem("userid")}&pageno=${current_page}`,
+        `http://43.204.150.238:3002/ticket/getWalletHistory?userId=${sessionStorage.getItem("userid")}&pageno=${current_page}`,
         {
           headers: {
             "Content-Type": "application/json",

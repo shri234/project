@@ -52,7 +52,7 @@ const Profile = () => {
     };
 
     await axios
-      .put(`http://localhost:3002/user/updateUserDetails?userId=${sessionStorage.getItem("userId")}`, body)
+      .put(`http://43.204.150.238:3002/user/updateUserDetails?userId=${sessionStorage.getItem("userId")}`, body)
       .then((res) => alert("updated successfully"))
       .catch((error) => {
         console.log(error);
