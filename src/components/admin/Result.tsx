@@ -158,7 +158,7 @@ const Result: FC<{ title: string }> = ({ title }) => {
     const body = { ticketRate:ticketrate};
     console.log(body);
     await axios
-      .post("http://localhost:3002/ticket/addTicketRate", body)
+      .post("http://43.204.150.238:3002/ticket/addTicketRate", body)
       .then((res) => {
         if (res.status === 200) {
           window.alert("Success! Ticket rate added");
@@ -173,7 +173,7 @@ const Result: FC<{ title: string }> = ({ title }) => {
     const body = [{ digit:firstdigit},{digit:seconddigit},{digit:thirddigit},{digit:fourthdigit}];
     console.log(body);
     await axios
-      .post("http://localhost:3002/ticket/publishResult", body)
+      .post("http://43.204.150.238:3002/ticket/publishResult", body)
       .then((res) => {
         if (res.status === 200) {
           window.alert(`Result Published successfully! There are ${res.data.Winners} winners.`);
