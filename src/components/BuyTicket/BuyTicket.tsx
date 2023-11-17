@@ -30,7 +30,7 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
 
     const fetchData=async () =>{
       try{
-    const body = {ticketCount:ticket_count };
+    const body = {ticketCount:alreadyticketcount+ticket_count };
     console.log(body);
     let date=new Date();
     let datee=moment(date).format("YYYY-MM-DD");
@@ -70,6 +70,7 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
           }
         });
         setWalletAmount(response.data.data.amount);
+        setBeforeTicketCount(response.data.data.ticketCount)
       } catch (err) {
         console.log(err);
       }
