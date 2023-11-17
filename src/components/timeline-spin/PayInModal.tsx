@@ -68,7 +68,7 @@ export default function PayInModal({
 }
   const initiatePayment = async () => {
     try {
-      const orderUrl = "http://localhost:3002/payment/paymentIntegration";
+      const orderUrl = "http://43.204.150.238:3002/payment/paymentIntegration";
 
       const result = await axios.post(orderUrl, { amount: amount * 100 });
       console.log(result.data);
@@ -103,7 +103,7 @@ export default function PayInModal({
       console.log(body);
       let date=new Date();
   let datee=moment(date).format("YYYY-MM-DD")
-      const response=await axios.post(`http://localhost:3002/ticket/addWallet`, body);
+      const response=await axios.post(`http://43.204.150.238:3002/ticket/addWallet`, body);
       if(response.status==200){
         // window.location.href = "/daily";
      }
@@ -116,7 +116,7 @@ export default function PayInModal({
   };
 
   async function handleVerification(response: any) {
-    const verifyUrl = "http://localhost:3002/payment/paymentverify";
+    const verifyUrl = "http://43.204.150.238:3002/payment/paymentverify";
     try {
       const verifyResult = await axios.post(verifyUrl, {
         payment_id: response.razorpay_payment_id,
