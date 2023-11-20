@@ -64,8 +64,8 @@ function App() {
           path="/weekly-buy-ticket"
           element={<BuyTicket name="Weekly Spin" path="/weekly" />}
         />
-        <Route path="/admin" element={<LoginComponent />} />
-        <Route path="/master" element={<LoginComponent />} />
+        <Route path="/admin" element={<AdminHome />} />
+        <Route path="/master" element={<MasterHome />} />
         <Route path="/user-details" element={<UserDetail />} />
         <Route path="/play-history" element={<PlayHistory />} />
         <Route path="/wallet-history" element={<RedeemHistory />} />
