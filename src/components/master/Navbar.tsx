@@ -73,8 +73,8 @@ const MasterNavbar: React.FC<{ path: string }> = ({ path }) => {
                 mb: 0.5,
               }}
             >
-              Master
-              {/* {sessionStorage.getItem("username")} */}
+              {/* Master */}
+              {sessionStorage.getItem("username")}
             </Box>
           </Box>
         </Tooltip>

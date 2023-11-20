@@ -64,8 +64,8 @@ function App() {
           path="/weekly-buy-ticket"
           element={<BuyTicket name="Weekly Spin" path="/weekly" />}
         />
-        <Route path="/admin" element={<AdminHome />} />
-        <Route path="/master" element={<MasterHome />} />
+        <Route path="/admin" element={<LoginComponent />} />
+        <Route path="/master" element={<LoginComponent />} />
         <Route path="/user-details" element={<UserDetail />} />
         <Route path="/play-history" element={<PlayHistory />} />
         <Route path="/wallet-history" element={<RedeemHistory />} />
@@ -87,7 +87,7 @@ function App() {
           element={<BackOfficePaymentRequest />}
         />
         <Route path="/spin-wheel" element={<SpinWheel />} />
-        <Route path="/agent" element={<AgentHome />} />
+        <Route path="/agent" element={<LoginComponent />} />
         <Route path="/user-profile" element={<UserProfile />} />
         <Route path="/agent-profile" element={<AgentProfile />} />
         <Route path="/profile" element={<Profile />} />
@@ -107,8 +107,8 @@ function App() {
           element={<MasterResult title="Monthly" />}
         />
         <Route path="/test" element={<SpinnerWheel />} />
-        <Route path="/back-office" element={<BackOfficeHome />} />
-        <Route path="/agent-sign-up" element={<AgentCreation />} />
+        <Route path="/back-office" element={<LoginComponent />} />
+        <Route path="/agent-sign-up" element={<LoginComponent />} />
       </Routes>
     </BrowserRouter>
   );

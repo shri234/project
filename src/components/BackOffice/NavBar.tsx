@@ -80,8 +80,8 @@ const BackOfficeNavbar: React.FC<{ path: string }> = ({ path }) => {
                 mb: 0.5,
               }}
             >
-              Back Office
-              {/* {sessionStorage.getItem("username")} */}
+              {/* Back Office */}
+              {sessionStorage.getItem("username")}
             </Box>
           </Box>
         </Tooltip>
