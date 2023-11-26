@@ -36,7 +36,7 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
     let datee=moment(date).format("YYYY-MM-DD");
     console.log("date",datee)
     if(walletamount>ticket_price){
-     const response=await axios.post(`http://43.204.150.238:3002/ticket/addTicketCount?userId=${sessionStorage.getItem("userId")}`, body);
+     const response=await axios.post(`http://35.154.119.156:3002/ticket/addTicketCount?userId=${sessionStorage.getItem("userId")}`, body);
      
      if(response.status==200){
       alert("Tickets has been Successfully bought")
@@ -44,7 +44,7 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
       try{
         console.log(walletamount)
         const body = { amount:walletamount-ticket_count * ticket_price,userId:sessionStorage.getItem("userId")};
-        const res=await axios.post(`http://43.204.150.238:3002/ticket/addWalletAmount`, body);
+        const res=await axios.post(`http://35.154.119.156:3002/ticket/addWalletAmount`, body);
       }
       catch(err){
       }
@@ -64,7 +64,7 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
     let datee=moment(date).format("YYYY-MM-DD")
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://43.204.150.238:3002/ticket/getWallet?userId=${sessionStorage.getItem("userId")}`,{
+        const response = await axios.get(`http://35.154.119.156:3002/ticket/getWallet?userId=${sessionStorage.getItem("userId")}`,{
           headers: {
             'Content-Type':"application/json"
           }
@@ -85,7 +85,7 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
     console.log("date",datee)
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://43.204.150.238:3002/ticket/getTicketRate?date=${datee}`,{
+        const response = await axios.get(`http://35.154.119.156:3002/ticket/getTicketRate?date=${datee}`,{
           headers: {
             'Content-Type':"application/json"
           }
