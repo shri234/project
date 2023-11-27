@@ -38,7 +38,7 @@ const Login: React.FC = () => {
 
     try {
       const response = await axios.post(
-        "/user/login",
+        "/api/user/login",
         body
       );
       console.log(response.data.user, "response");
