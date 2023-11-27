@@ -4,20 +4,15 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import AccountCircle from "@mui/icons-material/AccountCircle";
 import Tooltip from "@mui/material/Tooltip";
 import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 
 const settings = ["profile", "Logout"];
 
 const AgentNavbar: React.FC<{ path: string }> = ({ path }) => {
-  const [balance, setBalance] = React.useState(1000);
-
-  const [auth, setAuth] = React.useState(true);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -30,6 +25,7 @@ const AgentNavbar: React.FC<{ path: string }> = ({ path }) => {
     if (name === "profile") {
       window.location.href = "/agent-profile";
     } else if (name === "Logout") {
+      sessionStorage.clear();
       window.location.href = "/";
     } else if (name === "Balance") {
     }
@@ -79,26 +75,13 @@ const AgentNavbar: React.FC<{ path: string }> = ({ path }) => {
                 gap: "5px",
                 cursor: "pointer",
               }}
-            >
-              {/* <Box component={"div"} sx={{ mt: 0.5 }}>
-                <AccountBalanceWalletIcon sx={{ fontSize: "30px" }} />
-              </Box>
-              <Tooltip title={`Balance:${balance}`}>
-                <Box
-                  component={"div"}
-                  sx={{ fontSize: "18px", fontWeight: 650 }}
-                >
-                  {" "}
-                  ₹{balance}
-                </Box>
-              </Tooltip> */}
-            </Box>
+            ></Box>
             <Tooltip title="Open settings">
               <Box
                 sx={{
                   display: "flex",
                   flexDirection: "column",
-                  alignItems: "start",
+                  alignItems: "center",
                   justifyContent: "start",
                 }}
               >
@@ -106,10 +89,7 @@ const AgentNavbar: React.FC<{ path: string }> = ({ path }) => {
                   onClick={handleOpenUserMenu}
                   sx={{
                     p: 0,
-                    // width: "60px",
-                    // height: "60px",
                     borderRadius: "100%",
-                    // background: "grey",
                   }}
                 >
                   <Avatar alt="Remy Sharp" src="/avatar.svg" />

@@ -4,8 +4,6 @@ import AboutUs from "../about-us/AboutUs";
 import Carousel from "../carousel/Carousel";
 import ContactUS from "../contact-us/ContactUS";
 import RulesAndRegulation from "../rules/RulesAndRegulation";
-import { Home } from "@mui/icons-material";
-import HomeLand from "../Home/Home";
 import CopyRight from "../copyright/CopyRight";
 
 const segments = [
@@ -20,6 +18,7 @@ const segments = [
   { number: 9, color: "violet" },
   { number: 10, color: "magenta" },
 ];
+
 const winnersData = [
   {
     name: "MARIA FERGUSON",
@@ -51,9 +50,10 @@ const LandingPage = () => {
   return (
     <Box
       sx={{
-        height: "100%",
+        height: { xs: "100%" },
         backgroundImage: `url('/monthly.jpeg')`,
         width: "100%",
+        backgroundSize: "auto",
       }}
     >
       <NavBar />
@@ -69,8 +69,8 @@ const LandingPage = () => {
           id="home"
           component={"div"}
           sx={{
-            height: "100vh",
-            mb: 2,
+            height: { xs: "100%", sm: "100vh" },
+            mt: { xs: 3, sm: 0 },
           }}
         >
           <Box
@@ -152,7 +152,12 @@ const LandingPage = () => {
                 </Box>
                 <Box
                   component={"div"}
-                  sx={{ color: "#cc0e90", fontWeight: "700" }}
+                  sx={{
+                    color: "#f0f0f0",
+                    fontWeight: "700",
+                    fontSize: "1.5rem",
+                    mt: "4px",
+                  }}
                 >
                   "Win Upto 1 lakh"
                 </Box>
@@ -214,7 +219,12 @@ const LandingPage = () => {
                 </Box>
                 <Box
                   component={"div"}
-                  sx={{ color: "#cc0e90", fontWeight: "700" }}
+                  sx={{
+                    color: "#f0f0f0",
+                    fontWeight: "700",
+                    fontSize: "1.5rem",
+                    mt: "4px",
+                  }}
                 >
                   "Win Upto 5 lakh"
                 </Box>
@@ -276,7 +286,12 @@ const LandingPage = () => {
                 </Box>
                 <Box
                   component={"div"}
-                  sx={{ color: "#cc0e90", fontWeight: "700" }}
+                  sx={{
+                    color: "#f0f0f0",
+                    fontWeight: "700",
+                    fontSize: "1.5rem",
+                    mt: "4px",
+                  }}
                 >
                   "Win Upto 15 lakh"
                 </Box>

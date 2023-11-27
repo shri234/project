@@ -30,9 +30,6 @@ function NavBar() {
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
@@ -100,17 +97,38 @@ function NavBar() {
               flexGrow: 1,
               fontFamily: "monospace",
               fontWeight: 700,
-              letterSpacing: ".3rem",
+              fontSize: "1rem",
               color: "inherit",
               textDecoration: "none",
               textTransform: "capitalize",
+              whiteSpace: "pre-wrap",
             }}
           >
-            SPINNER
+            Money minning spinning game
           </Typography>
-          <MenuItem>
+          <MenuItem sx={{ display: { xs: "none", sm: "block" } }}>
             <img src="./nav_icon.jpeg" alt="" height={30} width={30} />
           </MenuItem>
+          <Typography
+            variant="h5"
+            noWrap
+            component="a"
+            href="#app-bar-with-responsive-menu"
+            sx={{
+              mr: 2,
+              display: { xs: "none", md: "flex" },
+              flexGrow: 1,
+              fontFamily: "monospace",
+              fontWeight: 700,
+              fontSize: "1rem",
+              color: "inherit",
+              textDecoration: "none",
+              textTransform: "uppercase",
+              whiteSpace: "pre-wrap",
+            }}
+          >
+            Money minning spinning game
+          </Typography>
           <Box
             sx={{
               flexGrow: 1,

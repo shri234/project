@@ -17,7 +17,11 @@ const ContactUS = () => {
         alignContent: "center",
       }}
     >
-      <Box sx={{ color: "#fff", fontWeight: "bold", pt: 4 }}>Contact US</Box>
+      <Box
+        sx={{ color: "#fff", fontSize: "2.5rem", fontWeight: "bold", pt: 4 }}
+      >
+        Contact Us
+      </Box>
       <Box
         sx={{
           display: "flex",

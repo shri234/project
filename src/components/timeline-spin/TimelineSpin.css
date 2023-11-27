@@ -84,3 +84,15 @@ h2 {
 .role-button:hover {
   background-color: #0056b3;
 }
+
+.payment-qr {
+  height: 300px;
+  width: 300px;
+}
+
+@media screen and (max-width: 480px) {
+  .payment-qr {
+    height: 200px;
+    width: 200px;
+  }
+}

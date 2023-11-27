@@ -1,33 +1,16 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { DialogTitle } from "@mui/material";
+import { useState } from "react";
 
-const loadRazorpayScript = (src: string) => {
-  return new Promise((resolve) => {
-    const script = document.createElement("script");
-    script.src = src;
-    script.onload = () => {
-      resolve(true);
-    };
-    script.onerror = () => {
-      resolve(false);
-    };
-    document.body.appendChild(script);
-  });
-};
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  //   width: 400,
   bgcolor: "background.paper",
-  //   border: "2px solid #000",
   borderRadius: "5px",
   boxShadow: 24,
   p: 4,
@@ -35,26 +18,38 @@ const style = {
 
 export default function PayoutModal({
   setPayoutOpen,
+  walletAmount,
+  setOpenLoader,
 }: {
   setPayoutOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenLoader: React.Dispatch<React.SetStateAction<boolean>>;
+  walletAmount: number;
 }) {
   const [amount, setAmount] = useState(0);
 
   const handleRedeem = async () => {
-    const userId = sessionStorage.getItem("userId")
+    // setOpenLoader(true);
+    const userId = sessionStorage.getItem("userId");
 
-    const body = { username:sessionStorage.getItem("username"), userId: userId,amount:amount };
-    console.log(body);
+    const body = {
+      username: sessionStorage.getItem("username"),
+      userId: userId,
+      amount: amount,
+      email: sessionStorage.getItem("email"),
+    };
+
     await axios
-      .post("http://43.204.150.238:3002/payment/redeem", body)
+      .post(`${process.env.REACT_APP_IP}/payment/redeem`, body)
       .then((res) => {
         if (res.status === 200) {
           window.alert("Success! Redeem request has been submitted");
         }
         window.location.href = "/spin";
+        setOpenLoader(false);
       })
       .catch((error) => {
         console.log(error);
+        setOpenLoader(false);
       });
   };
 
@@ -80,7 +75,9 @@ export default function PayoutModal({
           <Box
             sx={{
               display: "flex",
-              justifyContent: "center",
+              flexDirection: { xs: "column", sm: "row" },
+              gap: { xs: 2, sm: 0 },
+              justifyContent: { xs: "start", sm: "center" },
               alignItems: "center",
             }}
           >
@@ -93,7 +90,15 @@ export default function PayoutModal({
               />
             </Box>
             <Button
-              onClick={() => {handleRedeem()}}
+              onClick={() => {
+                if (amount === 0) {
+                  alert("Please enter amount");
+                } else if (walletAmount > amount) {
+                  handleRedeem();
+                } else {
+                  alert("Insufficient fund");
+                }
+              }}
               sx={{
                 background: "green",
                 color: "#fff",

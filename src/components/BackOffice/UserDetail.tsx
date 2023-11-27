@@ -9,8 +9,9 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Button, Pagination } from "@mui/material";
 import BackOfficeNavbar from "./NavBar";
-import React,{useState,useEffect} from "react"
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
 
 const table_head = [
   { id: 1, title: "Name" },
@@ -84,13 +85,13 @@ const table_body = [
 
 const BackOfficeUserDetail = () => {
   const [userDetailData, setUserDetailData] = useState<any[]>([]);
+  const [search_username, setSearchData] = useState("");
+  const [pageCount, setPageCount] = useState(0);
   const [current_page, setCurrentPage] = useState(0);
-  const [search_username,setSearchData] =useState("");
-  const [pageCount,setPageCount] = useState(0);
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `http://43.204.150.238:3002/user/getAllUserData?pageno=${current_page}`,
+        `${process.env.REACT_APP_IP}/user/getAllUserData?pageno=${current_page}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -99,16 +100,13 @@ const BackOfficeUserDetail = () => {
       );
       // console.log(response.data, "respone");
       setUserDetailData(response.data.data);
-      let count=0;
-      if(response.data.data.count<10){
-      count = Math.ceil(response.data.data.count / 10)+1;
+      let count = 0;
+      if (response.data.data.count < 10) {
+        count = Math.ceil(response.data.data.count / 10) + 1;
+      } else {
+        count = Math.ceil(response.data.count / 10);
       }
-      else{
-       count = Math.ceil(response.data.count / 10);
-      }
-      setPageCount(count)
-      // console.log(response.data.data[0].username);
-      
+      setPageCount(count);
     } catch (err) {
       console.log(err);
     }
@@ -117,7 +115,7 @@ const BackOfficeUserDetail = () => {
   const fetchSearchData = async () => {
     try {
       const response = await axios.get(
-        `http://43.204.150.238:3002/user/searchUser?username=${search_username}`,
+        `${process.env.REACT_APP_IP}/user/searchUser?username=${search_username}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -140,128 +138,133 @@ const BackOfficeUserDetail = () => {
   }, [current_page]);
 
   return (
-    <Box>
-      <BackOfficeNavbar path="/back-office" />
-      <Box
-        component={"div"}
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
+    isAuthenticated("back-office") && (
+      <Box>
+        <BackOfficeNavbar path="/back-office" />
         <Box
+          component={"div"}
           sx={{
-            color: "#210759",
-            fontWeight: "bold",
-            fontSize: "1.5rem",
-            my: 4,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
-          User Details
+          <Box
+            sx={{
+              color: "#210759",
+              fontWeight: "bold",
+              fontSize: "1.5rem",
+              my: 4,
+            }}
+          >
+            User Details
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+            }}
+          >
+            <input
+              type="text"
+              value={search_username}
+              onChange={(e) => setSearchData(e.target.value)}
+              placeholder="search username..."
+            />
+            <button onClick={fetchSearchData}>search</button>
+          </Box>
         </Box>
-        <Box
-        sx={{
-          display:"flex"
-        }}>
-          <input type="text" value={search_username} onChange={(e)=>setSearchData(e.target.value)} placeholder="search username..." />
-          <button
-          onClick={fetchSearchData}>
-            search
-          </button>
-        </Box>
-      </Box>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
-          <TableHead sx={{ background: "#b51271" }}>
-            <TableRow>
-              {table_head.map((cell) => (
-                <TableCell
-                  sx={{ color: "#fff", fontWeight: "bold" }}
-                  align="center"
-                >
-                  {cell.title} 
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {userDetailData.map((row) => (
-              <TableRow
-                key={row.username}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row" align="center">
-                  {row.username}
-                </TableCell>
-                <TableCell align="center">{row.email}</TableCell>
-                <TableCell align="center">{row.mobileNumber}</TableCell>
-                <TableCell align="center">{row.address}</TableCell>
-                <TableCell align="center">{row.accountNo}</TableCell>
-                <TableCell align="center">{row.IFSC}</TableCell>
-                <TableCell align="center">{row.panNo}</TableCell>
-                <TableCell align="center">{row.aadharNo}</TableCell>
-
-                <TableCell align="center">
-                  <Box
-                    sx={{
-                      background: "#410961",
-                      p: 1,
-                      borderRadius: "5px",
-                      color: "#fff",
-                      fontWeight: "bold",
-                      cursor: "pointer",
-                    }}
-                    component={"div"}
-                    onClick={() =>
-                      (window.location.href = "/back-office-play-history")
-                    }
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+            <TableHead sx={{ background: "#b51271" }}>
+              <TableRow>
+                {table_head.map((cell) => (
+                  <TableCell
+                    sx={{ color: "#fff", fontWeight: "bold" }}
+                    align="center"
                   >
-                    Play History
-                  </Box>
-                </TableCell>
-                <TableCell align="center">
-                  <Box
-                    sx={{
-                      background: "#057507",
-                      p: 1,
-                      borderRadius: "5px",
-                      color: "#fff",
-                      fontWeight: "bold",
-                      cursor: "pointer",
-                    }}
-                    component={"div"}
-                    onClick={() =>
-                      (window.location.href = "/back-office-wallet-history")
-                    }
-                  >
-                    Wallet History
-                  </Box>
-                </TableCell>
+                    {cell.title}
+                  </TableCell>
+                ))}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Box
-        component={"div"}
-        sx={{
-          display: "flex",
-          justifyContent: { xs: "start", sm: "end" },
-          mt: 1,
-        }}
-      >
-        <Pagination
-          count={pageCount}
-          defaultPage={1}
-          siblingCount={0}
-          boundaryCount={1}
-          onChange={(e, page) => {
-            setCurrentPage(page - 1);
+            </TableHead>
+            <TableBody>
+              {userDetailData.map((row) => (
+                <TableRow
+                  key={row.username}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row" align="center">
+                    {row.username}
+                  </TableCell>
+                  <TableCell align="center">{row.email}</TableCell>
+                  <TableCell align="center">{row.mobileNumber}</TableCell>
+                  <TableCell align="center">{row.address}</TableCell>
+                  <TableCell align="center">{row.accountNo}</TableCell>
+                  <TableCell align="center">{row.IFSC}</TableCell>
+                  <TableCell align="center">{row.panNo}</TableCell>
+                  <TableCell align="center">{row.aadharNo}</TableCell>
+
+                  <TableCell align="center">
+                    <Box
+                      sx={{
+                        background: "#410961",
+                        p: 1,
+                        borderRadius: "5px",
+                        color: "#fff",
+                        fontWeight: "bold",
+                        cursor: "pointer",
+                      }}
+                      component={"div"}
+                      onClick={() =>
+                        (window.location.href = "/back-office-play-history")
+                      }
+                    >
+                      Play History
+                    </Box>
+                  </TableCell>
+                  <TableCell align="center">
+                    <Box
+                      sx={{
+                        background: "#057507",
+                        p: 1,
+                        borderRadius: "5px",
+                        color: "#fff",
+                        fontWeight: "bold",
+                        cursor: "pointer",
+                      }}
+                      component={"div"}
+                      onClick={() =>
+                        (window.location.href = "/back-office-wallet-history")
+                      }
+                    >
+                      Wallet History
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Box
+          component={"div"}
+          sx={{
+            display: "flex",
+            justifyContent: { xs: "start", sm: "end" },
+            mt: 1,
           }}
-        />
+        >
+          <Pagination
+            count={pageCount}
+            defaultPage={1}
+            siblingCount={0}
+            boundaryCount={1}
+            onChange={(e, page) => {
+              setCurrentPage(page - 1);
+            }}
+          />
+        </Box>
       </Box>
-    </Box>
+    )
   );
 };
 export default BackOfficeUserDetail;

@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
 import MasterNavbar from "./Navbar";
+import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
 
 const SpinWheel = () => {
   const handleLoginType = (type: string, path: string) => {
@@ -7,45 +8,47 @@ const SpinWheel = () => {
     console.log(`Login as: ${type}`);
   };
   return (
-    <Box>
-      <MasterNavbar path="/master" />
+    isAuthenticated("master") && (
+      <Box>
+        <MasterNavbar path="/master" />
 
-      <Box
-        className="login-container"
-        sx={{ maxWidth: { xs: "220px", sm: "350px" } }}
-      >
         <Box
-          sx={{
-            color: "#210759",
-            fontWeight: "bold",
-            fontSize: "1.75rem",
-            mb: 2,
-          }}
+          className="login-container"
+          sx={{ maxWidth: { xs: "220px", sm: "350px" } }}
         >
-          SPIN WHEEL
+          <Box
+            sx={{
+              color: "#210759",
+              fontWeight: "bold",
+              fontSize: "1.75rem",
+              mb: 2,
+            }}
+          >
+            SPIN WHEEL
+          </Box>
+          <div className="button-row">
+            <button
+              className="role-button admin"
+              onClick={() => handleLoginType("Admin", "/master-daily-result")}
+            >
+              Daily
+            </button>
+            <button
+              className="role-button user"
+              onClick={() => handleLoginType("User", "/master-weekly-result")}
+            >
+              Weekly
+            </button>
+            <button
+              className="role-button agent"
+              onClick={() => handleLoginType("Agent", "/master-monthly-result")}
+            >
+              Monthly
+            </button>
+          </div>
         </Box>
-        <div className="button-row">
-          <button
-            className="role-button admin"
-            onClick={() => handleLoginType("Admin", "/master-daily-result")}
-          >
-            Daily
-          </button>
-          <button
-            className="role-button user"
-            onClick={() => handleLoginType("User", "/master-weekly-result")}
-          >
-            Weekly
-          </button>
-          <button
-            className="role-button agent"
-            onClick={() => handleLoginType("Agent", "/master-monthly-result")}
-          >
-            Monthly
-          </button>
-        </div>
       </Box>
-    </Box>
+    )
   );
 };
 export default SpinWheel;

@@ -27,6 +27,7 @@ const AboutUs = () => {
             sx={{
               width: { xs: "60%", sm: "30%" },
               height: { xs: "60%", sm: "30%" },
+              display: { xs: "none", sm: "block" },
             }}
           >
             <img
@@ -36,24 +37,33 @@ const AboutUs = () => {
               width={"100%"}
             />
           </Box>
-          <Box sx={{ width: { xs: "100%", sm: "60%" }, color: "#fff" }}>
-            <Typography variant="h4" gutterBottom>
+          <Box
+            sx={{
+              width: { xs: "100%", sm: "60%" },
+              color: "#fff",
+            }}
+          >
+            <Typography
+              variant="h4"
+              gutterBottom
+              sx={{ color: "#D81159", fontWeight: "bold", fontSize: "2.5rem" }}
+            >
               About Us
             </Typography>
             <Typography variant="h6" gutterBottom>
               How we work
             </Typography>
             <Typography variant="body1" paragraph>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Deserunt
-              repudiandae deleniti a nulla officiis eveniet soluta quia ex.
-              Unde, sit, aliquam. Fugit, aliquid, beatae. Sunt minus
-              consectetur, quam? Deserunt, earum, eiusmod? Neque amet adipisci
-              quidem earum tempore ut repellat officiis accusantium. In
-              delectus, facilis dolore ipsa ab sed maiores atque.
+              Spin and Win is an exciting Rewards Program offered by Spin Mining
+              Game. Every day, you have the opportunity to spin the wheel and
+              win up to ₹10,000 in cash prizes. When you participate in the Spin
+              & Win Wheel by Spin Mining Game, the amount is instantly added to
+              your Spin Mining Game wallet.Money Mining game provides customer
+              support to manage any queries or concerns you may have.
             </Typography>
-            <Button variant="contained" color="primary">
+            {/* <Button variant="contained" color="primary">
               See more
-            </Button>
+            </Button> */}
           </Box>
         </Box>
       </Box>

@@ -48,18 +48,16 @@ const MasterNavbar: React.FC<{ path: string }> = ({ path }) => {
             sx={{
               display: "flex",
               flexDirection: "column",
-              alignItems: "start",
-              justifyContent: "start",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             <IconButton
               onClick={handleOpenUserMenu}
               sx={{
                 p: 0,
-                // width: "60px",
-                // height: "60px",
+
                 borderRadius: "100%",
-                // background: "grey",
               }}
             >
               <Avatar alt="Remy Sharp" src="/avatar.svg" />
@@ -73,8 +71,7 @@ const MasterNavbar: React.FC<{ path: string }> = ({ path }) => {
                 mb: 0.5,
               }}
             >
-              {/* Master */}
-              {sessionStorage.getItem("username")}
+              Master
             </Box>
           </Box>
         </Tooltip>

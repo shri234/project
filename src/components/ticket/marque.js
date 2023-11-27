@@ -1,8 +1,8 @@
-const Marquee = () => {
+const Marquee = ({data}) => {
   return (
     <div>
       <marquee style={{ color: "green", fontWeight: "bold", fontSize: "20px" }}>
-        Winner: John, Cash Price: ₹3000
+        Winner: {data}, Cash Price: ₹3000
       </marquee>
     </div>
   );

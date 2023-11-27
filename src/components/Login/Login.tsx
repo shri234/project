@@ -10,41 +10,52 @@ const LoginComponent: React.FC = () => {
 
   return (
     <Box
-      className="login-container"
-      sx={{ maxWidth: { xs: "220px", sm: "350px" } }}
+      component={"div"}
+      className="login-page-container"
+      sx={{
+        display: "flex",
+        height: { xs: "100%", sm: "100vh" },
+        backgroundImage: `url('/monthly.jpeg')`,
+        width: "100%",
+      }}
     >
-      <h1
-        style={{
-          textAlign: "center",
-          marginBottom: "50px",
-          color: "#060538",
-          fontWeight: "bold",
-          fontSize: "40px",
-        }}
+      <Box
+        className="login-container"
+        sx={{ maxWidth: { xs: "220px", sm: "350px" } }}
       >
-        Login
-      </h1>
-      <div className="button-row">
-        <button
-          className="role-button user"
-          onClick={() => handleLoginType("User")}
+        <h1
+          style={{
+            textAlign: "center",
+            marginBottom: "50px",
+            color: "#060538",
+            fontWeight: "bold",
+            fontSize: "40px",
+          }}
         >
-          User
-        </button>
-        <button
-          className="role-button admin"
-          onClick={() => handleLoginType("Agent")}
-        >
-          Agent
-        </button>
+          Login
+        </h1>
+        <div className="button-row">
+          <button
+            className="role-button user"
+            onClick={() => handleLoginType("User")}
+          >
+            User
+          </button>
+          <button
+            className="role-button admin"
+            onClick={() => handleLoginType("Agent")}
+          >
+            Agent
+          </button>
 
-        <button
-          className="role-button agent"
-          onClick={() => handleLoginType("Management")}
-        >
-          Management
-        </button>
-      </div>
+          <button
+            className="role-button agent"
+            onClick={() => handleLoginType("Management")}
+          >
+            Management
+          </button>
+        </div>
+      </Box>
     </Box>
   );
 };
