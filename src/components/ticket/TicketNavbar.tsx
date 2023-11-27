@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -11,15 +11,15 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import axios from "axios";
-import moment from "moment";
+import { handleLogout } from "../../utill";
 
 const settings = ["Profile", "Logout"];
 
-const TicketNavBar: React.FC<{ name: string }> = ({ name }) => {
+const TicketNavBar: React.FC<{
+  name: string;
+  setWalletAmount?: React.Dispatch<React.SetStateAction<number>>;
+}> = ({ name, setWalletAmount }) => {
   const [balance, setBalance] = React.useState(0);
-
-  const [auth, setAuth] = React.useState(true);
-  // const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
@@ -33,29 +33,34 @@ const TicketNavBar: React.FC<{ name: string }> = ({ name }) => {
     if (name === "Profile") {
       window.location.href = "/profile";
     } else if (name === "Logout") {
+      handleLogout();
       window.location.href = "/";
     } else if (name === "Balance") {
     }
     setAnchorElUser(null);
   };
   useEffect(() => {
-    let date=new Date();
-    let datee=moment(date).format("YYYY-MM-DD")
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://43.204.150.238:3002/ticket/getWallet?userId=${sessionStorage.getItem("userId")}`,{
-          headers: {
-            'Content-Type':"application/json"
+        const response = await axios.get(
+          `${
+            process.env.REACT_APP_IP
+          }/ticket/getWallet?userId=${sessionStorage.getItem("userId")}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
           }
-        });
+        );
+
+        if (setWalletAmount) setWalletAmount(response.data.data.amount);
         setBalance(response.data.data.amount);
       } catch (err) {
         console.log(err);
       }
     };
     fetchData();
-  }
-,[]);
+  }, []);
   return (
     <AppBar position="sticky" sx={{ background: "#1a1c6b" }}>
       <Toolbar>
@@ -64,17 +69,22 @@ const TicketNavBar: React.FC<{ name: string }> = ({ name }) => {
           edge="start"
           color="inherit"
           aria-label="menu"
-          sx={{ mr: 2 }}
+          sx={{ mr: { xs: 0, sm: 2 } }}
           onClick={() => {
             window.location.href = "/spin";
           }}
         >
-          <ArrowBackIcon sx={{ fontSize: "2.25rem" }} />
+          <ArrowBackIcon sx={{ fontSize: { xs: "1.25rem", sm: "2.25rem" } }} />
         </IconButton>
         <Typography
           variant="h5"
           component="div"
-          sx={{ flexGrow: 1, textAlign: "center", fontWeight: "700" }}
+          sx={{
+            flexGrow: 1,
+            textAlign: "center",
+            fontWeight: "600",
+            fontSize: "1.25rem",
+          }}
         >
           {name}
         </Typography>
@@ -93,7 +103,7 @@ const TicketNavBar: React.FC<{ name: string }> = ({ name }) => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              gap: "35px",
+              gap: { xs: "10px", sm: "35px" },
             }}
           >
             <Box
@@ -107,12 +117,14 @@ const TicketNavBar: React.FC<{ name: string }> = ({ name }) => {
               }}
             >
               <Box component={"div"} sx={{ mt: 0.5 }}>
-                <AccountBalanceWalletIcon sx={{ fontSize: "30px" }} />
+                <AccountBalanceWalletIcon
+                  sx={{ fontSize: { xs: "20px", sm: "30px" } }}
+                />
               </Box>
               <Tooltip title={`Balance:${balance}`}>
                 <Box
                   component={"div"}
-                  sx={{ fontSize: "18px", fontWeight: 650 }}
+                  sx={{ fontSize: { xs: "1rem", sm: "18px" }, fontWeight: 650 }}
                 >
                   {" "}
                   ₹{balance}
@@ -124,18 +136,15 @@ const TicketNavBar: React.FC<{ name: string }> = ({ name }) => {
                 sx={{
                   display: "flex",
                   flexDirection: "column",
-                  alignItems: "start",
-                  justifyContent: "start",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
                 <IconButton
                   onClick={handleOpenUserMenu}
                   sx={{
                     p: 0,
-                    // width: "60px",
-                    // height: "60px",
                     borderRadius: "100%",
-                    // background: "grey",
                   }}
                 >
                   <Avatar alt="Remy Sharp" src="/avatar.svg" />

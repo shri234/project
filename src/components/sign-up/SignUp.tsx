@@ -3,6 +3,7 @@ import axios from "axios";
 import "./signup.css";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import Box from "@mui/material/Box";
 
 const SignUpComponent: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -20,7 +21,7 @@ const SignUpComponent: React.FC = () => {
   });
 
   const emailRegex = /\S+@\S+\.\S+/;
-  const userNameRegex = /^[a-z]+$/;
+  const userNameRegex = /^(?=.*[a-zA-Z])[a-zA-Z0-9]{6,}$/;
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = event.target.value;
@@ -44,6 +45,7 @@ const SignUpComponent: React.FC = () => {
           : "Password must be at least 8 characters long.",
     });
   };
+
   const handleMobileNoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newMobile = event.target.value;
     setMobile(newMobile);
@@ -55,7 +57,6 @@ const SignUpComponent: React.FC = () => {
 
   const handleUserNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newUserName = event.target.value;
-    console.log(userNameRegex.test(newUserName), "Username");
     setName(newUserName);
     setFormErrors({
       ...formErrors,
@@ -96,6 +97,7 @@ const SignUpComponent: React.FC = () => {
 
       return;
     }
+
     const body = {
       username: name,
       mobileNumber: mobile,
@@ -104,14 +106,17 @@ const SignUpComponent: React.FC = () => {
       referralId: refer_id,
       role: sessionStorage.getItem("Role")?.toLocaleLowerCase(),
     };
-
     try {
-      const response = await axios
-        .post("http://43.204.150.238:3002/user/signup", body)
-        .then(() => {
-          window.location.href = "/";
-        });
+      const response = await axios.post(
+        `${process.env.REACT_APP_IP}/user/signup`,
+        body
+      );
+
+      window.location.href = "/login";
     } catch (error) {
+      if (error) {
+        alert("user already exists");
+      }
       console.error(error);
     }
   };
@@ -121,79 +126,94 @@ const SignUpComponent: React.FC = () => {
   };
 
   return (
-    <div className="signup-container">
-      <h2>Sign Up</h2>
-      <div className="input-container">
-        <label className="label-color">Name</label>
-        <input
-          type="text"
-          value={name}
-          onChange={handleUserNameChange}
-          className={formErrors.name ? "invalid" : ""}
-          placeholder="Enter your name"
-        />
-        {formErrors.name && <p className="error">{formErrors.name}</p>}
-      </div>
-      <div className="input-container">
-        <label className="label-color">Mobile Number</label>
-        <input
-          type="tel"
-          value={mobile}
-          onChange={handleMobileNoChange}
-          className={formErrors.mobile ? "invalid" : ""}
-          placeholder="Enter your mobile number"
-        />
-        {formErrors.mobile && <p className="error">{formErrors.mobile}</p>}
-      </div>
-      <div className="input-container">
-        <label className="label-color">Email</label>
-        <input
-          type="email"
-          value={email}
-          onChange={handleEmailChange}
-          className={formErrors.email ? "invalid" : ""}
-          placeholder="Enter your email"
-        />
-        {formErrors.email && <p className="error">{formErrors.email}</p>}
-      </div>
-      <div className="input-container password-input-container">
-        <label className="label-color">Password</label>
+    <Box
+      component={"div"}
+      className="login-page-container"
+      sx={{
+        display: "flex",
+        height: { xs: "100%", sm: "100%" },
+        backgroundImage: `url('/monthly.jpeg')`,
+        width: "100%",
+      }}
+    >
+      <div className="signup-container">
+        <h2>Sign Up</h2>
+        <div className="input-container">
+          <label className="label-color">Name</label>
+          <input
+            type="text"
+            value={name}
+            onChange={handleUserNameChange}
+            className={formErrors.name ? "invalid" : ""}
+            placeholder="Enter your name"
+          />
+          {formErrors.name && <p className="error">{formErrors.name}</p>}
+        </div>
+        <div className="input-container">
+          <label className="label-color">Mobile Number</label>
+          <input
+            type="tel"
+            value={mobile}
+            onChange={handleMobileNoChange}
+            className={formErrors.mobile ? "invalid" : ""}
+            placeholder="Enter your mobile number"
+          />
+          {formErrors.mobile && <p className="error">{formErrors.mobile}</p>}
+        </div>
+        <div className="input-container">
+          <label className="label-color">Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={handleEmailChange}
+            className={formErrors.email ? "invalid" : ""}
+            placeholder="Enter your email"
+          />
+          {formErrors.email && <p className="error">{formErrors.email}</p>}
+        </div>
+        <div className="input-container password-input-container">
+          <label className="label-color">Password</label>
 
-        <input
-          type={isPasswordVisible ? "text" : "password"}
-          value={password}
-          onChange={handlePasswordChange}
-          className={formErrors.password ? "invalid" : ""}
-          placeholder="Enter your password"
-        />
+          <input
+            type={isPasswordVisible ? "text" : "password"}
+            value={password}
+            onChange={handlePasswordChange}
+            className={formErrors.password ? "invalid" : ""}
+            placeholder="Enter your password"
+          />
 
-        <span
-          className={
-            formErrors.password
-              ? "password-toggle-error-icon"
-              : "password-toggle-icon"
-          }
-          onClick={togglePasswordVisibility}
-        >
-          {isPasswordVisible ? <VisibilityOffIcon /> : <VisibilityIcon />}
-        </span>
-        {formErrors.password && <p className="error">{formErrors.password}</p>}
+          <span
+            className={
+              formErrors.password
+                ? "password-toggle-error-icon"
+                : "password-toggle-icon"
+            }
+            onClick={togglePasswordVisibility}
+          >
+            {isPasswordVisible ? <VisibilityOffIcon /> : <VisibilityIcon />}
+          </span>
+          {formErrors.password && (
+            <p className="error">{formErrors.password}</p>
+          )}
+        </div>
+        <div className="input-container">
+          <label className="label-color">Referral ID</label>
+          <input
+            type="text"
+            value={refer_id}
+            onChange={(e) => setReferralId(e.target.value)}
+            className={formErrors.refer_id ? "invalid" : ""}
+            placeholder="Enter your referral ID"
+          />
+          {formErrors.refer_id && (
+            <p className="error">{formErrors.refer_id}</p>
+          )}
+        </div>
+        <button className="signup-button" onClick={handleSignUp}>
+          Sign Up
+        </button>
       </div>
-      <div className="input-container">
-        <label className="label-color">Referral ID</label>
-        <input
-          type="text"
-          value={refer_id} 
-          onChange={(e) => setReferralId(e.target.value)}
-          className={formErrors.refer_id ? "invalid" : ""}
-          placeholder="Enter your referral ID"
-        />
-        {formErrors.refer_id && <p className="error">{formErrors.refer_id}</p>}
-      </div>
-      <button className="signup-button" onClick={handleSignUp}>
-        Sign Up
-      </button>
-    </div>
+    </Box>
   );
 };
 

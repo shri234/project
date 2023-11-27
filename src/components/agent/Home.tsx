@@ -7,61 +7,47 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import AgentNavbar from "./Navbar";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-const table_head = ["S.No", "Username", "Created At", "Total Amount Win"];
-const table_body = [
-  {
-    id: 1,
-    s_no: 1,
-    username: "john",
-    created_at: "12/04/2023",
-    win_amount: "$100",
-  },
-  {
-    id: 2,
-    s_no: 2,
-    username: "john",
-    created_at: "12/04/2023",
-    win_amount: "$100",
-  },
-  {
-    id: 3,
-    s_no: 3,
-    username: "john",
-    created_at: "12/04/2023",
-    win_amount: "$100",
-  },
-];
+import { formattedDate } from "../../utill";
+import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
+const table_head = ["S.No", "Username", "Created At", "Play History"];
+// "Total Amount Win"
 
-function getAgentId(){
-  let agentId=sessionStorage.getItem("agentId")
+function getAgentId() {
+  let agentId = sessionStorage.getItem("agentId");
   return agentId;
-  }
+}
 
 const AgentHome = () => {
-  const agentid=getAgentId();
-  const [getuserdata,setAgentUserData]=useState<any[]>([])
+  const agentid = getAgentId();
+  const [getuserdata, setAgentUserData] = useState<any[]>([]);
+  const [pageCount, setPageCount] = useState(0);
   const [current_page, setCurrentPage] = useState(0);
-  const pageCount = 10;
+
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3002/user/getAllUsers?referralId=${agentid}`,
+        `${process.env.REACT_APP_IP}/user/getAllUsers?referralId=${agentid}`,
         {
           headers: {
             "Content-Type": "application/json",
           },
         }
       );
-    
+
       setAgentUserData(response.data.data);
-      
+      let count = 0;
+      if (response.data.data.count < 10) {
+        count = Math.ceil(response.data.data.count / 10) + 1;
+      } else {
+        count = Math.ceil(response.data.count / 10);
+      }
+      setPageCount(count);
     } catch (err) {
       console.log(err);
     }
   };
-
 
   useEffect(() => {
     fetchData();
@@ -72,92 +58,138 @@ const AgentHome = () => {
   }, [current_page]);
 
   return (
-    <Box>
-      <AgentNavbar path="/" />
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <Box component={"div"} sx={{ minWidth: "300px" }}>
-          <Box
-            sx={{
-              color: "#210759",
-              fontWeight: "bold",
-              fontSize: "1.5rem",
-              my: 2,
-            }}
-          >
-            Agent Table
-          </Box>
-          <Box
-            component={"div"}
-            sx={{ display: "flex", justifyContent: "center" }}
-          >
-            <TableContainer
-              component={Paper}
+    isAuthenticated("agent") && (
+      <Box>
+        <AgentNavbar path="/" />
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <Box component={"div"} sx={{ minWidth: "300px" }}>
+            <Box
               sx={{
-                width: "fit-content",
+                color: "#210759",
+                fontWeight: "bold",
+                fontSize: "1.5rem",
+                my: 2,
               }}
             >
-              <Table
-                sx={{ maxWidth: 450 }}
-                size="small"
-                aria-label="a dense table"
+              Agent Table
+            </Box>
+            <Box
+              component={"div"}
+              sx={{ display: "flex", justifyContent: "center" }}
+            >
+              <TableContainer
+                component={Paper}
+                sx={{
+                  width: "fit-content",
+                }}
               >
-                <TableHead sx={{ background: "#b51271" }}>
-                  <TableRow>
-                    {table_head.map((cell) => (
-                      <TableCell
-                        sx={{ color: "#fff", fontWeight: "bold" }}
-                        align="center"
-                      >
-                        {cell}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {getuserdata.map((row) => (
-                    <TableRow
-                      key={row.s_no}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
-                      <TableCell component="th" scope="row" align="center">
-                        {row.s_no}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        sx={{ cursor: "pointer" }}
-                        onClick={() => (window.location.href = "/user-profile")}
-                      >
-                        {row.username}
-                      </TableCell>
-                      <TableCell align="center">{row.CreatedAt}</TableCell>
-                      <TableCell align="center">{row.amount}</TableCell>
+                <Table
+                  sx={{ maxWidth: 450 }}
+                  size="small"
+                  aria-label="a dense table"
+                >
+                  <TableHead sx={{ background: "#b51271" }}>
+                    <TableRow>
+                      {table_head.map((cell, index) => (
+                        <TableCell
+                          sx={{ color: "#fff", fontWeight: "bold" }}
+                          align="center"
+                          key={index}
+                        >
+                          {cell}
+                        </TableCell>
+                      ))}
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
-          <Box
-            component={"div"}
-            sx={{
-              display: "flex",
-              justifyContent: { xs: "start", sm: "end" },
-              mt: 1,
-            }}
-          >
-            <Pagination
-              count={pageCount}
-              defaultPage={0}
-              siblingCount={0}
-              boundaryCount={1}
-              onChange={(e, page) => {
-                setCurrentPage(page - 1);
-              }}
-            />
+                  </TableHead>
+                  <TableBody>
+                    {getuserdata.length === 0 ? (
+                      <TableRow
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell
+                          component="th"
+                          scope="row"
+                          align="center"
+                          colSpan={table_head.length}
+                        >
+                          No Data found...
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      getuserdata.map((row, index) => (
+                        <TableRow
+                          key={row.s_no}
+                          sx={{
+                            "&:last-child td, &:last-child th": { border: 0 },
+                          }}
+                        >
+                          <TableCell component="th" scope="row" align="center">
+                            {index + 1}
+                          </TableCell>
+                          <TableCell
+                            align="center"
+                            sx={{ cursor: "pointer" }}
+                            onClick={() =>
+                              (window.location.href = "/user-profile")
+                            }
+                          >
+                            {row.username}
+                          </TableCell>
+                          <TableCell align="center">
+                            {formattedDate(row.CreatedAt)}
+                          </TableCell>
+                          {/* <TableCell align="center">{row.amount}</TableCell> */}
+                          <TableCell align="center">
+                    <Box
+                      sx={{
+                        background: "#410961",
+                        p: 0.5,
+                        borderRadius: "5px",
+                        color: "#fff",
+                        fontWeight: "bold",
+                        cursor: "pointer",
+                      }}
+                      component={"div"}
+                      onClick={() =>
+                        (window.location.href = "/agent-play-history")
+                      }
+                    >
+                      Play History
+                    </Box>
+                  </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
+            {getuserdata.length !== 0 && (
+              <Box
+                component={"div"}
+                sx={{
+                  display: "flex",
+                  justifyContent: { xs: "start", sm: "end" },
+                  mt: 1,
+                }}
+              >
+                <Pagination
+                  count={pageCount}
+                  defaultPage={0}
+                  siblingCount={0}
+                  boundaryCount={1}
+                  onChange={(e, page) => {
+                    setCurrentPage(page - 1);
+                  }}
+                />
+              </Box>
+            )}
           </Box>
         </Box>
       </Box>
-    </Box>
+    )
   );
 };
 export default AgentHome;

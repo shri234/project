@@ -1,14 +1,56 @@
 import Box from "@mui/material/Box";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./Test.css";
-const SpinnerWheel: React.FC = () => {
+import axios from "axios";
 
-  
-  const spinWheel = () => {
-    
-    
-     
-    
+const SpinnerWheel: React.FC<{ value: number }> = ({ value }) => {
+  const wheelRef = useRef<HTMLDivElement>(null);
+  const [result, setResult] = useState([6, 5, 2, 4]);
+
+  const spinWheel = async (digit: number) => {
+    if (wheelRef.current) {
+      wheelRef.current.style.transform = `rotate(${3600 + digit}deg)`;
+    }
+  };
+
+  const ifZerospinWheel = async () => {
+    if (wheelRef.current) {
+      wheelRef.current.style.transform = `rotate(${3600 + 10}deg)`;
+    }
+  };
+
+  useEffect(() => {
+    const spinnerMap = new Map<number, number>();
+
+    const valuesForKeys = [38, 80, 120, 150, 190, 225, 260, 300, 335, 10];
+
+    for (let i = 9; i >= 0; i--) {
+      spinnerMap.set(i, valuesForKeys[9 - i]);
+    }
+
+    if (value === 0) {
+      ifZerospinWheel();
+    }
+    {
+      const tmp = spinnerMap.get(value);
+
+      if (tmp !== undefined) {
+        spinWheel(tmp);
+      }
+    }
+  }, [value]);
+
+  const resultPublish = async () => {
+    await axios
+      .get("")
+      .then((res) => {
+        if (res.data) {
+          setResult([]);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const numberStyle = (i: number, clr: string): React.CSSProperties =>
@@ -33,8 +75,9 @@ const SpinnerWheel: React.FC = () => {
   return (
     <div className="body-spin">
       <Box component={"div"} className="container">
-        <Box component={"div"} className="spinBtn" ></Box>
-        <Box component="div" className="wheel" >
+        {/* onClick={spinWheel} */}
+        <Box component={"div"} className="spinBtn"></Box>
+        <Box component="div" className="wheel" ref={wheelRef}>
           {numbers.map((num) => (
             <Box
               key={num.i}
@@ -47,17 +90,6 @@ const SpinnerWheel: React.FC = () => {
           ))}
         </Box>
       </Box>
-      <script>
-      let wheelRef =document.querySelector(".wheel")
-      let spinbtn=document.querySelectore
-      spinBtn.oncl
-
-      let value = Math.ceil(Math.random() * 3600);
-    console.log(wheelRef)
-
-      wheelRef.style.transform = "rotate("+ value + "deg)";
-      value +=Math.ceil(Math.random() * 3600)
-      </script>
     </div>
   );
 };

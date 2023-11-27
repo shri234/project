@@ -8,9 +8,10 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Pagination from "@mui/material/Pagination";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import Stack from "@mui/material/Stack";
 import axios from "axios";
+import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
 
 const table_head = [
   { id: 1, title: "S.No" },
@@ -52,31 +53,34 @@ const table_body = [
 const RedeemHistory = () => {
   const [wallethistory, setWalletHistory] = useState<any[]>([]);
   const [current_page, setCurrentPage] = useState(0);
-  const [pageCount,setPageCount] = useState(0);
-    const fetchData = async () => {
+  const [pageCount, setPageCount] = useState(0);
+  const fetchData = async () => {
     try {
       const response = await axios.get(
-        `http://43.204.150.238:3002/ticket/getWalletHistory?userId=${sessionStorage.getItem("userid")}&pageno=${current_page}`,
+        `${
+          process.env.REACT_APP_IP
+        }/ticket/getWalletHistory?userId=${sessionStorage.getItem(
+          "userid"
+        )}&pageno=${current_page}`,
         {
           headers: {
             "Content-Type": "application/json",
           },
         }
       );
+      console.log(response.data.data);
       setWalletHistory(response.data.data);
-      let count=0;
-      if(response.data.data.count<10){
-      count = Math.ceil(response.data.data.count / 10)+1;
+      let count = 0;
+      if (response.data.data.count < 10) {
+        count = Math.ceil(response.data.data.count / 10) + 1;
+      } else {
+        count = Math.ceil(response.data.count / 10);
       }
-      else{
-       count = Math.ceil(response.data.count / 10);
-      }
-      setPageCount(count)
+      setPageCount(count);
     } catch (err) {
       console.log(err);
     }
   };
-
 
   useEffect(() => {
     fetchData();
@@ -87,100 +91,138 @@ const RedeemHistory = () => {
   }, [current_page]);
 
   return (
-    <Box>
-      <MasterNavbar path="/user-details" />
-      <Box
-        component={"div"}
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
+    isAuthenticated("master") && (
+      <Box>
+        <MasterNavbar path="/user-details" />
         <Box
+          component={"div"}
           sx={{
-            boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
-            p: 2,
-            m: 2,
-            borderRadius: "5px",
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
           <Box
             sx={{
-              color: "#210759",
-              fontWeight: "bold",
-              fontSize: "1.5rem",
-              my: 2,
+              boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
+              p: 2,
+              m: 2,
+              borderRadius: "5px",
             }}
           >
-            Wallet History
-          </Box>
-          <TableContainer component={Paper}>
             <Box
-              component={"div"}
               sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
+                color: "#210759",
+                fontWeight: "bold",
+                fontSize: "1.5rem",
+                my: 2,
               }}
             >
-              <Table
-                sx={{ maxWidth: 450 }}
-                size="small"
-                aria-label="a dense table"
-              >
-                <TableHead sx={{ background: "#b51271" }}>
-                  <TableRow>
-                    {table_head.map((cell) => (
-                      <TableCell
-                        sx={{ color: "#fff", fontWeight: "bold" }}
-                        align="center"
-                      >
-                        {cell.title}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {wallethistory.map((row) => (
-                    <TableRow
-                      key={row.s_no}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
-                      <TableCell component="th" scope="row" align="center">
-                        {row.s_no}
-                      </TableCell>
-                      <TableCell align="center">{row.CreatedAt}</TableCell>
-                      <TableCell align="center">{row.amount}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              Wallet History
             </Box>
-          </TableContainer>
-          <Box
-            component={"div"}
-            sx={{
-              display: "flex",
-              width: "300px",
-              justifyContent: { xs: "start", sm: "end" },
-              mt: 1,
-            }}
-          >
-            <Pagination
-              count={pageCount}
-              defaultPage={1}
-              siblingCount={0}
-              boundaryCount={1}
-              onChange={(e, page) => {
-                setCurrentPage(page - 1);
-              }}
-            />
+            <TableContainer component={Paper}>
+              <Box
+                component={"div"}
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Table
+                  sx={{ maxWidth: 450 }}
+                  size="small"
+                  aria-label="a dense table"
+                >
+                  <TableHead sx={{ background: "#b51271" }}>
+                    <TableRow>
+                      {table_head.map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          sx={{ color: "#fff", fontWeight: "bold" }}
+                          align="center"
+                        >
+                          {cell.title}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+                  {wallethistory.length === 0 ? (
+                    <TableBody>
+                      <TableRow
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell
+                          align="center"
+                          colSpan={table_head.length}
+                          sx={{
+                            fontWeight: "800",
+                            fontSize: "1.15rem",
+                            color: "blue",
+                          }}
+                        >
+                          No Wallet History data found ...
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  ) : (
+                    <TableBody>
+                      {wallethistory.map((row, index) => (
+                        <TableRow
+                          key={row.number}
+                          sx={{
+                            "&:last-child td, &:last-child th": { border: 0 },
+                          }}
+                        >
+                          <TableCell component="th" scope="row" align="center">
+                            {index + 1}
+                          </TableCell>
+                          <TableCell align="center">{row.CreatedAt}</TableCell>
+                          <TableCell
+                            align="center"
+                            sx={
+                              row.status
+                                ? { color: "green", fontWeight: "bold" }
+                                : { color: "red", fontWeight: "bold" }
+                            }
+                          >
+                            {row.status ? `+${row.amount}` : `-${row.amount}`}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  )}
+                </Table>
+              </Box>
+            </TableContainer>
+            {wallethistory.length !== 0 && (
+              <Box
+                component={"div"}
+                sx={{
+                  display: "flex",
+                  width: "300px",
+                  justifyContent: { xs: "start", sm: "end" },
+                  mt: 1,
+                }}
+              >
+                <Pagination
+                  count={pageCount}
+                  defaultPage={1}
+                  siblingCount={0}
+                  boundaryCount={1}
+                  onChange={(e, page) => {
+                    setCurrentPage(page - 1);
+                  }}
+                />
+              </Box>
+            )}
           </Box>
         </Box>
       </Box>
-    </Box>
+    )
   );
 };
 export default RedeemHistory;

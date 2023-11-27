@@ -4,6 +4,7 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import ResponsiveAppBar from "./Test";
 import axios from "axios";
+import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
 
 const Profile = () => {
   const [name, setName] = useState("");
@@ -20,9 +21,9 @@ const Profile = () => {
   const initialRendering = async () => {
     await axios
       .get(
-        `http://43.204.150.238:3002/user/getUserData?userId=${sessionStorage.getItem(
-          "userId"
-        )}`
+        `${
+          process.env.REACT_APP_IP
+        }/user/getUserData?userId=${sessionStorage.getItem("userId")}`
       )
       .then((res) => {
         console.log(res.data);
@@ -48,11 +49,16 @@ const Profile = () => {
       IFSC: ifsc,
       panNo: pan,
       aadharNo: aadhar,
-      address: address
+      address: address,
     };
 
     await axios
-      .put(`http://43.204.150.238:3002/user/updateUserDetails?userId=${sessionStorage.getItem("userId")}`, body)
+      .put(
+        `${
+          process.env.REACT_APP_IP
+        }/user/updateUserDetails?userId=${sessionStorage.getItem("userId")}`,
+        body
+      )
       .then((res) => alert("updated successfully"))
       .catch((error) => {
         console.log(error);
@@ -68,139 +74,167 @@ const Profile = () => {
   };
 
   return (
-    <Box>
-      {" "}
-      <ResponsiveAppBar path="/spin" />
-      <Box component={"div"} sx={{ display: "flex", justifyContent: "center" }}>
+    isAuthenticated("user") && (
+      <Box>
+        <ResponsiveAppBar path="/spin" />
         <Box
-          sx={{
-            margin: "20px",
-            maxWidth: "350px",
-            p: 2,
-            my: 10,
-            borderRadius: "5px",
-            boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
-          }}
+          component={"div"}
+          sx={{ display: "flex", justifyContent: "center" }}
         >
           <Box
-            component={"div"}
             sx={{
-              color: "#444",
-              fontWeight: "bold",
-              fontSize: "25px",
-              // textAlign: "center",
-              my: 2,
+              margin: "20px",
+              maxWidth: "350px",
+              p: 2,
+              my: 10,
+              borderRadius: "5px",
+              boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
             }}
           >
-            {" "}
-            User Profile
-          </Box>
-          <Stack direction="column" spacing={2}>
-            <Box component="div" sx={{ display: "flex", alignItems: "center" }}>
-              <Box sx={{ minWidth: "100px" }}>Name:</Box>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Enter your Name"
-                style={inputStyle}
-              />
-            </Box>
-            <Box component="div" sx={{ display: "flex", alignItems: "center" }}>
-              <Box sx={{ minWidth: "100px" }}>Phone No:</Box>
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Enter your Phone number"
-                style={inputStyle}
-              />
-            </Box>
-            <Box component="div" sx={{ display: "flex", alignItems: "center" }}>
-              <Box sx={{ minWidth: "100px" }}>Mail:</Box>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your Mail"
-                style={inputStyle}
-              />
-            </Box>
-            <Box component="div" sx={{ display: "flex", alignItems: "center" }}>
-              <Box sx={{ minWidth: "100px" }}>Address:</Box>
-              <textarea
-                // type="textarea"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="Enter your Address"
-                style={inputStyle}
-              />
-            </Box>
-            <Box component="div" sx={{ display: "flex", alignItems: "center" }}>
-              <Box sx={{ minWidth: "100px" }}>Aadhar:</Box>
-              <input
-                type="text"
-                value={aadhar}
-                onChange={(e) => setAadhar(e.target.value)}
-                placeholder="Enter your Aadhar number"
-                style={inputStyle}
-              />
-            </Box>
-            <Box component="div" sx={{ display: "flex", alignItems: "center" }}>
-              <Box sx={{ minWidth: "100px" }}>PAN:</Box>
-              <input
-                type="text"
-                value={pan}
-                onChange={(e) => setPan(e.target.value)}
-                placeholder="Enter your PAN"
-                style={inputStyle}
-              />
-            </Box>
-            <Box component="div" sx={{ display: "flex", alignItems: "center" }}>
-              <Box sx={{ minWidth: "100px" }}>Account No:</Box>
-              <input
-                type="text"
-                value={accountno}
-                onChange={(e) => setAccountNo(e.target.value)}
-                placeholder="Enter your Acc no"
-                style={inputStyle}
-              />
-            </Box>
-            <Box component="div" sx={{ display: "flex", alignItems: "center" }}>
-              <Box sx={{ minWidth: "100px" }}>IFSC:</Box>
-              <input
-                type="text"
-                value={ifsc}
-                onChange={(e) => setIfsc(e.target.value)}
-                placeholder="Enter your IFSC code"
-                style={inputStyle}
-              />
-            </Box>
-          </Stack>
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{ marginTop: "20px", justifyContent: "center" }}
-          >
-            <Button
-              variant="outlined"
-              onClick={handleUpdate}
+            <Box
+              component={"div"}
               sx={{
-                width: "100px",
-                background: "#081680",
-                color: "#fff",
-                fontWeight: "600",
-                ":hover": {
-                  background: "#081680",
-                },
+                color: "#444",
+                fontWeight: "bold",
+                fontSize: "25px",
+                // textAlign: "center",
+                my: 2,
               }}
             >
-              Update
-            </Button>
-          </Stack>
+              {" "}
+              User Profile
+            </Box>
+            <Stack direction="column" spacing={2}>
+              <Box
+                component="div"
+                sx={{ display: "flex", alignItems: "center" }}
+              >
+                <Box sx={{ minWidth: "100px" }}>Name:</Box>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter your Name"
+                  style={inputStyle}
+                />
+              </Box>
+              <Box
+                component="div"
+                sx={{ display: "flex", alignItems: "center" }}
+              >
+                <Box sx={{ minWidth: "100px" }}>Phone No:</Box>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Enter your Phone number"
+                  style={inputStyle}
+                />
+              </Box>
+              <Box
+                component="div"
+                sx={{ display: "flex", alignItems: "center" }}
+              >
+                <Box sx={{ minWidth: "100px" }}>Mail:</Box>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your Mail"
+                  style={inputStyle}
+                />
+              </Box>
+              <Box
+                component="div"
+                sx={{ display: "flex", alignItems: "center" }}
+              >
+                <Box sx={{ minWidth: "100px" }}>Address:</Box>
+                <textarea
+                  // type="textarea"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="Enter your Address"
+                  style={inputStyle}
+                />
+              </Box>
+              <Box
+                component="div"
+                sx={{ display: "flex", alignItems: "center" }}
+              >
+                <Box sx={{ minWidth: "100px" }}>Aadhar:</Box>
+                <input
+                  type="text"
+                  value={aadhar}
+                  onChange={(e) => setAadhar(e.target.value)}
+                  placeholder="Enter your Aadhar number"
+                  style={inputStyle}
+                />
+              </Box>
+              <Box
+                component="div"
+                sx={{ display: "flex", alignItems: "center" }}
+              >
+                <Box sx={{ minWidth: "100px" }}>PAN:</Box>
+                <input
+                  type="text"
+                  value={pan}
+                  onChange={(e) => setPan(e.target.value)}
+                  placeholder="Enter your PAN"
+                  style={inputStyle}
+                />
+              </Box>
+              <Box
+                component="div"
+                sx={{ display: "flex", alignItems: "center" }}
+              >
+                <Box sx={{ minWidth: "100px" }}>Account No:</Box>
+                <input
+                  type="text"
+                  value={accountno}
+                  onChange={(e) => setAccountNo(e.target.value)}
+                  placeholder="Enter your Acc no"
+                  style={inputStyle}
+                />
+              </Box>
+              <Box
+                component="div"
+                sx={{ display: "flex", alignItems: "center" }}
+              >
+                <Box sx={{ minWidth: "100px" }}>IFSC:</Box>
+                <input
+                  type="text"
+                  value={ifsc}
+                  onChange={(e) => setIfsc(e.target.value)}
+                  placeholder="Enter your IFSC code"
+                  style={inputStyle}
+                />
+              </Box>
+            </Stack>
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{ marginTop: "20px", justifyContent: "center" }}
+            >
+              <Button
+                variant="outlined"
+                onClick={handleUpdate}
+                sx={{
+                  width: "100px",
+                  background: "#081680",
+                  color: "#fff",
+                  fontWeight: "600",
+                  ":hover": {
+                    background: "#081680",
+                  },
+                }}
+              >
+                Update
+              </Button>
+            </Stack>
+          </Box>
         </Box>
       </Box>
-    </Box>
+    )
   );
 };
 

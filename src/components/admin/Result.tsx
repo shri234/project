@@ -1,670 +1,711 @@
-import { Box, Divider } from "@mui/material";
-import { FC, useState, useEffect } from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import { Box, Divider, Input } from "@mui/material";
+import { FC, useState,useEffect } from "react";
 import axios from "axios";
 import BackOfficeNavbar from "./NavBar";
-
-const table_head = ["S.No", "Username", "Ticket"];
-const table_body = [
-  {
-    id: 1,
-    user_name: "John",
-    ticket_number: 1324,
-  },
-  {
-    id: 2,
-    user_name: "simens",
-    ticket_number: 4321,
-  },
-  {
-    id: 3,
-    user_name: "Tim",
-    ticket_number: 5431,
-  },
-  {
-    id: 4,
-    user_name: "David",
-    ticket_number: 6543,
-  },
-  {
-    id: 5,
-    user_name: "John",
-    ticket_number: 5643,
-  },
-];
-
-const Filteration: FC = () => {
-  const [digits, setDigits] = useState<any[]>([]);
-  const [digit,setDigit]=useState(0)
-  const [LowestValue, setLowestValue] = useState<number>();
- 
-  const userId = sessionStorage.getItem("userId");
-
-
- 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `http://43.204.150.238:3002/ticket/getMinimum?digit=${sessionStorage.getItem("digit")}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        setDigits(response.data.data);
-        setLowestValue(response.data.LowestValue);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: "10px",
-      }}
-    >
-      {digits.map((value) => (
-        <Box
-          key={value.id}
-          sx={{
-            display: "flex",
-            justifyContent: "start",
-            gap: "5px",
-            alignItems: "center",
-          }}
-        >
-          <Box
-            sx={{
-              background: "#4d0b63",
-              color: "#fff",
-              fontWeight: "600",
-              borderRadius: "5px",
-              textAlign: "center",
-              fontSize: "1.15rem",
-              p: "2px",
-              width: "30px",
-            }}
-          >
-            {value.id}
-          </Box>
-          <Box>:</Box>
-          <Box>{value.count}</Box>
-        </Box>
-      ))}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "start",
-          gap: "10px",
-          alignItems: "Center",
-        }}
-      >
-        <Box
-          sx={{
-            color: "#6b0c37",
-            fontWeight: "bold",
-            fontSize: "1.25rem",
-          }}
-        >
-          Lowest Number
-        </Box>
-        <Box
-          sx={{
-            color: "#fff",
-            fontWeight: "bold",
-            fontSize: "1.25rem",
-            background: "#19617d",
-            p: 0.5,
-            width: "40px",
-            textAlign: "center",
-            borderRadius: "5px",
-          }}
-        >
-          {LowestValue}
-        </Box>
-      </Box>
-    </Box>
-  );
-};
+import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
+import Filteration from "./Filteration";
+import Loader from "../loader/Loader";
 
 const Result: FC<{ title: string }> = ({ title }) => {
   const [openDigit, setOpenDigit] = useState("");
   const [result_or_ticket, setStatus] = useState("");
   const [ticketrate, setTicketRate] = useState<string>("");
-  const [firstdigit,setFirstDigit]=useState("");
-  const [seconddigit,setSecondDigit]=useState("")
-  const [thirddigit,setThirdDigit]=useState("")
-  const [fourthdigit,setFourthDigit]=useState("")
+  const [firstdigit, setFirstDigit] = useState("");
+  const [seconddigit, setSecondDigit] = useState("");
+  const [thirddigit, setThirdDigit] = useState("");
+  const [fourthdigit, setFourthDigit] = useState("");
+  const [priceFirstDigit, setPriceFirstDigit] = useState("");
+  const [priceSecondDigit, setPriceSecondtDigit] = useState("");
+  const [priceThirdDigit, setPriceThirdDigit] = useState("");
+  const [priceFourthDigit, setPriceFourthDigit] = useState("");
+  const [loader, setLoader] = useState(false);
+  const [ticketRate,setTicketrate]=useState(0)
 
   const handleTicketRate = async () => {
-    
+    const body = { ticketRate: ticketrate };
 
-    const body = { ticketRate:ticketrate};
-    console.log(body);
     await axios
-      .post("http://43.204.150.238:3002/ticket/addTicketRate", body)
+      .post(`${process.env.REACT_APP_IP}/ticket/addTicketRate`, body)
       .then((res) => {
         if (res.status === 200) {
           window.alert("Success! Ticket rate added");
         }
-        
       })
       .catch((error) => {
         console.log(error);
       });
   };
-  const handlePublishResult = async () => {
-    const body = [{ digit:firstdigit},{digit:seconddigit},{digit:thirddigit},{digit:fourthdigit}];
-    console.log(body);
+
+  const handlePriceRate = async () => {
+    const body = {
+      splitup:
+        priceFirstDigit + priceSecondDigit + priceThirdDigit + priceFourthDigit,
+    };
     await axios
-      .post("http://43.204.150.238:3002/ticket/publishResult", body)
+      .put(`${process.env.REACT_APP_IP}/ticket/updatePriceRate`, body)
       .then((res) => {
         if (res.status === 200) {
-          window.alert(`Result Published successfully! There are ${res.data.Winners} winners.`);
+          window.alert("Success! Price rate splitup added");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const handlePublishResult = async () => {
+    setLoader(true);
+    const body = [
+      { digit: firstdigit },
+      { digit: seconddigit },
+      { digit: thirddigit },
+      { digit: fourthdigit },
+    ];
+
+    const formatteddate = `${new Date().getFullYear()}-${
+      new Date().getMonth() + 1
+    }-${new Date().getDate()}`;
+
+    await axios
+      .post(
+        `${process.env.REACT_APP_IP}/ticket/publishResult?date=${formatteddate}`,
+        body
+      )
+      .then((res) => {
+        setLoader(false);
+        if (res.status === 200) {
+          window.alert(
+            `Result Published successfully! There are ${res.data.Winners} winners.`
+          );
         }
         window.location.href = "/daily-result";
       })
       .catch((error) => {
+        setLoader(false);
         console.log(error);
       });
   };
 
+  const fetchData = async () => {
+    try {
+      const formatteddate = `${new Date().getFullYear()}-${
+        new Date().getMonth() + 1
+      }-${new Date().getDate()}`;
+      const response = await axios.get(
+        `${process.env.REACT_APP_IP}/ticket/getTicketRate?date=${formatteddate}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setTicketRate(response.data.data.ticketRate);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData1 = async () => {
+    try {
+      const formatteddate = `${new Date().getFullYear()}-${
+        new Date().getMonth() + 1
+      }-${new Date().getDate()}`;
+      const response = await axios.get(
+        `${process.env.REACT_APP_IP}/ticket/getPriceRate?date=${formatteddate}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response.data.data.priceRate_splitup[0])
+      setPriceFirstDigit(response.data.data.priceRate_splitup[0]);
+      setPriceSecondtDigit(response.data.data.priceRate_splitup[1]);
+      setPriceThirdDigit(response.data.data.priceRate_splitup[2])
+      setPriceFourthDigit(response.data.data.priceRate_splitup[3])
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchData1();
+  }, []);
+
   return (
-    <Box>
-      <BackOfficeNavbar path="/admin" />
-      <Box
-        component={"div"}
-        sx={{
-          justifyContent: "center",
-          alignItems: "center",
-          display: "flex",
-        }}
-      >
+    isAuthenticated("admin") && (
+      <Box>
+        <BackOfficeNavbar path="/admin" />
+        {loader && <Loader />}
         <Box
           component={"div"}
           sx={{
-            boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
-            borderRadius: "5px",
-            py: 2,
-            mt: 2,
-            minWidth: "300px",
+            justifyContent: "center",
+            alignItems: "center",
+            display: "flex",
           }}
         >
-          <Box>
-            <h2>{title} Spin</h2>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                m: 2,
-              }}
-            >
-              <Box
-                sx={{
-                  background: "green",
-                  color: "#fff",
-                  fontWeight: "600",
-                  p: 1,
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-                component={"div"}
-                onClick={() =>
-                  setStatus((prev) => (prev === "result" ? "" : "result"))
-                }
-              >
-                RESULT
-              </Box>
-              {/* {sessionStorage.getItem("role") === "master" && ( */}
-              {/* <Box
-                sx={{
-                  background: "#191a5e",
-                  color: "#fff",
-                  fontWeight: "600",
-                  p: 1,
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-                component={"div"}
-                onClick={() =>
-                  setStatus((prev) => (prev === "history" ? "" : "history"))
-                }
-              >
-                HISTORY
-              </Box> */}
-              {/* )} */}
-              <Box
-                sx={{
-                  background: "#191a5e",
-                  color: "#fff",
-                  fontWeight: "600",
-                  cursor: "pointer",
-                  p: 1,
-                  borderRadius: "5px",
-                }}
-                component={"div"}
-                onClick={() =>
-                  setStatus((prev) => (prev === "ticket" ? "" : "ticket"))
-                }
-              >
-                AMOUNT
-              </Box>
-            </Box>
-          </Box>
-          {result_or_ticket === "result" && (
-            <>
-              <Divider sx={{ my: 1 }} />
-              <Box>
-                <h2>{title} Spin Result</h2>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "start",
-                    gap: "4px",
-                    alignItems: "center",
-                    ml: 2,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      color: "#47397d",
-                      fontWeight: "700",
-                      cursor: "pointer",
-                    }}
-                    component={"div"}
-                    onClick={() => {
-                      setOpenDigit((prev) =>
-                        prev === "digit_1" ? "" : "digit_1"
-                      );
-                    ;sessionStorage.setItem("digit","1")}}
-                  >
-                    Number 1:
-                  </Box>
-                  <Box>
-                    <input
-                      type="text"
-                      style={{ width: "40px", marginRight: "2px" }}
-                    />
-                  </Box>
-                </Box>
-                {openDigit === "digit_1" && <Filteration />}
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "start",
-                    gap: "4px",
-                    alignItems: "center",
-                    ml: 2,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      color: "#47397d",
-                      fontWeight: "700",
-                      cursor: "pointer",
-                    }}
-                    component={"div"}
-                    onClick={() => {
-                      setOpenDigit((prev) =>
-                        prev === "digit_2" ? "" : "digit_2"
-                      );
-                      ;sessionStorage.setItem("digit","2")}}
-                  >
-                    Number 2:
-                  </Box>
-                  <Box>
-                    <input
-                      type="text"
-                      style={{ width: "40px", marginRight: "2px" }}
-                    />
-                  </Box>
-                </Box>
-                {openDigit === "digit_2" && <Filteration />}
-
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "start",
-                    gap: "4px",
-                    alignItems: "center",
-                    ml: 2,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      color: "#47397d",
-                      fontWeight: "700",
-                      cursor: "pointer",
-                    }}
-                    component={"div"}
-                    onClick={() => {
-                      setOpenDigit((prev) =>
-                        prev === "digit_3" ? "" : "digit_3"
-                      );
-                      ;sessionStorage.setItem("digit","3")}}
-                  >
-                    Number 3:
-                  </Box>
-                  <Box>
-                    <input
-                      type="text"
-                      style={{ width: "40px", marginRight: "2px" }}
-                    />
-                  </Box>
-                </Box>
-                {openDigit === "digit_3" && <Filteration />}
-
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "start",
-                    gap: "4px",
-                    alignItems: "center",
-                    ml: 2,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      color: "#47397d",
-                      fontWeight: "700",
-                      cursor: "pointer",
-                    }}
-                    component={"div"}
-                    onClick={() => {
-                      setOpenDigit((prev) =>
-                        prev === "digit_4" ? "" : "digit_4"
-                      );
-                      ;sessionStorage.setItem("digit","4")}}
-                  >
-                    Number 4:
-                  </Box>
-                  <Box>
-                    <input
-                      type="text"
-                      style={{ width: "40px", marginRight: "2px" }}
-                    />
-                  </Box>
-                </Box>
-                {openDigit === "digit_4" && <Filteration />}
-              </Box>
-              <Divider sx={{ my: 1 }} />
+          <Box
+            component={"div"}
+            sx={{
+              boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
+              borderRadius: "5px",
+              py: 2,
+              mt: 2,
+              minWidth: "300px",
+            }}
+          >
+            <Box>
+              <h2>{title} Spin</h2>
               <Box
                 sx={{
                   display: "flex",
                   justifyContent: "space-between",
-                  alignItems: "center",
-                  px: 2,
+                  m: 2,
                 }}
               >
                 <Box
                   sx={{
+                    background: "green",
+                    color: "#fff",
+                    fontWeight: "600",
+                    p: 1,
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                  }}
+                  component={"div"}
+                  onClick={() =>
+                    setStatus((prev) => (prev === "result" ? "" : "result"))
+                  }
+                >
+                  RESULT
+                </Box>
+
+                <Box
+                  sx={{
+                    background: "#191a5e",
+                    color: "#fff",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    p: 1,
+                    borderRadius: "5px",
+                  }}
+                  component={"div"}
+                  onClick={() =>
+                    setStatus((prev) => (prev === "ticket" ? "" : "ticket"))
+                  }
+                >
+                  AMOUNT
+                </Box>
+              </Box>
+            </Box>
+            {result_or_ticket === "result" && (
+              <>
+                <Divider sx={{ my: 1 }} />
+                <Box>
+                  <h2>{title} Spin Result</h2>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "start",
+                      gap: "4px",
+                      alignItems: "center",
+                      ml: 2,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        color: "#47397d",
+                        fontWeight: "700",
+                        cursor: "pointer",
+                      }}
+                      component={"div"}
+                      onClick={() => {
+                        setOpenDigit((prev) =>
+                          prev === "digit_1" ? "" : "digit_1"
+                        );
+                        sessionStorage.setItem("digit", "1");
+                      }}
+                    >
+                      Number 1:
+                    </Box>
+                    <Box
+                      sx={{
+                        marginRight: "2px",
+                        p: 2,
+                        fontWeight: "bold",
+                        borderRadius: "5px",
+                        boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
+                      }}
+                    >
+                      {firstdigit}
+                    </Box>
+                  </Box>
+                  {openDigit === "digit_1" && (
+                    <Filteration setFiltered={setFirstDigit} />
+                  )}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "start",
+                      gap: "4px",
+                      alignItems: "center",
+                      ml: 2,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        color: "#47397d",
+                        fontWeight: "700",
+                        cursor: "pointer",
+                      }}
+                      component={"div"}
+                      onClick={() => {
+                        setOpenDigit((prev) =>
+                          prev === "digit_2" ? "" : "digit_2"
+                        );
+                        sessionStorage.setItem("digit", "2");
+                      }}
+                    >
+                      Number 2:
+                    </Box>
+                    <Box
+                      sx={{
+                        marginRight: "2px",
+                        p: 2,
+                        fontWeight: "bold",
+                        borderRadius: "5px",
+                        boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
+                      }}
+                    >
+                      {seconddigit}
+                    </Box>
+                  </Box>
+                  {openDigit === "digit_2" && (
+                    <Filteration setFiltered={setSecondDigit} />
+                  )}
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "start",
+                      gap: "4px",
+                      alignItems: "center",
+                      ml: 2,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        color: "#47397d",
+                        fontWeight: "700",
+                        cursor: "pointer",
+                      }}
+                      component={"div"}
+                      onClick={() => {
+                        setOpenDigit((prev) =>
+                          prev === "digit_3" ? "" : "digit_3"
+                        );
+                        sessionStorage.setItem("digit", "3");
+                      }}
+                    >
+                      Number 3:
+                    </Box>
+                    <Box
+                      sx={{
+                        marginRight: "2px",
+                        p: 2,
+                        fontWeight: "bold",
+                        borderRadius: "5px",
+                        boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
+                      }}
+                    >
+                      {thirddigit}
+                    </Box>
+                  </Box>
+                  {openDigit === "digit_3" && (
+                    <Filteration setFiltered={setThirdDigit} />
+                  )}
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "start",
+                      gap: "4px",
+                      alignItems: "center",
+                      ml: 2,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        color: "#47397d",
+                        fontWeight: "700",
+                        cursor: "pointer",
+                      }}
+                      component={"div"}
+                      onClick={() => {
+                        setOpenDigit((prev) =>
+                          prev === "digit_4" ? "" : "digit_4"
+                        );
+                        sessionStorage.setItem("digit", "4");
+                      }}
+                    >
+                      Number 4:
+                    </Box>
+                    <Box
+                      sx={{
+                        marginRight: "2px",
+                        p: 2,
+                        fontWeight: "bold",
+                        borderRadius: "5px",
+                        boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
+                      }}
+                    >
+                      {fourthdigit}
+                    </Box>
+                  </Box>
+                  {openDigit === "digit_4" && (
+                    <Filteration setFiltered={setFourthDigit} />
+                  )}
+                </Box>
+                <Divider sx={{ my: 1 }} />
+                <Box
+                  sx={{
                     display: "flex",
-                    justifyContent: "start",
-                    gap: "2px",
+                    justifyContent: "space-between",
                     alignItems: "center",
+                    px: 2,
                   }}
                 >
                   <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "start",
+                      gap: "2px",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        p: 1,
+                        borderRadius: "5px",
+                        background: "#d67349",
+                        color: "#fff",
+                        fontWeight: "600",
+                      }}
+                    >
+                      Result:
+                    </Box>
+                    <Box>
+                      <Input
+                        value={firstdigit}
+                        onChange={(e) => setFirstDigit(e.target.value)}
+                        sx={{
+                          width: "40px",
+
+                          borderRadius: "5px",
+                          border: "none",
+                          boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
+                        }}
+                      />
+                    </Box>
+                    <Box>
+                      <Input
+                        value={seconddigit}
+                        onChange={(e) => setSecondDigit(e.target.value)}
+                        sx={{
+                          width: "40px",
+
+                          borderRadius: "5px",
+                          border: "none",
+                          boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
+                        }}
+                      />
+                    </Box>
+                    <Box>
+                      <Input
+                        value={thirddigit}
+                        onChange={(e) => setThirdDigit(e.target.value)}
+                        sx={{
+                          width: "40px",
+
+                          borderRadius: "5px",
+                          border: "none",
+                          boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
+                        }}
+                      />
+                    </Box>
+                    <Box component={"div"} sx={{ borderRadius: "0px" }}>
+                      <Input
+                        value={fourthdigit}
+                        onChange={(e) => setFourthDigit(e.target.value)}
+                        sx={{
+                          width: "40px",
+
+                          borderRadius: "5px",
+                          border: "none",
+                          boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
+                        }}
+                      />
+                    </Box>
+                  </Box>
+                  <Box
+                    onClick={() => {
+                      if (
+                        firstdigit &&
+                        seconddigit &&
+                        thirddigit &&
+                        fourthdigit
+                      ) {
+                        setLoader((pre) => !pre);
+                        handlePublishResult();
+                      } else {
+                        alert("Fill all digits");
+                      }
+                    }}
                     sx={{
                       p: 1,
                       borderRadius: "5px",
-                      background: "#d67349",
+                      background: "#7a1160",
                       color: "#fff",
                       fontWeight: "600",
+                      cursor: "pointer",
                     }}
                   >
-                    Result:
-                  </Box>
-                  <Box>
-                    <input
-                      type="text"
-                      value={firstdigit}
-                      onChange={(e)=>setFirstDigit(e.target.value)}
-                      style={{ width: "30px", marginRight: "2px" }}
-                    />
-                  </Box>
-                  <Box>
-                    <input
-                      type="text"
-                      value={seconddigit}
-                      onChange={(e)=>setSecondDigit(e.target.value)}
-                      style={{ width: "30px", marginRight: "2px" }}
-                    />
-                  </Box>
-                  <Box>
-                    <input
-                      type="text"
-                      value={thirddigit}
-                      onChange={(e)=>setThirdDigit(e.target.value)}
-                      style={{ width: "30px", marginRight: "2px" }}
-                    />
-                  </Box>
-                  <Box>
-                    <input
-                      type="text"
-                      value={fourthdigit}
-                      onChange={(e)=>setFourthDigit(e.target.value)}
-                      style={{ width: "30px", marginRight: "2px" }}
-                    />
+                    PUBLISH
                   </Box>
                 </Box>
-                <Box
-                onClick={handlePublishResult}
-                  sx={{
-                    p: 1,
-                    borderRadius: "5px",
-                    background: "#7a1160",
-                    color: "#fff",
-                    fontWeight: "600",
-                  }}
-                >
-                  PUBLISH
-                </Box>
-              </Box>
-            </>
-          )}
+              </>
+            )}
 
-          {result_or_ticket === "ticket" && (
-            <>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  m: 2,
-
-                  gap: { xs: 10, sm: 20 },
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "start",
-                    alignItems: "center",
-                    gap: "5px",
-                    // ml: 1,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      fontWeight: "bold",
-                      fontSize: "1.25rem",
-                      color: "#ab0a4a",
-                      // whiteSpace: "nowrap",
-                    }}
-                  >
-                    Ticket Rate:
-                  </Box>
-                  <Box>
-                    <input
-                      type="number"
-                      value={ticketrate}
-                      onChange={(e) => setTicketRate(e.target.value)}
-                      style={{ minWidth: "40px", maxWidth: "100px" }}
-                    />
-                  </Box>
-                </Box>
-                <Box
-                onClick={handleTicketRate}
-                  sx={{
-                    p: 1.25,
-                    background: "#0bb329",
-                    borderRadius: "5px",
-                    color: "#fff",
-                    fontWeight: 600,
-                  }}
-                >
-                  Publish
-                </Box>
-              </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  m: 2,
-                }}
-              >
+            {result_or_ticket === "ticket" && (
+              <>
                 <Box
                   sx={{
                     display: "flex",
                     justifyContent: "center",
-                    alignItems: { xs: "start", sm: "center" },
-                    gap: "10px",
-                    flexDirection: { xs: "column", sm: "row" },
+                    alignItems: "center",
+                    m: 2,
+
+                    gap: { xs: 10, sm: 20 },
                   }}
                 >
                   <Box
                     sx={{
-                      fontWeight: "bold",
-                      fontSize: "1.25rem",
-                      color: "#ab0a4a",
+                      display: "flex",
+                      justifyContent: "start",
+                      alignItems: "center",
+                      gap: "5px",
+                      // ml: 1,
                     }}
                   >
-                    Price Rate:
-                  </Box>
-                  <Box component={"div"} sx={{ display: "flex", gap: "2px" }}>
                     <Box
-                      component={"div"}
                       sx={{
-                        borderRadius: "5px",
-                        boxShadow: `rgba(0, 0, 0, 0.35) 0px 5px 15px;`,
-                        p: 1,
+                        fontWeight: "bold",
+                        fontSize: "1.25rem",
+                        color: "#ab0a4a",
+                        // whiteSpace: "nowrap",
                       }}
                     >
-                      <Box
-                        component={"div"}
-                        sx={{
-                          color: "#08285c",
-                          fontWeight: "700",
-                          my: "2px",
-                          whiteSpace: "nowrap",
-                          fontSize: "14px",
-                        }}
-                      >
-                        Level 1:
-                      </Box>
-                      {/* <Divider sx={{ my: "2px", background: "#545b66" }} /> */}
-                      <input
-                        type="text"
-                        style={{ minWidth: "20px", maxWidth: "50px" }}
-                      />
+                      Ticket Rate:
                     </Box>
-                    <Box
-                      component={"div"}
-                      sx={{
-                        borderRadius: "5px",
-                        boxShadow: `rgba(0, 0, 0, 0.35) 0px 5px 15px;`,
-                        p: 1,
-                      }}
-                    >
-                      <Box
-                        component={"div"}
-                        sx={{
-                          color: "#08285c",
-                          fontWeight: "700",
-                          my: "2px",
-                          whiteSpace: "nowrap",
-                          fontSize: "14px",
-                        }}
-                      >
-                        Level 2:
-                      </Box>
+                    <Box>
                       <input
-                        type="text"
-                        style={{ minWidth: "20px", maxWidth: "50px" }}
-                      />
-                    </Box>
-                    <Box
-                      component={"div"}
-                      sx={{
-                        borderRadius: "5px",
-                        boxShadow: `rgba(0, 0, 0, 0.35) 0px 5px 15px;`,
-                        p: 1,
-                      }}
-                    >
-                      <Box
-                        component={"div"}
-                        sx={{
-                          color: "#08285c",
-                          fontWeight: "700",
-                          my: "2px",
-                          whiteSpace: "nowrap",
-                          fontSize: "14px",
-                        }}
-                      >
-                        Level 3:
-                      </Box>
-                      <input
-                        type="text"
-                        style={{ minWidth: "20px", maxWidth: "50px" }}
-                      />
-                    </Box>
-                    <Box
-                      component={"div"}
-                      sx={{
-                        borderRadius: "5px",
-                        boxShadow: `rgba(0, 0, 0, 0.35) 0px 5px 15px;`,
-                        p: 1,
-                      }}
-                    >
-                      <Box
-                        component={"div"}
-                        sx={{
-                          color: "#08285c",
-                          fontWeight: "700",
-                          my: "2px",
-                          whiteSpace: "nowrap",
-                          fontSize: "14px",
-                        }}
-                      >
-                        Level 4:
-                      </Box>
-                      <input
-                        type="text"
-                        style={{ minWidth: "20px", maxWidth: "50px" }}
+                        type="number"
+                        value={ticketrate}
+                        onChange={(e) => setTicketRate(e.target.value)}
+                        style={{ minWidth: "40px", maxWidth: "100px" }}
                       />
                     </Box>
                   </Box>
                   <Box
+                    onClick={handleTicketRate}
                     sx={{
-                      display: { xs: "none", sm: "block" },
+                      p: 1.25,
+                      background: "#0bb329",
+                      cursor: "pointer",
+                      borderRadius: "5px",
+                      color: "#fff",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Publish
+                  </Box>
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    m: 2,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: { xs: "start", sm: "center" },
+                      gap: "10px",
+                      flexDirection: { xs: "column", sm: "row" },
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        fontWeight: "bold",
+                        fontSize: "1.25rem",
+                        color: "#ab0a4a",
+                      }}
+                    >
+                      Price Rate:
+                    </Box>
+                    <Box component={"div"} sx={{ display: "flex", gap: "2px" }}>
+                      <Box
+                        component={"div"}
+                        sx={{
+                          borderRadius: "5px",
+                          boxShadow: `rgba(0, 0, 0, 0.35) 0px 5px 15px;`,
+                          p: 1,
+                        }}
+                      >
+                        <Box
+                          component={"div"}
+                          sx={{
+                            color: "#08285c",
+                            fontWeight: "700",
+                            my: "2px",
+                            whiteSpace: "nowrap",
+                            fontSize: "14px",
+                          }}
+                        >
+                          Level 1:
+                        </Box>
+                        {/* <Divider sx={{ my: "2px", background: "#545b66" }} /> */}
+                        <input
+                          type="text"
+                          value={priceFirstDigit}
+                          onChange={(e) => {
+                            setPriceFirstDigit(e.target.value);
+                          }}
+                          style={{ minWidth: "20px", maxWidth: "60px" }}
+                        />
+                      </Box>
+                      <Box
+                        component={"div"}
+                        sx={{
+                          borderRadius: "5px",
+                          boxShadow: `rgba(0, 0, 0, 0.35) 0px 5px 15px;`,
+                          p: 1,
+                        }}
+                      >
+                        <Box
+                          component={"div"}
+                          sx={{
+                            color: "#08285c",
+                            fontWeight: "700",
+                            my: "2px",
+                            whiteSpace: "nowrap",
+                            fontSize: "14px",
+                          }}
+                        >
+                          Level 2:
+                        </Box>
+                        <input
+                          type="text"
+                          value={priceSecondDigit}
+                          onChange={(e) => {
+                            setPriceSecondtDigit(e.target.value);
+                          }}
+                          style={{ minWidth: "20px", maxWidth: "60px" }}
+                        />
+                      </Box>
+                      <Box
+                        component={"div"}
+                        sx={{
+                          borderRadius: "5px",
+                          boxShadow: `rgba(0, 0, 0, 0.35) 0px 5px 15px;`,
+                          p: 1,
+                        }}
+                      >
+                        <Box
+                          component={"div"}
+                          sx={{
+                            color: "#08285c",
+                            fontWeight: "700",
+                            my: "2px",
+                            whiteSpace: "nowrap",
+                            fontSize: "14px",
+                          }}
+                        >
+                          Level 3:
+                        </Box>
+                        <input
+                          type="text"
+                          value={priceThirdDigit}
+                          onChange={(e) => {
+                            setPriceThirdDigit(e.target.value);
+                          }}
+                          style={{ minWidth: "20px", maxWidth: "60px" }}
+                        />
+                      </Box>
+                      <Box
+                        component={"div"}
+                        sx={{
+                          borderRadius: "5px",
+                          boxShadow: `rgba(0, 0, 0, 0.35) 0px 5px 15px;`,
+                          p: 1,
+                        }}
+                      >
+                        <Box
+                          component={"div"}
+                          sx={{
+                            color: "#08285c",
+                            fontWeight: "700",
+                            my: "2px",
+                            whiteSpace: "nowrap",
+                            fontSize: "14px",
+                          }}
+                        >
+                          Level 4:
+                        </Box>
+                        <input
+                          type="text"
+                          value={priceFourthDigit}
+                          onChange={(e) => {
+                            setPriceFourthDigit(e.target.value);
+                          }}
+                          style={{ minWidth: "20px", maxWidth: "60px" }}
+                        />
+                      </Box>
+                    </Box>
+                    <Box
+                      onClick={handlePriceRate}
+                      sx={{
+                        display: { xs: "none", sm: "block" },
+                        p: 1.25,
+                        background: "#0bb329",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                        color: "#fff",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Publish
+                    </Box>
+                  </Box>
+                </Box>
+                <Box
+                  component={"div"}
+                  sx={{
+                    display: { xs: "flex", sm: "none" },
+                    justifyContent: "end",
+                    mr: 2,
+                  }}
+                >
+                  <Box
+                    sx={{
                       p: 1.25,
                       background: "#0bb329",
                       borderRadius: "5px",
@@ -675,92 +716,12 @@ const Result: FC<{ title: string }> = ({ title }) => {
                     Publish
                   </Box>
                 </Box>
-              </Box>
-              <Box
-                component={"div"}
-                sx={{
-                  display: { xs: "flex", sm: "none" },
-                  justifyContent: "end",
-                  mr: 2,
-                }}
-              >
-                <Box
-                  sx={{
-                    p: 1.25,
-                    background: "#0bb329",
-                    borderRadius: "5px",
-                    color: "#fff",
-                    fontWeight: 600,
-                  }}
-                >
-                  Publish
-                </Box>
-              </Box>
-            </>
-          )}
-
-          {result_or_ticket === "history" && (
-            <>
-              {" "}
-              <Box
-                sx={{
-                  color: "#210759",
-                  fontWeight: "bold",
-                  fontSize: "1.5rem",
-                  my: 2,
-                  ml: 2,
-                }}
-              >
-                History
-              </Box>
-              <Box
-                component={"div"}
-                sx={{ display: "flex", justifyContent: "center" }}
-              >
-                <TableContainer component={Paper} sx={{ width: "fit-content" }}>
-                  <Table
-                    sx={{ maxWidth: 450 }}
-                    size="small"
-                    aria-label="a dense table"
-                  >
-                    <TableHead sx={{ background: "#b51271" }}>
-                      <TableRow>
-                        {table_head.map((cell) => (
-                          <TableCell
-                            sx={{ color: "#fff", fontWeight: "bold" }}
-                            align="center"
-                          >
-                            {cell}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {table_body.map((row) => (
-                        <TableRow
-                          key={row.id}
-                          sx={{
-                            "&:last-child td, &:last-child th": { border: 0 },
-                          }}
-                        >
-                          <TableCell component="th" scope="row" align="center">
-                            {row.id}
-                          </TableCell>
-                          <TableCell align="center">{row.user_name}</TableCell>
-                          <TableCell align="center">
-                            {row.ticket_number}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </Box>
-            </>
-          )}
+              </>
+            )}
+          </Box>
         </Box>
       </Box>
-    </Box>
+    )
   );
 };
 export default Result;

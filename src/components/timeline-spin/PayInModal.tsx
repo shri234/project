@@ -1,11 +1,10 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import moment from "moment";
+import "./TimelineSpin.css";
 
 const loadRazorpayScript = (src: string) => {
   return new Promise((resolve) => {
@@ -38,7 +37,7 @@ export default function PayInModal({
 }: {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const userid=sessionStorage.getItem("userId")
+  const userid = sessionStorage.getItem("userId");
   const [amount, setAmount] = useState(0);
   useEffect(() => {
     loadRazorpayScript("https://checkout.razorpay.com/v1/checkout.js").then(
@@ -49,26 +48,31 @@ export default function PayInModal({
       }
     );
   }, []);
-  const fetchData = async () =>{
-    const walletAmount=sessionStorage.getItem("amount")
-    try{
-  const body = { amount:walletAmount,userId:userid,username:sessionStorage.getItem("username")};
-  console.log(body);
-  let date=new Date();
-  let datee=moment(date).format("YYYY-MM-DD")
-  console.log(datee)
-   const response=await axios.post(`http://43.204.150.238:3002/ticket/addWallet`, body);
+  const fetchData = async () => {
+    const walletAmount = sessionStorage.getItem("amount");
+    try {
+      const body = {
+        amount: walletAmount,
+        userId: userid,
+        username: sessionStorage.getItem("username"),
+      };
+      console.log(body);
+      let date = new Date();
+      let datee = moment(date).format("YYYY-MM-DD");
+      console.log(datee);
+      const response = await axios.post(
+        `${process.env.REACT_APP_IP}/ticket/addWallet`,
+        body
+      );
 
-   if(response.status==200){
-      window.location.href = "/daily";
-   }
-  }
-  catch(err){
-  }
-}
+      if (response.status == 200) {
+        window.location.href = "/daily";
+      }
+    } catch (err) {}
+  };
   const initiatePayment = async () => {
     try {
-      const orderUrl = "http://43.204.150.238:3002/payment/paymentIntegration";
+      const orderUrl = `${process.env.REACT_APP_IP}/payment/paymentIntegration`;
 
       const result = await axios.post(orderUrl, { amount: amount * 100 });
       console.log(result.data);
@@ -97,26 +101,31 @@ export default function PayInModal({
 
       const paymentObject = new window.Razorpay(options);
       paymentObject.open();
-      const walletAmount=sessionStorage.getItem("amount")
-      try{
-      const body = { amount:walletAmount,userId:userid,username:sessionStorage.getItem("username")};
-      console.log(body);
-      let date=new Date();
-  let datee=moment(date).format("YYYY-MM-DD")
-      const response=await axios.post(`http://43.204.150.238:3002/ticket/addWallet`, body);
-      if(response.status==200){
-        // window.location.href = "/daily";
-     }
-    }
-    catch(err){
-    }
+      const walletAmount = sessionStorage.getItem("amount");
+      try {
+        const body = {
+          amount: walletAmount,
+          userId: userid,
+          username: sessionStorage.getItem("username"),
+        };
+        console.log(body);
+        let date = new Date();
+        let datee = moment(date).format("YYYY-MM-DD");
+        const response = await axios.post(
+          `${process.env.REACT_APP_IP}/ticket/addWallet`,
+          body
+        );
+        if (response.status == 200) {
+          // window.location.href = "/daily";
+        }
+      } catch (err) {}
     } catch (error) {
       console.error("Payment initiation failed:", error);
     }
   };
 
   async function handleVerification(response: any) {
-    const verifyUrl = "http://43.204.150.238:3002/payment/paymentverify";
+    const verifyUrl = `${process.env.REACT_APP_IP}/payment/paymentverify`;
     try {
       const verifyResult = await axios.post(verifyUrl, {
         payment_id: response.razorpay_payment_id,
@@ -157,27 +166,43 @@ export default function PayInModal({
               alignItems: "center",
             }}
           >
+            <img src="/qr.jpeg" className="payment-qr" />
+          </Box>
+          <Box
+            component={"div"}
+            sx={{
+              display: "flex",
+              justifyContent: "start",
+              alignItems: "start",
+              gap: "4px",
+            }}
+          >
             <Box>
-              <input
-                type="number"
-                placeholder="Enter amount..."
-                value={amount === 0 ? "" : amount}
-                onChange={(e) => {sessionStorage.setItem("amount",e.target.value);setAmount(parseInt(e.target.value))}}
-              />
+              <img src="/star.svg" height={20} width={20} />{" "}
             </Box>
-            <Button
-              onClick={initiatePayment}
-              sx={{
-                background: "green",
-                color: "#fff",
-                fontWeight: "650",
-                ":hover": {
-                  background: "green",
-                },
-              }}
+            <Box
+              component={"div"}
+              sx={{ textAlign: "justify", fontWeight: "600" }}
             >
-              Pay
-            </Button>
+              Please send the payment screenshot with your username & mail on
+              these number <span style={{ color: "blue" }}>9025134872</span>
+            </Box>
+          </Box>
+          <Box
+            component={"div"}
+            sx={{
+              display: "flex",
+              justifyContent: "start",
+              alignItems: "start",
+              gap: "4px",
+            }}
+          >
+            <Box>
+              <img src="/star.svg" height={20} width={20} />{" "}
+            </Box>
+            <Box sx={{ textAlign: "justify", fontWeight: "600" }}>
+              Any queries text me at whatsapp on the above number
+            </Box>
           </Box>
         </Box>
       </Modal>

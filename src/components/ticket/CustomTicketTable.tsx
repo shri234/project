@@ -7,7 +7,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -39,8 +39,11 @@ export default function CustomizedTables() {
         const formatteddate = `${new Date().getFullYear()}-${
           new Date().getMonth() + 1
         }-${new Date().getDate()}`;
+
         const response = await axios.get(
-          `http://43.204.150.238:3002/ticket/getTickets?userId=${sessionStorage.getItem(
+          `${
+            process.env.REACT_APP_IP
+          }/ticket/getTickets?userId=${sessionStorage.getItem(
             "userId"
           )}&&date=${formatteddate}`,
           {
@@ -65,24 +68,22 @@ export default function CustomizedTables() {
           <TableRow>
             <StyledTableCell align="center">S.No.</StyledTableCell>
             <StyledTableCell align="center">Your Ticket</StyledTableCell>
-            {/* <StyledTableCell align="center">Result</StyledTableCell>
-            <StyledTableCell align="center" sx={{ whiteSpace: "nowrap" }}>
-              Cash Price
-            </StyledTableCell> */}
           </TableRow>
         </TableHead>
-        <TableBody>
-          {digits.map((row) => (
-            <StyledTableRow key={row.ticketId}>
-              <StyledTableCell align="center">{row.ticketId}</StyledTableCell>
-              <StyledTableCell
-                align="center"
-                sx={{ display: "flex", justifyContent: "center", gap: "10px" }}
-              >
-                {row.ticket.map(
-                  (value:any) => {
-                    console.log(value)
-                    if(value.status=="true"){
+        {digits.length > 0 ? (
+          <TableBody>
+            {digits.map((row, index) => (
+              <StyledTableRow key={row.ticketId}>
+                <StyledTableCell align="center">{index + 1}</StyledTableCell>
+                <StyledTableCell
+                  align="center"
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: "10px",
+                  }}
+                >
+                  {row.ticket.map((value: any) => {
                     return (
                       <Box
                         component={"div"}
@@ -92,40 +93,35 @@ export default function CustomizedTables() {
                           p: 0.5,
                           fontWeight: "bold",
                           color: "#fff",
-                          background:  "green",
+                          background:
+                            value.status === "true"
+                              ? "green"
+                              : value.status === "null"
+                              ? "grey"
+                              : "red",
                           borderRadius: "50%",
                         }}
                       >
                         {value.digit}
                       </Box>
                     );
-                      }
-                      else if(value.status=="false"){
-                        return (
-                          <Box
-                            component={"div"}
-                            sx={{
-                              height: "20px",
-                              width: "20px",
-                              p: 0.5,
-                              fontWeight: "bold",
-                              color: "#fff",
-                              background:  "grey",
-                              borderRadius: "50%",
-                            }}
-                          >
-                            {value.digit}
-                          </Box>
-                        );
-                      }
-                  }
-                )}
-              </StyledTableCell>
-              {/* <StyledTableCell align="center">{row.result}</StyledTableCell>
-              <StyledTableCell align="center">{row.cash_price}</StyledTableCell> */}
-            </StyledTableRow>
-          ))}
-        </TableBody>
+                  })}
+                </StyledTableCell>
+              </StyledTableRow>
+            ))}
+          </TableBody>
+        ) : (
+          <Box
+            sx={{
+              textAlign: "center",
+              color: "blueViolet",
+              fontWeight: "bold",
+              py: 2,
+            }}
+          >
+            No Tickets found...
+          </Box>
+        )}
       </Table>
     </TableContainer>
   );

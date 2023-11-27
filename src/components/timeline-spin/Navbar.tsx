@@ -11,6 +11,7 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
+import { handleLogout } from "../../utill";
 
 const settings = ["Profile", "Logout"];
 
@@ -24,13 +25,12 @@ function ResponsiveAppBar() {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseUserMenu = (name: string) => {
+  const handleCloseUserMenu = async (name: string) => {
     console.log(name, "Menu");
     if (name === "Profile") {
       window.location.href = "/profile";
     } else if (name === "Logout") {
-      sessionStorage.clear();
-      window.location.href = "/";
+      await handleLogout();
     } else if (name === "Balance") {
     }
     setAnchorElUser(null);

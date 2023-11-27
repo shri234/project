@@ -1,25 +1,113 @@
 import React, { useState } from "react";
 import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
 import BackOfficeNavbar from "./NavBar";
 import axios from "axios";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import "./AgentCreate.css";
 
 const AgentCreation = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("");
+  const [mobile, setMobile] = useState<string>("");
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  const [formErrors, setFormErrors] = useState({
+    name: "",
+    mobile: "",
+    email: "",
+    password: "",
+  });
+  const emailRegex = /\S+@\S+\.\S+/;
+
+  const userNameRegex = /^(?=.*[a-zA-Z])[a-zA-Z0-9]{6,}$/;
+
+  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newEmail = event.target.value;
+    setEmail(newEmail);
+    setFormErrors({
+      ...formErrors,
+      email: emailRegex.test(newEmail)
+        ? ""
+        : "Please enter a valid email address.",
+    });
+  };
+
+  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newPassword = event.target.value;
+    setPassword(newPassword);
+    setFormErrors({
+      ...formErrors,
+      password:
+        newPassword.length >= 8
+          ? ""
+          : "Password must be at least 8 characters long.",
+    });
+  };
+
+  const handleMobileNoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newMobile = event.target.value;
+    setMobile(newMobile);
+    setFormErrors({
+      ...formErrors,
+      mobile: mobile ? "" : "Please enter Mobile number",
+    });
+  };
+
+  const handleUserNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newUserName = event.target.value;
+    console.log(userNameRegex.test(newUserName), "Username");
+    setName(newUserName);
+    setFormErrors({
+      ...formErrors,
+      name: !userNameRegex.test(newUserName)
+        ? "username must contains a-z characters"
+        : newUserName.length >= 6
+        ? ""
+        : "Username must be at least 6 characters long.",
+    });
+  };
+
   const handleAgentCreation = async (digits: any) => {
+    const newErrors = {
+      ...formErrors,
+      name: name ? "" : "Name is required.",
+      mobile: mobile ? "" : "Mobile number is required.",
+      email: email
+        ? emailRegex.test(email)
+          ? ""
+          : "Please enter a valid email address."
+        : "Email is required.",
+      password: password
+        ? password.length >= 8
+          ? ""
+          : "Password must be at least 8 characters long."
+        : "Password is required.",
+    };
+    setFormErrors(newErrors);
+
+    if (Object.values(newErrors).some((error) => error !== "")) {
+      return;
+    }
+    if (mobile.length !== 10) {
+      setFormErrors({
+        ...formErrors,
+        mobile: mobile.length === 10 ? "" : "Mobile number must be 10 digits",
+      });
+
+      return;
+    }
+
     const body = {
-      role: "Agent",
+      role: "agent",
       username: name,
       email: email,
       password: password,
-      mobileNumber: phone,
+      mobileNumber: mobile,
     };
     await axios
-      .post("http://localhost:3002/user/addAgent", body)
+      .post(`${process.env.REACT_APP_IP}/user/addAgent`, body)
       .then((res) => {
         if (res.status === 200) {
           window.alert("Success! Agent has been successfully created.");
@@ -31,73 +119,79 @@ const AgentCreation = () => {
       });
   };
 
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  };
+
   return (
     <Box>
       <BackOfficeNavbar path="/back-office" />
 
-      <Box
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="100vh"
-        padding={3}
-      >
-        <Box
-          component="form"
-          sx={{
-            "& .MuiTextField-root": { m: 1, width: "25ch" },
-            borderRadius: "5px",
-            boxShadow: `rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;`,
-            p: 2,
-          }}
-          noValidate
-          autoComplete="off"
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-        >
-          <TextField
-            required
-            id="name-input"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            label="Name"
+      <div className="signup-container">
+        <h2>Agent Create</h2>
+        <div className="input-container">
+          <label className="label-color">Name</label>
+          <input
             type="text"
+            value={name}
+            onChange={handleUserNameChange}
+            className={formErrors.name ? "invalid" : ""}
+            placeholder="Enter your name"
           />
-          <TextField
-            required
-            id="phone-input"
-            label="Phone"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+          {formErrors.name && <p className="error">{formErrors.name}</p>}
+        </div>
+        <div className="input-container">
+          <label className="label-color">Mobile Number</label>
+          <input
             type="tel"
+            value={mobile}
+            onChange={handleMobileNoChange}
+            className={formErrors.mobile ? "invalid" : ""}
+            placeholder="Enter your mobile number"
           />
-          <TextField
-            required
-            id="email-input"
-            label="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+          {formErrors.mobile && <p className="error">{formErrors.mobile}</p>}
+        </div>
+        <div className="input-container">
+          <label className="label-color">Email</label>
+          <input
             type="email"
+            value={email}
+            onChange={handleEmailChange}
+            className={formErrors.email ? "invalid" : ""}
+            placeholder="Enter your email"
           />
-          <TextField
-            required
-            id="password-input"
-            label="Password"
+          {formErrors.email && <p className="error">{formErrors.email}</p>}
+        </div>
+        <div className="input-container password-input-container">
+          <label className="label-color">Password</label>
+
+          <input
+            type={isPasswordVisible ? "text" : "password"}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            type="password"
+            onChange={handlePasswordChange}
+            className={formErrors.password ? "invalid" : ""}
+            placeholder="Enter your password"
           />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleAgentCreation}
+
+          <span
+            className={
+              formErrors.password
+                ? "password-toggle-error-icon"
+                : "password-toggle-icon"
+            }
+            onClick={togglePasswordVisibility}
           >
-            Sign Up
-          </Button>
-        </Box>
-      </Box>
+            {isPasswordVisible ? <VisibilityOffIcon /> : <VisibilityIcon />}
+          </span>
+          {formErrors.password && (
+            <p className="error">{formErrors.password}</p>
+          )}
+        </div>
+
+        <button className="signup-button" onClick={handleAgentCreation}>
+          Create
+        </button>
+      </div>
     </Box>
   );
 };
