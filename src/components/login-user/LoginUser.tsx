@@ -38,7 +38,7 @@ const Login: React.FC = () => {
 
     try {
       const response = await axios.post(
-        "/api/user/login",
+        "http://35.154.119.156:3002/api/user/login",
         body
       );
       console.log(response.data.user, "response");
