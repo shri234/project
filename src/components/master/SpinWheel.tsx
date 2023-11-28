@@ -2,8 +2,7 @@ import { Box } from "@mui/material";
 import MasterNavbar from "./Navbar";
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
 
-const SpinWheel = () => {
-   const handleLoginType = (type: string, path: string) => {
+  const handleLoginType = (type: string, path: string) => {
     window.location.href = `/${path}`;
     console.log(`Login as: ${type}`);
   };
@@ -30,7 +29,7 @@ const SpinWheel = () => {
           <div className="button-row">
             <button
               className="role-button admin"
-              onClick={() => handleLoginType("Admin", "/master-daily-result")}
+              onClick={() => handleLoginType("Master", "/master-daily-result")}
             >
               Daily
             </button>
