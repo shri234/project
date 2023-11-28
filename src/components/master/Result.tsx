@@ -13,6 +13,7 @@ import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
 import { TicketResult } from "./PlayHistory";
 import Loader from "../loader/Loader";
 import Filteration from "../admin/Filteration";
+import MasterHistoryTable from "./HistoryTable";
 
 const table_head = ["S.No", "Username", "Ticket"];
 
@@ -29,42 +30,6 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
   const [priceThirdDigit, setPriceThirdDigit] = useState("");
   const [priceFourthDigit, setPriceFourthDigit] = useState("");
   const [loader, setLoader] = useState(false);
-  const [current_page, setCurrentPage] = useState(0);
-  const [pageCount, setPageCount] = useState(0);
-  const [history_data, setHistoryData] = useState<any[]>([]);
-
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_IP}/ticket/getAllHistory?&pageno=${current_page}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      setHistoryData(response.data.data);
-
-      let count = 0;
-      if (response.data.data.count < 10) {
-        count = Math.ceil(response.data.data.count / 10) + 1;
-      } else {
-        count = Math.ceil(response.data.count / 10);
-      }
-      setPageCount(count);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-  }, [current_page]);
 
   const handleTicketRate = async () => {
     const body = { ticketRate: ticketrate };
@@ -132,6 +97,35 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
         console.log(error);
       });
   };
+
+  const fetchData1 = async () => {
+    try {
+      const formatteddate = `${new Date().getFullYear()}-${
+        new Date().getMonth() + 1
+      }-${new Date().getDate()}`;
+      const response = await axios.get(
+        `${process.env.REACT_APP_IP}/ticket/getPriceRate?date=${formatteddate}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response.data.data.priceRate_splitup[0])
+      setPriceFirstDigit(response.data.data.priceRate_splitup[0]);
+      setPriceSecondtDigit(response.data.data.priceRate_splitup[1]);
+      setPriceThirdDigit(response.data.data.priceRate_splitup[2])
+      setPriceFourthDigit(response.data.data.priceRate_splitup[3])
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  
+  useEffect(() => {
+   
+    fetchData1();
+  }, []);
 
   return (
     isAuthenticated("master") && (
@@ -600,6 +594,7 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
                         {/* <Divider sx={{ my: "2px", background: "#545b66" }} /> */}
                         <input
                           type="text"
+                          value={priceFirstDigit}
                           onChange={(e) => {
                             setPriceFirstDigit(e.target.value);
                           }}
@@ -628,6 +623,7 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
                         </Box>
                         <input
                           type="text"
+                          value={priceSecondDigit}
                           onChange={(e) => {
                             setPriceSecondtDigit(e.target.value);
                           }}
@@ -656,6 +652,7 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
                         </Box>
                         <input
                           type="text"
+                          value={priceThirdDigit}
                           onChange={(e) => {
                             setPriceThirdDigit(e.target.value);
                           }}
@@ -730,118 +727,7 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
               </>
             )}
 
-            {result_or_ticket === "history" && (
-              <>
-                {" "}
-                <Box
-                  sx={{
-                    color: "#210759",
-                    fontWeight: "bold",
-                    fontSize: "1.5rem",
-                    my: 2,
-                    ml: 2,
-                  }}
-                >
-                  History
-                </Box>
-                <Box
-                  component={"div"}
-                  sx={{ display: "flex", justifyContent: "center" }}
-                >
-                  <TableContainer
-                    component={Paper}
-                    sx={{ width: "fit-content" }}
-                  >
-                    <Table
-                      sx={{ maxWidth: 450 }}
-                      size="small"
-                      aria-label="a dense table"
-                    >
-                      <TableHead sx={{ background: "#b51271" }}>
-                        <TableRow>
-                          {table_head.map((cell) => (
-                            <TableCell
-                              sx={{ color: "#fff", fontWeight: "bold" }}
-                              align="center"
-                            >
-                              {cell}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {history_data.length === 0 ? (
-                          <TableRow
-                            sx={{
-                              "&:last-child td, &:last-child th": { border: 0 },
-                            }}
-                          >
-                            <TableCell
-                              component="th"
-                              scope="row"
-                              align="center"
-                              colSpan={table_head.length}
-                            >
-                              No data found...
-                            </TableCell>
-                          </TableRow>
-                        ) : (
-                          history_data.map((row, index) => (
-                            <TableRow
-                              key={index}
-                              sx={{
-                                "&:last-child td, &:last-child th": {
-                                  border: 0,
-                                },
-                              }}
-                            >
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                align="center"
-                              >
-                                {index + 1}
-                              </TableCell>
-                              <TableCell align="center">
-                                {row.username}
-                              </TableCell>
-                              <TableCell
-                                align="center"
-                                sx={{ display: "flex" }}
-                              >
-                                {row.ticket.map((value: any) => (
-                                  <TicketResult value={value} key={value.id} />
-                                ))}
-                              </TableCell>
-                            </TableRow>
-                          ))
-                        )}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Box>
-                {history_data.length !== 0 && (
-                  <Box
-                    component={"div"}
-                    sx={{
-                      display: "flex",
-                      justifyContent: { xs: "start", sm: "end" },
-                      mt: 1,
-                    }}
-                  >
-                    <Pagination
-                      count={pageCount}
-                      defaultPage={6}
-                      siblingCount={0}
-                      boundaryCount={1}
-                      onChange={(e, page) => {
-                        setCurrentPage(page - 1);
-                      }}
-                    />
-                  </Box>
-                )}
-              </>
-            )}
+            {result_or_ticket === "history" && <MasterHistoryTable />}
           </Box>
         </Box>
       </Box>

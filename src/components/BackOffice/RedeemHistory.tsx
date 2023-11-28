@@ -11,49 +11,20 @@ import Pagination from "@mui/material/Pagination";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
+import { CustomTableHead } from "../custom-table/CustomTableHead";
+import { CustomPagination } from "../custom-table/CustomPagination";
+import Loader from "../loader/Loader";
+import { TableLoader } from "../custom-table/TableLoader";
+import { NoDataFoundTable } from "../custom-table/NoDataFound";
 
-const table_head = [
-  { id: 1, title: "S.No" },
-  { id: 2, title: "Date" },
-  { id: 3, title: "Amount" },
-];
-const table_body = [
-  {
-    id: 1,
-    s_no: "1",
-    date: "29/10/2023",
-    amount: "$100",
-  },
-  {
-    id: 2,
-    s_no: "2",
-    date: "19/10/2023",
-    amount: "$200",
-  },
-  {
-    id: 3,
-    s_no: "3",
-    date: "12/10/2023",
-    amount: "$250",
-  },
-  {
-    id: 4,
-    s_no: "4",
-    date: "29/10/2023",
-    amount: "$400",
-  },
-  {
-    id: 5,
-    s_no: "5",
-    date: "29/10/2023",
-    amount: "$300",
-  },
-];
+const table_head = ["S.No", "Date", "Amount"];
 
 const BackOfficeRedeemHistory = () => {
   const [wallethistory, setWalletHistory] = useState<any[]>([]);
   const [current_page, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
+  const [open_loader, setOpenLoader] = useState(false);
+  const [table_loader, setOpenTableLoader] = useState(false);
   const fetchData = async () => {
     try {
       const response = await axios.get(
@@ -77,16 +48,22 @@ const BackOfficeRedeemHistory = () => {
         count = Math.ceil(response.data.count / 10);
       }
       setPageCount(count);
+      setOpenLoader(false);
+      setOpenTableLoader(false);
     } catch (err) {
       console.log(err);
+      setOpenLoader(false);
+      setOpenTableLoader(false);
     }
   };
 
   useEffect(() => {
+    setOpenLoader(true);
     fetchData();
   }, []);
 
   useEffect(() => {
+    setOpenTableLoader(true);
     fetchData();
   }, [current_page]);
 
@@ -94,6 +71,7 @@ const BackOfficeRedeemHistory = () => {
     isAuthenticated("back-office") && (
       <Box>
         <BackOfficeNavbar path="/back-office-user-details" />
+        {open_loader && <Loader />}
         <Box
           component={"div"}
           sx={{
@@ -127,61 +105,51 @@ const BackOfficeRedeemHistory = () => {
                 size="small"
                 aria-label="a dense table"
               >
-                <TableHead sx={{ background: "#b51271" }}>
-                  <TableRow>
-                    {table_head.map((cell) => (
-                      <TableCell
-                        sx={{ color: "#fff", fontWeight: "bold" }}
-                        align="center"
-                      >
-                        {cell.title}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
+                <CustomTableHead table_head={table_head} />
                 <TableBody>
-                  {wallethistory.map((row) => (
-                    <TableRow
-                      key={row.number}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
-                      <TableCell component="th" scope="row" align="center">
-                        {row.number}
-                      </TableCell>
-                      <TableCell align="center">{row.CreatedAt}</TableCell>
-                      <TableCell
-                        align="center"
-                        sx={
-                          row.status
-                            ? { color: "green", fontWeight: "bold" }
-                            : { color: "red", fontWeight: "bold" }
-                        }
+                  {!open_loader && table_loader ? (
+                    <TableLoader colSpan={table_head.length} />
+                  ) : !table_loader &&
+                    !open_loader &&
+                    wallethistory.length === 0 ? (
+                    <NoDataFoundTable
+                      description="No data found..."
+                      colSpan={table_head.length}
+                    />
+                  ) : (
+                    wallethistory.map((row, index) => (
+                      <TableRow
+                        key={row.number}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
                       >
-                        {row.status ? `+${row.amount}` : `-${row.amount}`}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        <TableCell component="th" scope="row" align="center">
+                          {row.number}
+                        </TableCell>
+                        <TableCell align="center">{row.CreatedAt}</TableCell>
+                        <TableCell
+                          align="center"
+                          sx={
+                            row.status
+                              ? { color: "green", fontWeight: "bold" }
+                              : { color: "red", fontWeight: "bold" }
+                          }
+                        >
+                          {row.status ? `+${row.amount}` : `-${row.amount}`}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>
-            <Box
-              component={"div"}
-              sx={{
-                display: "flex",
-                justifyContent: { xs: "start", sm: "end" },
-                mt: 1,
-              }}
-            >
-              <Pagination
-                count={pageCount}
-                defaultPage={6}
-                siblingCount={0}
-                boundaryCount={1}
-                onChange={(e, page) => {
-                  setCurrentPage(page - 1);
-                }}
+            {wallethistory.length !== 0 && (
+              <CustomPagination
+                pageCount={pageCount}
+                setCurrentPage={setCurrentPage}
               />
-            </Box>
+            )}
           </Box>
         </Box>
       </Box>

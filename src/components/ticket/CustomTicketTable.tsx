@@ -9,6 +9,7 @@ import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { NoDataFoundTable } from "../custom-table/NoDataFound";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -33,96 +34,94 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 export default function CustomizedTables() {
   const [digits, setDigits] = useState<any[]>([]);
 
+  const fetchTableData = async () => {
+    try {
+      const formatteddate = `${new Date().getFullYear()}-${
+        new Date().getMonth() + 1
+      }-${new Date().getDate()}`;
+
+      const response = await axios.get(
+        `${
+          process.env.REACT_APP_IP
+        }/ticket/getTickets?userId=${sessionStorage.getItem(
+          "userId"
+        )}&&date=${formatteddate}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setDigits(response.data.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const formatteddate = `${new Date().getFullYear()}-${
-          new Date().getMonth() + 1
-        }-${new Date().getDate()}`;
-
-        const response = await axios.get(
-          `${
-            process.env.REACT_APP_IP
-          }/ticket/getTickets?userId=${sessionStorage.getItem(
-            "userId"
-          )}&&date=${formatteddate}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        console.log(response.data);
-        setDigits(response.data.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    fetchData();
+    fetchTableData();
   }, []);
+
   return (
-    <TableContainer component={Paper} sx={{ maxWidth: "300px", mt: 2 }}>
-      <Table aria-label="customized table">
-        <TableHead>
-          <TableRow>
-            <StyledTableCell align="center">S.No.</StyledTableCell>
-            <StyledTableCell align="center">Your Ticket</StyledTableCell>
-          </TableRow>
-        </TableHead>
-        {digits.length > 0 ? (
-          <TableBody>
-            {digits.map((row, index) => (
-              <StyledTableRow key={row.ticketId}>
-                <StyledTableCell align="center">{index + 1}</StyledTableCell>
-                <StyledTableCell
-                  align="center"
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    gap: "10px",
-                  }}
-                >
-                  {row.ticket.map((value: any) => {
-                    return (
-                      <Box
-                        component={"div"}
-                        sx={{
-                          height: "20px",
-                          width: "20px",
-                          p: 0.5,
-                          fontWeight: "bold",
-                          color: "#fff",
-                          background:
-                            value.status === "true"
-                              ? "green"
-                              : value.status === "null"
-                              ? "grey"
-                              : "red",
-                          borderRadius: "50%",
-                        }}
-                      >
-                        {value.digit}
-                      </Box>
-                    );
-                  })}
-                </StyledTableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        ) : (
-          <Box
-            sx={{
-              textAlign: "center",
-              color: "blueViolet",
-              fontWeight: "bold",
-              py: 2,
-            }}
-          >
-            No Tickets found...
-          </Box>
-        )}
-      </Table>
-    </TableContainer>
+    <Box component={"div"} sx={{ display: "flex", justifyContent: "center" }}>
+      <TableContainer component={Paper} sx={{ maxWidth: "300px", mt: 2 }}>
+        <Table aria-label="customized table">
+          <TableHead>
+            <TableRow>
+              <StyledTableCell align="center">S.No.</StyledTableCell>
+              <StyledTableCell align="center">Your Ticket</StyledTableCell>
+            </TableRow>
+          </TableHead>
+          {digits.length > 0 ? (
+            <TableBody>
+              {digits.map((row, index) => (
+                <StyledTableRow key={row.ticketId}>
+                  <StyledTableCell align="center">{index + 1}</StyledTableCell>
+                  <StyledTableCell
+                    align="center"
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      gap: "10px",
+                    }}
+                  >
+                    {row.ticket.map((value: any) => {
+                      return (
+                        <StyledTableCell
+                          key={`${value._id}-ticket`}
+                          component={"div"}
+                          align="center"
+                          sx={{
+                            height: "20px",
+                            width: "20px",
+                            p: 0.5,
+                            fontWeight: "bold",
+
+                            color: "#fff",
+                            background:
+                              value.status === "true"
+                                ? "green"
+                                : value.status === "null"
+                                ? "grey"
+                                : "red",
+                            borderRadius: "50%",
+                          }}
+                        >
+                          {value.digit}
+                        </StyledTableCell>
+                      );
+                    })}
+                  </StyledTableCell>
+                </StyledTableRow>
+              ))}
+            </TableBody>
+          ) : (
+            <TableBody>
+              <NoDataFoundTable colSpan={2} description="No Data Found..." />
+            </TableBody>
+          )}
+        </Table>
+      </TableContainer>
+    </Box>
   );
 }

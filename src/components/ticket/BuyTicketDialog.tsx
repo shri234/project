@@ -1,12 +1,6 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
-import axios from "axios";
-import moment from "moment";
-import { useEffect, useState } from "react";
-import { DialogTitle } from "@mui/material";
 
 const style = {
   position: "absolute" as "absolute",
@@ -32,7 +26,11 @@ export default function BuyTicketWarningDlg({
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style} component={"div"} style={{ color: "red" }}>
+        <Box
+          sx={style}
+          component={"div"}
+          style={{ color: "red", fontSize: "1.25rem", fontWeight: "bold" }}
+        >
           Cannot Buy a Ticket between 5pm to 6pm.
         </Box>
       </Modal>

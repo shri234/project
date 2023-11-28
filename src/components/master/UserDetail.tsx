@@ -14,22 +14,25 @@ import PaginationRounded from "../pagination/CustomPagination";
 import Pagination from "@mui/material/Pagination";
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
 import DepsoitModal from "./DepositModal";
+import { CustomPagination } from "../custom-table/CustomPagination";
+import { NoDataFoundTable } from "../custom-table/NoDataFound";
+import { CustomTableHead } from "../custom-table/CustomTableHead";
+import { TableLoader } from "../custom-table/TableLoader";
+import Loader from "../loader/Loader";
 
 const table_head = [
-  { id: 1, title: "Name" },
-  { id: 2, title: "Mail" },
-  { id: 3, title: "Phone" },
-  { id: 4, title: "Address" },
-  { id: 5, title: "Acc. No" },
-  { id: 6, title: "IFSC" },
-  { id: 7, title: "PAN No" },
-  { id: 8, title: "Aadhar No" },
-  { id: 9, title: "Play History" },
-  { id: 10, title: "Wallet History" },
-  { id: 11, title: "Wallet" },
+  "Name",
+  "Mail",
+  "Phone",
+  "Address",
+  "Acc. No",
+  "IFSC",
+  "PAN No",
+  "Aadhar No",
+  "Play History",
+  "Wallet History",
+  "Wallet",
 ];
-
-const handleUserName = (username: string) => {};
 
 const UserDetail = () => {
   const [userDetailData, setUserDetailData] = useState<any[]>([]);
@@ -37,6 +40,8 @@ const UserDetail = () => {
   const [search_username, setSearchData] = useState("");
   const [pageCount, setPageCount] = useState<number>(0);
   const [open_deposit_amount, setDepsoitAmount] = React.useState(false);
+  const [open_loader, setOpenLoader] = useState(false);
+  const [table_loader, setOpenTableLoader] = useState(false);
   const fetchData = async () => {
     try {
       const response = await axios.get(
@@ -47,7 +52,6 @@ const UserDetail = () => {
           },
         }
       );
-
       setUserDetailData(response.data.data);
       let count = 0;
       if (response.data.data.count < 10) {
@@ -55,14 +59,18 @@ const UserDetail = () => {
       } else {
         count = Math.ceil(response.data.count / 10);
       }
-      console.log(count);
       setPageCount(count);
+      setOpenLoader(false);
+      setOpenTableLoader(false);
     } catch (err) {
       console.log(err);
+      setOpenLoader(false);
+      setOpenTableLoader(false);
     }
   };
 
   const fetchSearchData = async () => {
+    setOpenTableLoader(true);
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_IP}/user/searchUser?username=${search_username}`,
@@ -72,20 +80,22 @@ const UserDetail = () => {
           },
         }
       );
-
       setUserDetailData(response.data.data);
+      setOpenLoader(false);
+      setOpenTableLoader(false);
     } catch (err) {
-      console.log("inside");
-      alert("No Data to search");
+      setOpenTableLoader(false);
+      console.log(err);
     }
   };
+
   useEffect(() => {
+    setOpenLoader(true);
     fetchData();
   }, []);
+
   useEffect(() => {
-    console.log(userDetailData);
-  }, []);
-  useEffect(() => {
+    setOpenTableLoader(true);
     fetchData();
   }, [current_page]);
 
@@ -96,6 +106,7 @@ const UserDetail = () => {
         {open_deposit_amount && (
           <DepsoitModal setDepsoitAmount={setDepsoitAmount} />
         )}
+        {open_loader && <Loader />}
         <Box
           component={"div"}
           sx={{
@@ -125,44 +136,26 @@ const UserDetail = () => {
               onChange={(e) => setSearchData(e.target.value)}
               placeholder="search username..."
             />
-            <button onClick={fetchSearchData}>search</button>
+            <button onClick={fetchSearchData} style={{ cursor: "pointer" }}>
+              search
+            </button>
           </Box>
         </Box>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
-            <TableHead sx={{ background: "#b51271" }}>
-              <TableRow>
-                {table_head.map((cell) => (
-                  <TableCell
-                    sx={{ color: "#fff", fontWeight: "bold" }}
-                    align="center"
-                  >
-                    {cell.title}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            {userDetailData.length === 0 ? (
-              <TableBody>
-                <TableRow
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell
-                    align="center"
-                    colSpan={table_head.length}
-                    sx={{
-                      fontWeight: "800",
-                      fontSize: "1.15rem",
-                      color: "blue",
-                    }}
-                  >
-                    No User Detail found
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            ) : (
-              <TableBody>
-                {userDetailData.map((row) => (
+            <CustomTableHead table_head={table_head} />
+            <TableBody>
+              {!open_loader && table_loader ? (
+                <TableLoader colSpan={table_head.length} />
+              ) : !table_loader &&
+                !open_loader &&
+                userDetailData.length === 0 ? (
+                <NoDataFoundTable
+                  description="No data found..."
+                  colSpan={table_head.length}
+                />
+              ) : (
+                userDetailData.map((row) => (
                   <TableRow
                     key={row.username}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -239,30 +232,16 @@ const UserDetail = () => {
                       </Box>
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            )}
+                ))
+              )}
+            </TableBody>
           </Table>
         </TableContainer>
         {userDetailData.length !== 0 && (
-          <Box
-            component={"div"}
-            sx={{
-              display: "flex",
-              justifyContent: { xs: "start", sm: "end" },
-              mt: 1,
-            }}
-          >
-            <Pagination
-              count={pageCount}
-              defaultPage={1}
-              siblingCount={0}
-              boundaryCount={1}
-              onChange={(e, page) => {
-                setCurrentPage(page - 1);
-              }}
-            />
-          </Box>
+          <CustomPagination
+            pageCount={pageCount}
+            setCurrentPage={setCurrentPage}
+          />
         )}
       </Box>
     )

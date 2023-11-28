@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import MasterNavbar from "./Navbar";
+
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -13,71 +13,152 @@ import { Pagination } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
+import Loader from "../loader/Loader";
+import { NoDataFoundTable } from "../custom-table/NoDataFound";
+import { CustomTableHead } from "../custom-table/CustomTableHead";
+import { TableLoader } from "../custom-table/TableLoader";
+import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
+import { STATUS } from "../../utill";
+import { CustomPagination } from "../custom-table/CustomPagination";
+import MasterNavbar from "./Navbar";
 
 const table_head = ["User Name", "Mail", "Request Amount", "Confirm", "Delete"];
 
 const PaymentRequest = () => {
   const [paymentRequest, setPaymentRequest] = useState<any[]>([]);
-  const [redeemId, setRedeemId] = useState(0);
   const [current_page, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
+  const [open_loader, setOpenLoader] = useState(false);
+  const [table_loader, setOpenTableLoader] = useState(false);
+  const [status_dlg, setOpenStatusDlg] = useState(false);
+  const [status, setStatus] = useState({
+    paid: false,
+    paid_error: false,
+    delete: false,
+    delete_error: false,
+  });
+
   const fetchData = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_IP}/payment/getRedeem?pageno=${current_page}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      setPaymentRequest(response.data.data);
-      let count = 0;
-      if (response.data.data.count < 10) {
-        count = Math.ceil(response.data.data.count / 10) + 1;
-      } else {
-        count = Math.ceil(response.data.count / 10);
-      }
-      setPageCount(count);
+      await axios
+        .get(
+          `${process.env.REACT_APP_IP}/payment/getRedeem?pageno=${current_page}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((response) => {
+          setPaymentRequest(response.data.data);
+          let count = 0;
+          if (response.data.data.count < 10) {
+            count = Math.ceil(response.data.data.count / 10) + 1;
+          } else {
+            count = Math.ceil(response.data.count / 10);
+          }
+          setPageCount(count);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
+        });
     } catch (err) {
       console.log(err);
+      setOpenLoader(false);
+      setOpenTableLoader(false);
     }
   };
+
   const handleRedeem = async (redeemId: number) => {
-    const userId = sessionStorage.getItem("userid");
-
     try {
+      setOpenTableLoader(true);
       const body = {};
-      console.log(body);
-
-      const response = await axios.put(
+      await axios.put(
         `${process.env.REACT_APP_IP}/payment/updateRedeem?redeemId=${redeemId}`,
         body
       );
-
-      if (response.status == 200) {
-        window.location.href = "/payment-request";
-      }
-    } catch (err) {}
+      setOpenStatusDlg(true);
+      setStatus((prevStatus) => ({
+        ...prevStatus,
+        paid: true,
+      }));
+      setTimeout(() => {
+        setOpenStatusDlg(false);
+        setStatus((prevStatus) => ({
+          ...prevStatus,
+          paid: false,
+        }));
+      }, 5000);
+      await fetchData().then(() => {
+        setOpenTableLoader(false);
+      });
+    } catch (err) {
+      setOpenTableLoader(false);
+      setOpenStatusDlg(true);
+      setStatus((prevStatus) => ({
+        ...prevStatus,
+        paid_error: true,
+      }));
+      setTimeout(() => {
+        setOpenStatusDlg(false);
+        setStatus((prevStatus) => ({
+          ...prevStatus,
+          paid_error: false,
+        }));
+      }, 5000);
+      console.error(err);
+    }
   };
 
   const handleDeleteRedeem = async (redeemId: number) => {
+    setOpenTableLoader(true);
     try {
-      const response = await axios.delete(
-        `${process.env.REACT_APP_IP}/payment/deleteRedeem?redeemId=${redeemId}`
-      );
+      await axios
+        .delete(
+          `${process.env.REACT_APP_IP}/payment/deleteRedeem?redeemId=${redeemId}`
+        )
+        .then(async () => {
+          setOpenStatusDlg(true);
+          setStatus((prevStatus) => ({
+            ...prevStatus,
+            delete: true,
+          }));
+          setTimeout(() => {
+            setOpenStatusDlg(false);
+            setStatus((prevStatus) => ({
+              ...prevStatus,
+              delete: false,
+            }));
+          }, 5000);
 
-      if (response.status == 200) {
-        window.location.href = "/payment-request";
-      }
-    } catch (err) {}
+          await fetchData().then(() => {
+            setOpenTableLoader(false);
+          });
+        });
+    } catch (err) {
+      setOpenTableLoader(false);
+      setOpenStatusDlg(true);
+      setStatus((prevStatus) => ({
+        ...prevStatus,
+        delete_error: true,
+      }));
+      setTimeout(() => {
+        setOpenStatusDlg(false);
+        setStatus((prevStatus) => ({
+          ...prevStatus,
+          delete_error: false,
+        }));
+      }, 5000);
+      console.error(err);
+    }
   };
+
   useEffect(() => {
+    setOpenLoader(true);
     fetchData();
   }, []);
 
   useEffect(() => {
+    setOpenTableLoader(true);
     fetchData();
   }, [current_page]);
 
@@ -85,6 +166,37 @@ const PaymentRequest = () => {
     isAuthenticated("master") && (
       <Box>
         <MasterNavbar path="/master" />
+
+        {open_loader && <Loader />}
+        {status_dlg && status.paid && (
+          <CustomizedStatusDialogs
+            setOpenStatusDlg={setOpenStatusDlg}
+            description="Paid Successfully"
+            status={STATUS.SUCCESS}
+          />
+        )}
+        {status_dlg && status.paid_error && (
+          <CustomizedStatusDialogs
+            setOpenStatusDlg={setOpenStatusDlg}
+            description="Payment faild"
+            status={STATUS.ERROR}
+          />
+        )}
+
+        {status_dlg && status.delete && (
+          <CustomizedStatusDialogs
+            setOpenStatusDlg={setOpenStatusDlg}
+            description="Deleted Successfully"
+            status={STATUS.ERROR}
+          />
+        )}
+        {status_dlg && status.delete_error && (
+          <CustomizedStatusDialogs
+            setOpenStatusDlg={setOpenStatusDlg}
+            description="Delete Failed"
+            status={STATUS.ERROR}
+          />
+        )}
         <Box
           component={"div"}
           sx={{
@@ -117,35 +229,18 @@ const PaymentRequest = () => {
               sx={{ maxWidth: { xs: 300, sm: 450 }, overflowX: "scroll" }}
             >
               <Table sx={{}} size="small" aria-label="a dense table">
-                <TableHead sx={{ background: "#b51271" }}>
-                  <TableRow>
-                    {table_head.map((cell) => (
-                      <TableCell
-                        sx={{ color: "#fff", fontWeight: "bold" }}
-                        align="center"
-                      >
-                        {cell}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
+                <CustomTableHead table_head={table_head} />
+
                 <TableBody>
-                  {paymentRequest.length === 0 ? (
-                    <TableRow
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
-                      <TableCell
-                        align="center"
-                        colSpan={table_head.length}
-                        sx={{
-                          fontWeight: "800",
-                          fontSize: "1.15rem",
-                          color: "blue",
-                        }}
-                      >
-                        No Payment Request Detail found
-                      </TableCell>
-                    </TableRow>
+                  {!open_loader && table_loader ? (
+                    <TableLoader colSpan={table_head.length} />
+                  ) : !table_loader &&
+                    !open_loader &&
+                    paymentRequest.length === 0 ? (
+                    <NoDataFoundTable
+                      description="No Payment Request Detail found"
+                      colSpan={table_head.length}
+                    />
                   ) : (
                     paymentRequest.map((row) => (
                       <TableRow
@@ -162,8 +257,14 @@ const PaymentRequest = () => {
                         <TableCell align="center">
                           <Button
                             onClick={() => {
-                              handleRedeem(row.redeemId);
+                              !row.status && handleRedeem(row.redeemId);
                             }}
+                            style={
+                              row.status
+                                ? { background: "red" }
+                                : { background: "green" }
+                            }
+                            sx={{ color: "#fff", fontWeight: "bold" }}
                           >
                             {row.status ? "paid" : "pay"}{" "}
                           </Button>
@@ -184,25 +285,10 @@ const PaymentRequest = () => {
               </Table>
             </TableContainer>
             {paymentRequest.length !== 0 && (
-              <Box
-                component={"div"}
-                sx={{
-                  display: "flex",
-
-                  justifyContent: { xs: "start", sm: "flex-end" },
-                  mt: 1,
-                }}
-              >
-                <Pagination
-                  count={pageCount}
-                  defaultPage={1}
-                  siblingCount={0}
-                  boundaryCount={1}
-                  onChange={(e, page) => {
-                    setCurrentPage(page - 1);
-                  }}
-                />
-              </Box>
+              <CustomPagination
+                pageCount={pageCount}
+                setCurrentPage={setCurrentPage}
+              />
             )}
           </Box>
         </Box>

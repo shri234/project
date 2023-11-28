@@ -11,12 +11,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Pagination from "@mui/material/Pagination";
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
-
-const table_head = [
-  { id: 1, title: "S.No" },
-  { id: 2, title: "Date" },
-  { id: 3, title: "Ticket" },
-];
+import Loader from "../loader/Loader";
+import { CustomTableHead } from "../custom-table/CustomTableHead";
+import { TableLoader } from "../custom-table/TableLoader";
+import { NoDataFoundTable } from "../custom-table/NoDataFound";
+import { CustomPagination } from "../custom-table/CustomPagination";
+const table_head = ["S.No", "Date", "Ticket"];
 
 function getUserName() {
   return sessionStorage.getItem("userName");
@@ -27,6 +27,8 @@ const PlayHistory = () => {
   const [play_history_data, setPlayHistoryData] = useState<any[]>([]);
   const [current_page, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
+  const [open_loader, setOpenLoader] = useState(false);
+  const [table_loader, setOpenTableLoader] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -38,19 +40,6 @@ const PlayHistory = () => {
           },
         }
       );
-      // let ticketarr = [];
-      // for (let i = 0; i < response.data.data.length; i++) {
-      //   let ticket_data = {
-      //     id: i + 1,
-      //     ticket:
-      //       String(response.data.data[i].ticket[0].digit) +
-      //       String(response.data.data[i].ticket[1].digit) +
-      //       String(response.data.data[i].ticket[2].digit) +
-      //       String(response.data.data[i].ticket[3].digit),
-      //     CreatedAt: response.data.data[i].CreatedAt,
-      //   };
-      //   ticketarr.push(ticket_data);
-      // }
 
       setPlayHistoryData(response.data.data);
 
@@ -61,16 +50,22 @@ const PlayHistory = () => {
         count = Math.ceil(response.data.count / 10);
       }
       setPageCount(count);
+      setOpenLoader(false);
+      setOpenTableLoader(false);
     } catch (err) {
       console.log(err);
+      setOpenLoader(false);
+      setOpenTableLoader(false);
     }
   };
 
   useEffect(() => {
+    setOpenLoader(true);
     fetchData();
   }, []);
 
   useEffect(() => {
+    setOpenTableLoader(true);
     fetchData();
   }, [current_page]);
 
@@ -78,6 +73,7 @@ const PlayHistory = () => {
     isAuthenticated("master") && (
       <Box>
         <MasterNavbar path="/user-details" />
+        {open_loader && <Loader />}
         <Box
           component={"div"}
           sx={{
@@ -106,48 +102,27 @@ const PlayHistory = () => {
             >
               Play History
             </Box>
-            <TableContainer component={Paper} sx={{ width: "fit-content" }}>
+            <TableContainer component={Paper}>
               <Table
+                sx={{ maxWidth: 450 }}
                 size="small"
                 aria-label="a dense table"
-                sx={{ maxWidth: 450 }}
               >
-                <TableHead sx={{ background: "#b51271" }}>
-                  <TableRow>
-                    {table_head.map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        sx={{ color: "#fff", fontWeight: "bold" }}
-                        align="center"
-                      >
-                        {cell.title}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                {play_history_data.length === 0 ? (
-                  <TableBody>
-                    <TableRow
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
-                      <TableCell
-                        align="center"
-                        colSpan={table_head.length}
-                        sx={{
-                          fontWeight: "800",
-                          fontSize: "1.15rem",
-                          color: "blue",
-                        }}
-                      >
-                        No Play History data found ...
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                ) : (
-                  <TableBody>
-                    {play_history_data.map((row, index) => (
+                <CustomTableHead table_head={table_head} />
+                <TableBody>
+                  {!open_loader && table_loader ? (
+                    <TableLoader colSpan={table_head.length} />
+                  ) : !table_loader &&
+                    !open_loader &&
+                    play_history_data.length === 0 ? (
+                    <NoDataFoundTable
+                      description="No data found..."
+                      colSpan={table_head.length}
+                    />
+                  ) : (
+                    play_history_data.map((row, index) => (
                       <TableRow
-                        key={row.id}
+                        key={index}
                         sx={{
                           "&:last-child td, &:last-child th": { border: 0 },
                         }}
@@ -164,30 +139,17 @@ const PlayHistory = () => {
                           })}
                         </TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                )}
+                    ))
+                  )}
+                </TableBody>
               </Table>
             </TableContainer>
+
             {play_history_data.length !== 0 && (
-              <Box
-                component={"div"}
-                sx={{
-                  display: "flex",
-                  justifyContent: { xs: "start", sm: "end" },
-                  mt: 1,
-                }}
-              >
-                <Pagination
-                  count={pageCount}
-                  defaultPage={6}
-                  siblingCount={0}
-                  boundaryCount={1}
-                  onChange={(e, page) => {
-                    setCurrentPage(page - 1);
-                  }}
-                />
-              </Box>
+              <CustomPagination
+                pageCount={pageCount}
+                setCurrentPage={setCurrentPage}
+              />
             )}
           </Box>
         </Box>

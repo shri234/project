@@ -7,6 +7,7 @@ import axios from "axios";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { DialogTitle } from "@mui/material";
+import { handleKeyPrevent } from "../../utill";
 
 const loadRazorpayScript = (src: string) => {
   return new Promise((resolve) => {
@@ -40,7 +41,6 @@ export default function DepsoitModal({
   setDepsoitAmount: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [amount, setAmount] = useState(0);
-  const [balance, setBalance] = useState(0);
 
   const handleRedeem = async () => {
     const userId = sessionStorage.getItem("userid");
@@ -49,7 +49,7 @@ export default function DepsoitModal({
       const body = {
         amount: amount,
         userId: userId,
-        username: sessionStorage.getItem("username"),
+        username: sessionStorage.getItem("userName"),
       };
       console.log(body);
       let date = new Date();
@@ -88,16 +88,21 @@ export default function DepsoitModal({
           <Box
             sx={{
               display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
               justifyContent: "center",
               alignItems: "center",
+              gap: { xs: 2, sm: 0 },
             }}
           >
             <Box>
               <input
                 type="number"
+                min={0}
                 placeholder="Enter amount..."
                 value={amount === 0 ? "" : amount}
-                onChange={(e) => setAmount(parseInt(e.target.value))}
+                onChange={(e) => {
+                  handleKeyPrevent(e) && setAmount(parseInt(e.target.value));
+                }}
               />
             </Box>
             <Button

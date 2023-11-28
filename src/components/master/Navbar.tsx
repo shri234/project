@@ -4,15 +4,11 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
-import AccountCircle from "@mui/icons-material/AccountCircle";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { Avatar, Menu, MenuItem, Tooltip } from "@mui/material";
 
 const settings = ["Logout"];
 const MasterNavbar: React.FC<{ path: string }> = ({ path }) => {
-  const [auth, setAuth] = React.useState(true);
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );

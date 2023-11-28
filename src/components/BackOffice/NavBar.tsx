@@ -10,12 +10,11 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import Avatar from "@mui/material/Avatar";
+import { handleLogout } from "../../utill";
 
 const settings = ["Logout"];
 
 const BackOfficeNavbar: React.FC<{ path: string }> = ({ path }) => {
-  const [auth, setAuth] = React.useState(true);
-
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -25,11 +24,9 @@ const BackOfficeNavbar: React.FC<{ path: string }> = ({ path }) => {
   };
 
   const handleCloseUserMenu = (name: string) => {
-    if (name === "Profile") {
-      // window.location.href = "/profile";
-    } else if (name === "Logout") {
+    if (name === "Logout") {
+      handleLogout();
       window.location.href = "/";
-    } else if (name === "Balance") {
     }
     setAnchorElUser(null);
   };
