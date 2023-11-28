@@ -111,11 +111,11 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
           },
         }
       );
-      console.log(response.data.data.priceRate_splitup[0])
+    
       setPriceFirstDigit(response.data.data.priceRate_splitup[0]);
       setPriceSecondtDigit(response.data.data.priceRate_splitup[1]);
       setPriceThirdDigit(response.data.data.priceRate_splitup[2])
-      setPriceFourthDigit(response.data.data.priceRate_splitup[3])
+      setPriceFourthDigit(response.data.data.priceRate_splitup[3]);
     } catch (err) {
       console.log(err);
     }
@@ -123,8 +123,30 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
 
   
   useEffect(() => {
-   
     fetchData1();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const formatteddate = `${new Date().getFullYear()}-${
+        new Date().getMonth() + 1
+      }-${new Date().getDate()}`;
+      const response = await axios.get(
+        `${process.env.REACT_APP_IP}/ticket/getTicketRate?date=${formatteddate}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setTicketRate(response.data.data.ticketRate);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
   return (
@@ -531,7 +553,7 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
                     </Box>
                   </Box>
                   <Box
-                    onClick={handleTicketRate}
+                    onClick={handleTicketRate} 
                     sx={{
                       p: 1.25,
                       background: "#0bb329",
@@ -598,7 +620,7 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
                           onChange={(e) => {
                             setPriceFirstDigit(e.target.value);
                           }}
-                          style={{ minWidth: "20px", maxWidth: "50px" }}
+                          style={{ minWidth: "20px", maxWidth: "60px" }}
                         />
                       </Box>
                       <Box
@@ -627,7 +649,7 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
                           onChange={(e) => {
                             setPriceSecondtDigit(e.target.value);
                           }}
-                          style={{ minWidth: "20px", maxWidth: "50px" }}
+                          style={{ minWidth: "20px", maxWidth: "60px" }}
                         />
                       </Box>
                       <Box
@@ -656,7 +678,7 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
                           onChange={(e) => {
                             setPriceThirdDigit(e.target.value);
                           }}
-                          style={{ minWidth: "20px", maxWidth: "50px" }}
+                          style={{ minWidth: "20px", maxWidth: "60px" }}
                         />
                       </Box>
                       <Box
@@ -681,10 +703,11 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
                         </Box>
                         <input
                           type="text"
+                          value={priceFourthDigit}
                           onChange={(e) => {
                             setPriceFourthDigit(e.target.value);
                           }}
-                          style={{ minWidth: "20px", maxWidth: "50px" }}
+                          style={{ minWidth: "20px", maxWidth: "60px" }}
                         />
                       </Box>
                     </Box>

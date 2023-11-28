@@ -4,7 +4,7 @@ import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
 
 const SpinWheel = () => {
   const handleLoginType = (type: string, path: string) => {
-    window.location.href = `http://localhost:3000${path}`;
+    window.location.href = `/${path}`;
     console.log(`Login as: ${type}`);
   };
   return (
@@ -29,19 +29,19 @@ const SpinWheel = () => {
           <div className="button-row">
             <button
               className="role-button admin"
-              onClick={() => handleLoginType("Admin", "/master-daily-result")}
+              onClick={() => handleLoginType("master", "master-daily-result")}
             >
               Daily
             </button>
             <button
               className="role-button user"
-              onClick={() => handleLoginType("User", "/master-weekly-result")}
+              onClick={() => handleLoginType("User", "master-weekly-result")}
             >
               Weekly
             </button>
             <button
               className="role-button agent"
-              onClick={() => handleLoginType("Agent", "/master-monthly-result")}
+              onClick={() => handleLoginType("Agent", "master-monthly-result")}
             >
               Monthly
             </button>

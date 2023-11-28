@@ -233,16 +233,17 @@ const Result: FC<{ title: string }> = ({ title }) => {
                     >
                       Number 1:
                     </Box>
-                    <Box
+                    <Box>
+                      <Input
+                      value={firstdigit}
+                      onChange={(e) => setFirstDigit(e.target.value)}
                       sx={{
-                        marginRight: "2px",
-                        p: 2,
-                        fontWeight: "bold",
+                        width: "40px",
                         borderRadius: "5px",
+                        border: "none",
                         boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
                       }}
-                    >
-                      {firstdigit}
+                    />
                     </Box>
                   </Box>
                   {openDigit === "digit_1" && (
@@ -269,20 +270,22 @@ const Result: FC<{ title: string }> = ({ title }) => {
                           prev === "digit_2" ? "" : "digit_2"
                         );
                         sessionStorage.setItem("digit", "2");
+                        sessionStorage.setItem("digit1",firstdigit)
                       }}
                     >
                       Number 2:
                     </Box>
-                    <Box
-                      sx={{
-                        marginRight: "2px",
-                        p: 2,
-                        fontWeight: "bold",
-                        borderRadius: "5px",
-                        boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
-                      }}
-                    >
-                      {seconddigit}
+                    <Box>
+                     <Input
+                     value={seconddigit}
+                     onChange={(e) => setSecondDigit(e.target.value)}
+                     sx={{
+                       width: "40px",
+                       borderRadius: "5px",
+                       border: "none",
+                       boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
+                     }}
+                   />
                     </Box>
                   </Box>
                   {openDigit === "digit_2" && (
@@ -310,20 +313,22 @@ const Result: FC<{ title: string }> = ({ title }) => {
                           prev === "digit_3" ? "" : "digit_3"
                         );
                         sessionStorage.setItem("digit", "3");
+                        sessionStorage.setItem("digit2",seconddigit)
                       }}
                     >
                       Number 3:
                     </Box>
-                    <Box
-                      sx={{
-                        marginRight: "2px",
-                        p: 2,
-                        fontWeight: "bold",
-                        borderRadius: "5px",
-                        boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
-                      }}
-                    >
-                      {thirddigit}
+                    <Box>
+                    <Input
+                    value={thirddigit}
+                    onChange={(e) => setThirdDigit(e.target.value)}
+                    sx={{
+                      width: "40px",
+                      borderRadius: "5px",
+                      border: "none",
+                      boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
+                    }}
+                  />
                     </Box>
                   </Box>
                   {openDigit === "digit_3" && (
@@ -351,20 +356,22 @@ const Result: FC<{ title: string }> = ({ title }) => {
                           prev === "digit_4" ? "" : "digit_4"
                         );
                         sessionStorage.setItem("digit", "4");
+                        sessionStorage.setItem("digit3",thirddigit)
                       }}
                     >
                       Number 4:
                     </Box>
-                    <Box
-                      sx={{
-                        marginRight: "2px",
-                        p: 2,
-                        fontWeight: "bold",
-                        borderRadius: "5px",
-                        boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
-                      }}
-                    >
-                      {fourthdigit}
+                    <Box>
+                     <Input
+                     value={fourthdigit}
+                     onChange={(e) => setFourthDigit(e.target.value)}
+                     sx={{
+                       width: "40px",
+                       borderRadius: "5px",
+                       border: "none",
+                       boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
+                     }}
+                   />
                     </Box>
                   </Box>
                   {openDigit === "digit_4" && (
@@ -405,7 +412,6 @@ const Result: FC<{ title: string }> = ({ title }) => {
                         onChange={(e) => setFirstDigit(e.target.value)}
                         sx={{
                           width: "40px",
-
                           borderRadius: "5px",
                           border: "none",
                           boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
