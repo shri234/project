@@ -3,10 +3,11 @@ import MasterNavbar from "./Navbar";
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
 
 const SpinWheel = () => {
-  const handleLoginType = (type: string, path: string) => {
-    window.location.href = `http://localhost:3000${path}`;
+   const handleLoginType = (type: string, path: string) => {
+    window.location.href = `/${path}`;
     console.log(`Login as: ${type}`);
   };
+
   return (
     isAuthenticated("master") && (
       <Box>
