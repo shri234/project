@@ -7,8 +7,9 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import moment from "moment";
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
-
 import "./BuyTicket.css";
+import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
+import { STATUS } from "../../utill";
 
 const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
   const [ticket_count, setTicketCount] = useState(0);
@@ -16,15 +17,31 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
   const [ticket_price, setTicketprice] = useState(0);
   const [alreadyticketcount, setBeforeTicketCount] = useState(0);
   const [alreadyticketcount1, setAlreadyTicketCount] = useState(0);
+  const [status, setStatus] = useState(false);
+  const [loader, setOpenLoader] = useState(false);
+  const [status_dlg, setStatusDlg] = useState({
+    error: false,
+    warning: false,
+    success: false,
+    info: false,
+  });
+
   const increaseCount = () => {
     if (ticket_count < 15 - alreadyticketcount) {
       setTicketCount(ticket_count + 1);
     } else {
-      alert(
-        `You already bought ${alreadyticketcount} tickets you can buy  Only ${
-          15 - alreadyticketcount
-        } tickets `
-      );
+      setStatus(true);
+      setStatusDlg((prevStatus) => ({
+        ...prevStatus,
+        warning: true,
+      }));
+      setTimeout(() => {
+        setStatus(false);
+        setStatusDlg((prevStatus) => ({
+          ...prevStatus,
+          warning: false,
+        }));
+      }, 5000);
     }
   };
 
@@ -35,8 +52,8 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
   };
 
   const fetchData = async () => {
-    if (walletamount >= ticket_count * ticket_price) {
-      if (alreadyticketcount1 + ticket_count <= 15) {
+    if (alreadyticketcount1 + ticket_count <= 15) {
+      if (walletamount >= ticket_count * ticket_price) {
         try {
           const body = { ticketCount: alreadyticketcount + ticket_count };
 
@@ -47,9 +64,19 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
             body
           );
 
+          setStatus(true);
+          setStatusDlg((prevStatus) => ({
+            ...prevStatus,
+            success: true,
+          }));
+          setTimeout(() => {
+            setStatus(false);
+            setStatusDlg((prevStatus) => ({
+              ...prevStatus,
+              success: false,
+            }));
+          }, 5000);
           if (response.status == 200) {
-            alert("Tickets has been Successfully bought");
-
             try {
               const body = {
                 amount: walletamount - ticket_count * ticket_price,
@@ -64,12 +91,32 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
           }
         } catch (err) {}
       } else {
-        alert(
-          `You can only buy 15 tickets. You have already bought ${alreadyticketcount1} tickets`
-        );
+        setStatus(true);
+        setStatusDlg((prevStatus) => ({
+          ...prevStatus,
+          error: true,
+        }));
+        setTimeout(() => {
+          setStatus(false);
+          setStatusDlg((prevStatus) => ({
+            ...prevStatus,
+            error: false,
+          }));
+        }, 5000);
       }
     } else {
-      alert("Insufficient fund");
+      setStatus(true);
+      setStatusDlg((prevStatus) => ({
+        ...prevStatus,
+        warning: true,
+      }));
+      setTimeout(() => {
+        setStatus(false);
+        setStatusDlg((prevStatus) => ({
+          ...prevStatus,
+          warning: false,
+        }));
+      }, 5000);
     }
   };
 
@@ -132,6 +179,34 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
           <BuyTicketNavBar name={name} path={path} />
           <br />
 
+          {status && status_dlg.error && (
+            <CustomizedStatusDialogs
+              setOpenStatusDlg={setStatus}
+              description="Insufficient fund..."
+              status={STATUS.ERROR}
+            />
+          )}
+          {status && status_dlg.success && (
+            <CustomizedStatusDialogs
+              setOpenStatusDlg={setStatus}
+              description="Ticket bought successfully."
+              status={STATUS.SUCCESS}
+            />
+          )}
+          {status && status_dlg.info && (
+            <CustomizedStatusDialogs
+              setOpenStatusDlg={setStatus}
+              description="Please select minimum 1 ticket."
+              status={STATUS.INFO}
+            />
+          )}
+          {status && status_dlg.warning && (
+            <CustomizedStatusDialogs
+              setOpenStatusDlg={setStatus}
+              description={`You already bought ${alreadyticketcount1} tickets you can buy  Only ${15 - alreadyticketcount1} tickets`}
+              status={STATUS.WARNING}
+            />
+          )}
           <Box
             sx={{
               display: "flex",
@@ -264,7 +339,18 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
                 }}
                 onClick={() => {
                   if (ticket_count === 0) {
-                    alert("Please select at least one ticket.");
+                    setStatus(true);
+                    setStatusDlg((prevStatus) => ({
+                      ...prevStatus,
+                      info: true,
+                    }));
+                    setTimeout(() => {
+                      setStatus(false);
+                      setStatusDlg((prevStatus) => ({
+                        ...prevStatus,
+                        info: false,
+                      }));
+                    }, 6000);
                   } else {
                     fetchData();
                   }

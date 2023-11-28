@@ -9,6 +9,7 @@ import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
+import { handleLogout } from "../../utill";
 
 const settings = ["profile", "Logout"];
 
@@ -25,9 +26,8 @@ const AgentNavbar: React.FC<{ path: string }> = ({ path }) => {
     if (name === "profile") {
       window.location.href = "/agent-profile";
     } else if (name === "Logout") {
-      sessionStorage.clear();
+      handleLogout();
       window.location.href = "/";
-    } else if (name === "Balance") {
     }
     setAnchorElUser(null);
   };

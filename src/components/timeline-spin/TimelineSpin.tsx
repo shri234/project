@@ -34,7 +34,6 @@ const TimelineSpin: React.FC = () => {
         {open_payout && (
           <PayoutModal
             setPayoutOpen={setPayoutOpen}
-            setOpenLoader={setOpenLoader}
             walletAmount={walletAmount !== undefined ? walletAmount : 0}
           />
         )}

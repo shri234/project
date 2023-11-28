@@ -11,49 +11,14 @@ import { useState, useEffect } from "react";
 import { Pagination } from "@mui/material";
 import axios from "axios";
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
+import { CustomTableHead } from "../custom-table/CustomTableHead";
+import { CustomPagination } from "../custom-table/CustomPagination";
+import { NoDataFoundTable } from "../custom-table/NoDataFound";
+import { TableLoader } from "../custom-table/TableLoader";
+import Loader from "../loader/Loader";
+import { TicketResult } from "../master/PlayHistory";
 
-const table_head = [
-  { id: 1, title: "S.No" },
-  { id: 2, title: "Date" },
-  { id: 3, title: "Ticket" },
-];
-const table_body = [
-  {
-    id: 1,
-    s_no: "1",
-    date: "29/10/2023",
-    ticket: "1234",
-    win_loss: "win",
-  },
-  {
-    id: 2,
-    s_no: "2",
-    date: "19/10/2023",
-    ticket: "1434",
-    win_loss: "loss",
-  },
-  {
-    id: 3,
-    s_no: "3",
-    date: "12/10/2023",
-    ticket: "1634",
-    win_loss: "loss",
-  },
-  {
-    id: 4,
-    s_no: "4",
-    date: "29/10/2023",
-    ticket: "1234",
-    win_loss: "win",
-  },
-  {
-    id: 5,
-    s_no: "5",
-    date: "29/10/2023",
-    ticket: "1234",
-    win_loss: "win",
-  },
-];
+const table_head = ["S.No", "Date", "Ticket"];
 
 function getUserName() {
   return sessionStorage.getItem("userName");
@@ -64,6 +29,9 @@ const BackOfficePlayHistory = () => {
   const [play_history_data, setPlayHistoryData] = useState<any[]>([]);
   const [current_page, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
+  const [open_loader, setOpenLoader] = useState(false);
+  const [table_loader, setOpenTableLoader] = useState(false);
+
   const fetchData = async () => {
     try {
       const response = await axios.get(
@@ -74,21 +42,8 @@ const BackOfficePlayHistory = () => {
           },
         }
       );
-      let ticketarr = [];
-      for (let i = 0; i < response.data.data.length; i++) {
-        let ticket_data = {
-          id: i + 1,
-          ticket:
-            String(response.data.data[i].ticket[0].digit) +
-            String(response.data.data[i].ticket[1].digit) +
-            String(response.data.data[i].ticket[2].digit) +
-            String(response.data.data[i].ticket[3].digit),
-          CreatedAt: response.data.data[i].CreatedAt,
-        };
-        ticketarr.push(ticket_data);
-      }
 
-      setPlayHistoryData(ticketarr);
+      setPlayHistoryData(response.data.data);
 
       let count = 0;
       if (response.data.data.count < 10) {
@@ -97,16 +52,22 @@ const BackOfficePlayHistory = () => {
         count = Math.ceil(response.data.count / 10);
       }
       setPageCount(count);
+      setOpenLoader(false);
+      setOpenTableLoader(false);
     } catch (err) {
       console.log(err);
+      setOpenLoader(false);
+      setOpenTableLoader(false);
     }
   };
 
   useEffect(() => {
+    setOpenLoader(true);
     fetchData();
   }, []);
 
   useEffect(() => {
+    setOpenTableLoader(true);
     fetchData();
   }, [current_page]);
 
@@ -114,6 +75,7 @@ const BackOfficePlayHistory = () => {
     isAuthenticated("back-office") && (
       <Box>
         <BackOfficeNavbar path="/back-office-user-details" />
+        {open_loader && <Loader />}
         <Box
           component={"div"}
           sx={{
@@ -148,52 +110,49 @@ const BackOfficePlayHistory = () => {
                 size="small"
                 aria-label="a dense table"
               >
-                <TableHead sx={{ background: "#b51271" }}>
-                  <TableRow>
-                    {table_head.map((cell) => (
-                      <TableCell
-                        sx={{ color: "#fff", fontWeight: "bold" }}
-                        align="center"
-                      >
-                        {cell.title}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
+                <CustomTableHead table_head={table_head} />
                 <TableBody>
-                  {play_history_data.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
-                      <TableCell component="th" scope="row" align="center">
-                        {row.id}
-                      </TableCell>
-                      <TableCell align="center">{row.CreatedAt}</TableCell>
-                      <TableCell align="center">{row.ticket}</TableCell>
-                    </TableRow>
-                  ))}
+                  {!open_loader && table_loader ? (
+                    <TableLoader colSpan={table_head.length} />
+                  ) : !table_loader &&
+                    !open_loader &&
+                    play_history_data.length === 0 ? (
+                    <NoDataFoundTable
+                      description="No data found..."
+                      colSpan={table_head.length}
+                    />
+                  ) : (
+                    play_history_data.map((row, index) => (
+                      <TableRow
+                        key={index}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell component="th" scope="row" align="center">
+                          {index + 1}
+                        </TableCell>
+                        <TableCell align="center">{row.CreatedAt}</TableCell>
+                        <TableCell align="center" sx={{ display: "flex" }}>
+                          {row.ticket.map((value: any) => {
+                            return (
+                              <TicketResult value={value} key={value.id} />
+                            );
+                          })}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>
-            <Box
-              component={"div"}
-              sx={{
-                display: "flex",
-                justifyContent: { xs: "start", sm: "end" },
-                mt: 1,
-              }}
-            >
-              <Pagination
-                count={pageCount}
-                defaultPage={6}
-                siblingCount={0}
-                boundaryCount={1}
-                onChange={(e, page) => {
-                  setCurrentPage(page - 1);
-                }}
+
+            {play_history_data.length !== 0 && (
+              <CustomPagination
+                pageCount={pageCount}
+                setCurrentPage={setCurrentPage}
               />
-            </Box>
+            )}
           </Box>
         </Box>
       </Box>

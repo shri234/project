@@ -4,6 +4,8 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import axios from "axios";
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
+import { handleLogout } from "../../utill";
+import Loader from "../loader/Loader";
 
 function getAgentId() {
   let agentId = sessionStorage.getItem("agentId");
@@ -15,9 +17,8 @@ const AgentProfile = () => {
   const [agentemail, setAgentEmail] = useState("");
   const [agentPhone, setAgentPhone] = useState("");
   const [agentcode, setAgentCode] = useState("");
-  const [current_page, setCurrentPage] = useState(0);
+  const [open_loader, setOpenLoader] = useState(false);
 
-  const pageCount = 10;
   const fetchData = async () => {
     try {
       const response = await axios.get(
@@ -28,16 +29,18 @@ const AgentProfile = () => {
           },
         }
       );
-      // console.log(response.data, "respone");
       setAgentName(response.data.data.username);
       setAgentPhone(response.data.data.mobileNumber);
       setAgentCode(response.data.data.agentId);
+      setOpenLoader(false);
     } catch (err) {
+      setOpenLoader(false);
       console.log(err);
     }
   };
 
   useEffect(() => {
+    setOpenLoader(true);
     fetchData();
   }, []);
 
@@ -54,6 +57,7 @@ const AgentProfile = () => {
             boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
           }}
         >
+          {open_loader && <Loader />}
           <Box
             component={"div"}
             sx={{
@@ -108,9 +112,17 @@ const AgentProfile = () => {
           >
             <Button
               variant="outlined"
-              sx={{ background: "red", color: "#fff", fontWeight: "600" }}
+              sx={{
+                background: "red",
+                color: "#fff",
+                fontWeight: "600",
+                ":hover": {
+                  background: "red",
+                },
+              }}
               onClick={() => {
-                /* Handle logout logic */
+                handleLogout();
+                window.location.href = "/";
               }}
             >
               Logout

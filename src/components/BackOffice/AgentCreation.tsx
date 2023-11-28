@@ -5,6 +5,8 @@ import axios from "axios";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import "./AgentCreate.css";
+import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
+import { STATUS } from "../../utill";
 
 const AgentCreation = () => {
   const [name, setName] = useState("");
@@ -12,6 +14,7 @@ const AgentCreation = () => {
   const [password, setPassword] = useState("");
   const [mobile, setMobile] = useState<string>("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [status_dlg, setOpenStatusDlg] = useState(false);
 
   const [formErrors, setFormErrors] = useState({
     name: "",
@@ -109,9 +112,11 @@ const AgentCreation = () => {
     await axios
       .post(`${process.env.REACT_APP_IP}/user/addAgent`, body)
       .then((res) => {
-        if (res.status === 200) {
-          window.alert("Success! Agent has been successfully created.");
-        }
+        setOpenStatusDlg(true);
+
+        setTimeout(() => {
+          setOpenStatusDlg(false);
+        }, 5000);
         window.location.href = "/back-office";
       })
       .catch((error) => {
@@ -129,6 +134,13 @@ const AgentCreation = () => {
 
       <div className="signup-container">
         <h2>Agent Create</h2>
+        {status_dlg && (
+          <CustomizedStatusDialogs
+            setOpenStatusDlg={setOpenStatusDlg}
+            description="Agent Created Successfully"
+            status={STATUS.SUCCESS}
+          />
+        )}
         <div className="input-container">
           <label className="label-color">Name</label>
           <input

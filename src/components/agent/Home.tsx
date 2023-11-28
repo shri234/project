@@ -11,6 +11,11 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { formattedDate } from "../../utill";
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
+import { CustomPagination } from "../custom-table/CustomPagination";
+import { CustomTableHead } from "../custom-table/CustomTableHead";
+import { TableLoader } from "../custom-table/TableLoader";
+import { NoDataFoundTable } from "../custom-table/NoDataFound";
+import Loader from "../loader/Loader";
 const table_head = ["S.No", "Username", "Created At", "Play History"];
 // "Total Amount Win"
 
@@ -24,6 +29,8 @@ const AgentHome = () => {
   const [getuserdata, setAgentUserData] = useState<any[]>([]);
   const [pageCount, setPageCount] = useState(0);
   const [current_page, setCurrentPage] = useState(0);
+  const [open_loader, setOpenLoader] = useState(false);
+  const [table_loader, setOpenTableLoader] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -44,16 +51,22 @@ const AgentHome = () => {
         count = Math.ceil(response.data.count / 10);
       }
       setPageCount(count);
+      setOpenLoader(false);
+      setOpenTableLoader(false);
     } catch (err) {
       console.log(err);
+      setOpenLoader(false);
+      setOpenTableLoader(false);
     }
   };
 
   useEffect(() => {
+    setOpenLoader(true);
     fetchData();
   }, []);
 
   useEffect(() => {
+    setOpenTableLoader(true);
     fetchData();
   }, [current_page]);
 
@@ -61,6 +74,7 @@ const AgentHome = () => {
     isAuthenticated("agent") && (
       <Box>
         <AgentNavbar path="/" />
+        {open_loader && <Loader />}
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           <Box component={"div"} sx={{ minWidth: "300px" }}>
             <Box
@@ -88,35 +102,18 @@ const AgentHome = () => {
                   size="small"
                   aria-label="a dense table"
                 >
-                  <TableHead sx={{ background: "#b51271" }}>
-                    <TableRow>
-                      {table_head.map((cell, index) => (
-                        <TableCell
-                          sx={{ color: "#fff", fontWeight: "bold" }}
-                          align="center"
-                          key={index}
-                        >
-                          {cell}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  </TableHead>
+                  <CustomTableHead table_head={table_head} />
+
                   <TableBody>
-                    {getuserdata.length === 0 ? (
-                      <TableRow
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
-                        }}
-                      >
-                        <TableCell
-                          component="th"
-                          scope="row"
-                          align="center"
-                          colSpan={table_head.length}
-                        >
-                          No Data found...
-                        </TableCell>
-                      </TableRow>
+                    {!open_loader && table_loader ? (
+                      <TableLoader colSpan={table_head.length} />
+                    ) : !table_loader &&
+                      !open_loader &&
+                      getuserdata.length === 0 ? (
+                      <NoDataFoundTable
+                        description="No data found..."
+                        colSpan={table_head.length}
+                      />
                     ) : (
                       getuserdata.map((row, index) => (
                         <TableRow
@@ -128,37 +125,36 @@ const AgentHome = () => {
                           <TableCell component="th" scope="row" align="center">
                             {index + 1}
                           </TableCell>
-                          <TableCell
-                            align="center"
-                            sx={{ cursor: "pointer" }}
-                            onClick={() =>
-                              (window.location.href = "/user-profile")
-                            }
-                          >
+                          <TableCell align="center" sx={{ cursor: "pointer" }}>
                             {row.username}
                           </TableCell>
                           <TableCell align="center">
                             {formattedDate(row.CreatedAt)}
                           </TableCell>
-                          {/* <TableCell align="center">{row.amount}</TableCell> */}
                           <TableCell align="center">
-                    <Box
-                      sx={{
-                        background: "#410961",
-                        p: 0.5,
-                        borderRadius: "5px",
-                        color: "#fff",
-                        fontWeight: "bold",
-                        cursor: "pointer",
-                      }}
-                      component={"div"}
-                      onClick={() =>
-                        (window.location.href = "/agent-play-history")
-                      }
-                    >
-                      Play History
-                    </Box>
-                  </TableCell>
+                            <Box
+                              sx={{
+                                background: "#410961",
+                                p: 0.5,
+                                borderRadius: "5px",
+                                color: "#fff",
+                                fontWeight: "bold",
+                                cursor: "pointer",
+                              }}
+                              component={"div"}
+                              onClick={() => {
+                                sessionStorage.setItem(
+                                  "userName",
+                                  row.username
+                                );
+                                sessionStorage.setItem("userid", row.userId);
+
+                                window.location.href = "/agent-play-history";
+                              }}
+                            >
+                              Play History
+                            </Box>
+                          </TableCell>
                         </TableRow>
                       ))
                     )}
@@ -167,24 +163,10 @@ const AgentHome = () => {
               </TableContainer>
             </Box>
             {getuserdata.length !== 0 && (
-              <Box
-                component={"div"}
-                sx={{
-                  display: "flex",
-                  justifyContent: { xs: "start", sm: "end" },
-                  mt: 1,
-                }}
-              >
-                <Pagination
-                  count={pageCount}
-                  defaultPage={0}
-                  siblingCount={0}
-                  boundaryCount={1}
-                  onChange={(e, page) => {
-                    setCurrentPage(page - 1);
-                  }}
-                />
-              </Box>
+              <CustomPagination
+                setCurrentPage={setCurrentPage}
+                pageCount={pageCount}
+              />
             )}
           </Box>
         </Box>
