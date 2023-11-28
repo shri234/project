@@ -29,19 +29,22 @@ const SpinWheel = () => {
           <div className="button-row">
             <button
               className="role-button admin"
-              onClick={() => handleLoginType("master", "/master-daily-result")}
+
+              onClick={() => handleLoginType("master", "master-daily-result")}
+
+
             >
               Daily
             </button>
             <button
               className="role-button user"
-              onClick={() => handleLoginType("User", "/master-weekly-result")}
+              onClick={() => handleLoginType("User", "master-weekly-result")}
             >
               Weekly
             </button>
             <button
               className="role-button agent"
-              onClick={() => handleLoginType("Agent", "/master-monthly-result")}
+              onClick={() => handleLoginType("Agent", "master-monthly-result")}
             >
               Monthly
             </button>

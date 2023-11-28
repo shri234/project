@@ -7,15 +7,19 @@ const Filteration: FC<{ setFiltered: Dispatch<SetStateAction<string>> }> = ({
 }) => {
   const [digits, setDigits] = useState<any[]>([]);
   const [digit, setDigit] = useState(0);
+  const [digit1,setDigit1] = useState(0);
   const [LowestValue, setLowestValue] = useState<number>();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const formatteddate = `${new Date().getFullYear()}-${
+          new Date().getMonth() + 1
+        }-${new Date().getDate()}`;
         const response = await axios.get(
           `${
             process.env.REACT_APP_IP
-          }/ticket/getMinimum?digit=${sessionStorage.getItem("digit")}`,
+          }/ticket/getMinimum?digit=${sessionStorage.getItem("digit")}&digit1=${sessionStorage.getItem("digit1")}&digit2=${sessionStorage.getItem("digit2")}&digit3=${sessionStorage.getItem("digit3")}&date=${formatteddate}`,
           {
             headers: {
               "Content-Type": "application/json",
