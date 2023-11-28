@@ -29,7 +29,7 @@ const SpinWheel = () => {
           <div className="button-row">
             <button
               className="role-button admin"
-              onClick={() => handleLoginType("Master", "/master-daily-result")}
+              onClick={() => handleLoginType("master", "/master-daily-result")}
             >
               Daily
             </button>
