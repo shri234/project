@@ -14,12 +14,15 @@ import axios from "axios";
 import { handleLogout } from "../../utill";
 
 const settings = ["Profile", "Logout"];
-
+interface EventData {
+    amount:number
+}
 const TicketNavBar: React.FC<{
   name: string;
   setWalletAmount?: React.Dispatch<React.SetStateAction<number>>;
 }> = ({ name, setWalletAmount }) => {
   const [balance, setBalance] = React.useState(0);
+  const [events, setEvents] = useState<EventData[]>([]);
 
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
@@ -39,28 +42,77 @@ const TicketNavBar: React.FC<{
     }
     setAnchorElUser(null);
   };
-  useEffect(() => {
+
+
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${
-            process.env.REACT_APP_IP
-          }/ticket/getWallet?userId=${sessionStorage.getItem("userId")}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        // const response = await axios.get(
+        //   `${
+        //     process.env.REACT_APP_IP
+        //   }/ticket/getWallet?userId=${sessionStorage.getItem("userId")}`,
+        //   {
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //     },
+        //   }
+        // );
+      
+        const eventSource = new EventSource(`${
+          process.env.REACT_APP_IP
+        }/ticket/sse`)
 
-        if (setWalletAmount) setWalletAmount(response.data.data.amount);
-        setBalance(response.data.data.amount);
+        eventSource.onmessage = (event) => {
+          
+          const eventData: EventData = JSON.parse(event.data);
+         
+          if(eventData){
+          setBalance(eventData.amount);
+          }
+          else{
+            console.log("inside")
+            
+          }
+        
+        };
+    
+        // Handle SSE errors
+        eventSource.onerror = (error) => {
+          console.error('EventSource failed:', error);
+          eventSource.close();
+        };
+    
+        // if (setWalletAmount) setWalletAmount(response.data.data.amount);
+        // setBalance(response.data.data.amount);
+
+         // Cleanup SSE connection on component unmount
+        return () => {
+          eventSource.close();
+        };
       } catch (err) {
         console.log(err);
       }
     };
-    fetchData();
+
+    useEffect(()=>{
+      fetchData()
+          },[])
+
+  useEffect(() => {
+    axios
+      .get( `${
+        process.env.REACT_APP_IP
+      }/ticket/getWallet?userId=${sessionStorage.getItem("userId")}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => setBalance(response.data.data.amount))
+      .catch((error) => console.error('Error making initial API call:', error));
   }, []);
+
+ 
+
   return (
     <AppBar position="sticky" sx={{ background: "#1a1c6b" }}>
       <Toolbar>
