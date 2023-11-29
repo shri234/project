@@ -11,6 +11,8 @@ export enum STATUS {
   INFO = "info",
 }
 
+export const dialog_timeout = 5000;
+
 export const handleLogout = async () => {
   sessionStorage.removeItem("is_logged");
   sessionStorage.removeItem("username");
@@ -23,6 +25,11 @@ export const handleLogout = async () => {
   // window.location.href = "/";
 };
 
+export const is5pmto6pm = (): boolean => {
+  const now = new Date();
+  if (now.getHours() >= 17 && now.getHours() < 18) return true;
+  return false;
+};
 export const handleKeyPrevent = (
   e: React.ChangeEvent<HTMLInputElement>
 ): boolean => {

@@ -157,7 +157,14 @@ function NavBar() {
 
           <Box sx={{ flexGrow: 0 }}>
             <Button
-              sx={{ background: "green", color: "white", borderRadius: "6px" }}
+              sx={{
+                background: "green",
+                color: "white",
+                borderRadius: "6px",
+                ":hover": {
+                  background: "green",
+                },
+              }}
               onClick={() => {
                 window.location.href = "/login-page";
               }}

@@ -1,15 +1,9 @@
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import {
-  Button,
-  FormControl,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  OutlinedInput,
-} from "@mui/material";
+import { Button, FormControl, InputLabel, OutlinedInput } from "@mui/material";
 import Box from "@mui/material/Box";
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState, FormEvent } from "react";
 import axios from "axios";
+import { STATUS, dialog_timeout } from "../../utill";
+import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
 
 interface FormData {
   fullName: string;
@@ -18,54 +12,94 @@ interface FormData {
 }
 
 const Contact: React.FC = () => {
-  const [formData, setFormData] = useState<FormData>({
-    fullName: "",
-    email: "",
-    message: "",
-  });
-  const [fullName, setFullName] = useState("");
+  const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [status, setStatus] = useState(false);
 
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [error, setError] = useState({
+    username_error: "",
+    email_error: "",
+    message_error: "",
+  });
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    event.preventDefault();
-  };
-
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  const isAllValueEntered = (): boolean => {
+    if (username.length === 0 && email.length === 0 && message.length === 0) {
+      setError({
+        username_error: "Please enter username!",
+        email_error: "Please enter email!",
+        message_error: "please enter message!",
+      });
+      return false;
+    }
+    if (
+      error.email_error.length === 0 &&
+      error.message_error.length === 0 &&
+      error.message_error.length === 0
+    )
+      return true;
+    return false;
   };
 
   const handleSubmit = async (e: FormEvent) => {
-    const body = {
-      fullname: fullName,
-      email: email,
-      message: message,
-    };
-    e.preventDefault();
-    try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_IP}/user/sendMail`,
-        body
-      );
-      if (response.status == 200) {
-        window.alert("Success");
-        window.location.href = "/";
+    if (isAllValueEntered()) {
+      if (!emailRegex.test(email)) {
+        setError({ ...error, email_error: "Invalid email !" });
+        setEmail("");
+        return;
       }
-    } catch (err) {
-      console.log(err);
+      const body = {
+        fullname: username,
+        email: email,
+        message: message,
+      };
+      try {
+        const response = await axios.post(
+          `${process.env.REACT_APP_IP}/user/sendMail`,
+          body
+        );
+        if (response.status == 200) {
+          setStatus(true);
+
+          setTimeout(() => {
+            setStatus(false);
+          }, dialog_timeout);
+
+          window.location.href = "/";
+        }
+      } catch (err) {
+        console.log(err);
+      }
     }
+  };
+
+  const handleUserNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newUserName = event.target.value;
+
+    setUserName(newUserName);
+    setError({
+      ...error,
+      username_error: "",
+    });
+  };
+
+  const handleMessageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const message = event.target.value;
+    setMessage(message);
+    setError({
+      ...error,
+      message_error: "",
+    });
+  };
+
+  const emailRegex = /\S+@\S+\.\S+/;
+  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newEmail = event.target.value;
+    setEmail(newEmail);
+    setError({
+      ...error,
+      email_error: "",
+    });
   };
 
   return (
@@ -86,10 +120,26 @@ const Contact: React.FC = () => {
           <InputLabel
             htmlFor="outlined-adornment-password"
             sx={{ color: "#fff" }}
+            style={
+              error.username_error.length > 0
+                ? { color: "red", display: "none" }
+                : {}
+            }
           >
             Full Name
           </InputLabel>
           <OutlinedInput
+            onFocus={() => {
+              setError({ ...error, username_error: "" });
+            }}
+            value={
+              error.username_error.length > 0 ? error.username_error : username
+            }
+            style={
+              error.username_error.length > 0
+                ? { color: "red", border: "1px solid red" }
+                : {}
+            }
             sx={{
               border: "1px solid #fff",
               color: "#fff",
@@ -101,9 +151,11 @@ const Contact: React.FC = () => {
               },
             }}
             id="outlined-adornment-password"
-            onChange={(e) => setFullName(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleUserNameChange(e)
+            }
             type={"text"}
-            label="Full Name"
+            label="Username"
           />
         </FormControl>
         <FormControl
@@ -113,13 +165,27 @@ const Contact: React.FC = () => {
           <InputLabel
             htmlFor="outlined-adornment-password"
             sx={{ color: "#fff" }}
+            style={
+              error.email_error.length > 0
+                ? { color: "red", display: "none" }
+                : {}
+            }
           >
             E-mail
           </InputLabel>
           <OutlinedInput
+            onFocus={() => {
+              setError({ ...error, email_error: "" });
+            }}
+            value={error.email_error.length > 0 ? error.email_error : email}
+            style={
+              error.email_error.length > 0
+                ? { color: "red", border: "1px solid red" }
+                : {}
+            }
             sx={{ border: "1px solid #fff", color: "#fff" }}
             id="outlined-adornment-password"
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleEmailChange}
             type={"mail"}
             label="E-mail"
           />
@@ -129,15 +195,31 @@ const Contact: React.FC = () => {
           variant="outlined"
         >
           <InputLabel
+            style={
+              error.message_error.length > 0
+                ? { color: "red", display: "none" }
+                : {}
+            }
             htmlFor="outlined-adornment-password"
             sx={{ color: "#fff", fontWeight: "700" }}
           >
             Message
           </InputLabel>
           <OutlinedInput
+            onFocus={() => {
+              setError({ ...error, message_error: "" });
+            }}
+            value={
+              error.message_error.length > 0 ? error.message_error : message
+            }
+            style={
+              error.message_error.length > 0
+                ? { color: "red", border: "1px solid red" }
+                : {}
+            }
             sx={{ border: "1px solid #fff", color: "#fff" }}
             id="outlined-adornment-password"
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={handleMessageChange}
             type={"text"}
             label="Message"
           />
@@ -151,11 +233,21 @@ const Contact: React.FC = () => {
               width: "140px",
               borderRadius: "10px",
               whiteSpace: "nowrap",
+              ":hover": {
+                background: "green",
+              },
             }}
           >
             Contact Us
           </Button>
         </Box>
+        {status && (
+          <CustomizedStatusDialogs
+            setOpenStatusDlg={setStatus}
+            description={"Message sent successfully"}
+            status={STATUS.SUCCESS}
+          />
+        )}
       </Box>
     </Box>
   );

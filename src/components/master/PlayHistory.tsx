@@ -19,7 +19,7 @@ import { CustomPagination } from "../custom-table/CustomPagination";
 const table_head = ["S.No", "Date", "Ticket"];
 
 function getUserName() {
-  return sessionStorage.getItem("userid");
+  return sessionStorage.getItem("userName");
 }
 
 const PlayHistory = () => {
@@ -33,7 +33,7 @@ const PlayHistory = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_IP}/ticket/getHistory?userId=${username}&pageno=${current_page}`,
+        `${process.env.REACT_APP_IP}/ticket/getHistory?username=${username}&pageno=${current_page}`,
         {
           headers: {
             "Content-Type": "application/json",

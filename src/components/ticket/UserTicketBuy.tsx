@@ -77,7 +77,7 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
   }, []);
 
   useEffect(() => {
-    if (new Date().getHours() === 11) {
+    if (new Date().getHours() === 18) {
       const intervalId = setInterval(() => {
         setRenderCount((prevCount) => {
           if (prevCount === 0) {
@@ -175,7 +175,10 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
         console.log(err);
       }
     };
-    if (new Date().getHours() === 11) fetchData();
+    if (new Date().getHours() === 18) fetchData();
+    else {
+      setResult([]);
+    }
   }, []);
 
   return (
