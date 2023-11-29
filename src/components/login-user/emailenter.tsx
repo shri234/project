@@ -4,6 +4,8 @@ import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import axios from "axios";
 import { useState } from "react";
+import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
+import { STATUS, dialog_timeout } from "../../utill";
 
 const style = {
   position: "absolute" as "absolute",
@@ -21,24 +23,46 @@ export default function EmailModal({
 }: {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const [amount, setAmount] = useState(0);
   const [email, setEmail] = useState("");
+  const [email_error, setEmailError] = useState<string>("");
+  const [status, setStatus] = useState(false);
+  const emailRegex = /\S+@\S+\.\S+/;
+  const isEmailValid = (): boolean => {
+    if (email.length === 0) {
+      setEmailError("Enter email id...");
+      setEmail("");
+      return false;
+    }
+    if (!emailRegex.test(email)) {
+      setEmailError("Enter valid email...");
+      setEmail("");
+      return false;
+    }
+    return true;
+  };
   const handleForgotPassword = async () => {
-    const body = {
-      email: email,
-    };
+    if (isEmailValid()) {
+      const body = {
+        email: email,
+      };
 
-    try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_IP}/user/sendPasswordMail`,
-        body
-      );
-      if (response.status == 200) {
-        window.alert("Success sent password to you mail");
-        window.location.href = "/login";
+      try {
+        const response = await axios.post(
+          `${process.env.REACT_APP_IP}/user/sendPasswordMail`,
+          body
+        );
+        if (response.status == 200) {
+          setStatus(true);
+          setTimeout(() => {
+            setStatus(false);
+          }, dialog_timeout);
+          window.location.href = "/login";
+        }
+      } catch (err) {
+        setEmailError("email id is not exist...");
+        setEmail("");
+        console.log(err);
       }
-    } catch (err) {
-      console.log(err);
     }
   };
 
@@ -53,30 +77,31 @@ export default function EmailModal({
         <Box sx={style}>
           <Box
             sx={{
-              color: "#092b61",
-              fontWeight: "bold",
-              my: 1,
-              fontSize: "18px",
-            }}
-          >
-            Email ID
-          </Box>
-          <Box
-            sx={{
               display: "flex",
               flexDirection: { xs: "column", sm: "row" },
-              gap: { xs: 2, sm: 0 },
+              gap: { xs: 2, sm: 0.2 },
               justifyContent: { xs: "start", sm: "center" },
               alignItems: "center",
             }}
           >
-            <Box>
+            <Box component={"div"} className="input-container">
+              <label className="label-color">Email</label>
               <input
-                type="text"
-                placeholder="Enter email id"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="email"
+                onFocus={() => {
+                  setEmailError("");
+                }}
+                style={email_error.length > 0 ? { color: "red" } : {}}
+                value={email_error.length > 0 ? email_error : email}
+                onChange={(e) => {
+                  setEmailError("");
+                  setEmail(e.target.value);
+                }}
+                className={email_error.length > 0 ? "invalid" : ""}
+                placeholder="Enter your email"
               />
+
+              {/* {email_error.length > 1 && <p className="error">{email_error}</p>} */}
             </Box>
             <Button
               onClick={handleForgotPassword}
@@ -84,6 +109,7 @@ export default function EmailModal({
                 background: "green",
                 color: "#fff",
                 fontWeight: "650",
+                mt: 1.2,
                 ":hover": {
                   background: "green",
                 },
@@ -92,6 +118,13 @@ export default function EmailModal({
               Send
             </Button>
           </Box>
+          {status && (
+            <CustomizedStatusDialogs
+              setOpenStatusDlg={setStatus}
+              description="Password sent successfully..."
+              status={STATUS.SUCCESS}
+            />
+          )}
         </Box>
       </Modal>
     </div>

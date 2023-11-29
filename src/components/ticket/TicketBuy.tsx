@@ -3,13 +3,14 @@ import { STATUS, numbers } from "../../utill";
 import { FC, useState } from "react";
 import axios from "axios";
 import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
+import Loader from "../loader/Loader";
 
 export const TicketBuy: FC<{
   ticketcount: number;
 }> = ({ ticketcount }) => {
   const [ticket, setTicket] = useState<any[]>([]);
   const [status_dlg, setOpenStatusDlg] = useState(false);
-
+  const [loader, setLoader] = useState(false);
   const [status, setStatus] = useState({
     ticket_buy: false,
     ticket_count: false,
@@ -36,6 +37,7 @@ export const TicketBuy: FC<{
     await axios
       .post(`${process.env.REACT_APP_IP}/ticket/addticket`, body)
       .then((res) => {
+        setLoader(false);
         if (res.status === 200) {
           setOpenStatusDlg(true);
           setStatus((prevStatus) => ({
@@ -53,6 +55,7 @@ export const TicketBuy: FC<{
         window.location.href = "/daily";
       })
       .catch((error) => {
+        setLoader(false);
         setOpenStatusDlg(true);
         setStatus((prevStatus) => ({
           ...prevStatus,
@@ -80,6 +83,7 @@ export const TicketBuy: FC<{
         mt: 1,
       }}
     >
+      {loader && <Loader />}
       <Box
         sx={{
           display: "grid",
@@ -140,8 +144,8 @@ export const TicketBuy: FC<{
             minHeight: "20px",
           }}
         >
-          {ticket.map((value) => (
-            <Box>{value.digit}</Box>
+          {ticket.map((value, index) => (
+            <Box key={index}>{value.digit}</Box>
           ))}
         </Box>
         {ticket.length > 0 && (
@@ -165,7 +169,7 @@ export const TicketBuy: FC<{
         )}
         <Box
           onClick={async () => {
-            if (ticketcount === 0) {
+            if (ticket.length === 4 && ticketcount === 0) {
               setOpenStatusDlg(true);
               setStatus((prevStatus) => ({
                 ...prevStatus,
@@ -179,6 +183,7 @@ export const TicketBuy: FC<{
                 }));
               }, 5000);
             } else if (ticket.length === 4) {
+              setLoader(true);
               await handleBuyTicket();
             } else {
               setTicket([]);

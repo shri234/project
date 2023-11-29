@@ -5,6 +5,8 @@ import Button from "@mui/material/Button";
 import ResponsiveAppBar from "./Test";
 import axios from "axios";
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
+import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
+import { STATUS, dialog_timeout } from "../../utill";
 
 const Profile = () => {
   const [name, setName] = useState("");
@@ -15,8 +17,8 @@ const Profile = () => {
   const [accountno, setAccountNo] = useState("");
   const [pan, setPan] = useState("");
   const [ifsc, setIfsc] = useState("");
+  const [status, setStatus] = useState(false);
 
-  const [redeem, setRedeem] = useState(false);
   // Handlers for each button
   const initialRendering = async () => {
     await axios
@@ -59,19 +61,20 @@ const Profile = () => {
         }/user/updateUserDetails?userId=${sessionStorage.getItem("userId")}`,
         body
       )
-      .then((res) => alert("updated successfully"))
+      .then((res) => {
+        setStatus(true);
+        setTimeout(() => {
+          setStatus(false);
+        }, dialog_timeout);
+      })
       .catch((error) => {
         console.log(error);
       });
   };
+
   useEffect(() => {
     initialRendering();
   }, []);
-
-  const handleWallet = () => {
-    // Implement wallet logic
-    alert("Wallet clicked");
-  };
 
   return (
     isAuthenticated("user") && (
@@ -97,7 +100,6 @@ const Profile = () => {
                 color: "#444",
                 fontWeight: "bold",
                 fontSize: "25px",
-                // textAlign: "center",
                 my: 2,
               }}
             >
@@ -231,6 +233,13 @@ const Profile = () => {
                 Update
               </Button>
             </Stack>
+            {status && (
+              <CustomizedStatusDialogs
+                setOpenStatusDlg={setStatus}
+                description="Updated Successfully..."
+                status={STATUS.SUCCESS}
+              />
+            )}
           </Box>
         </Box>
       </Box>

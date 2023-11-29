@@ -84,11 +84,9 @@ const Login: React.FC = () => {
   return (
     <Box
       component={"div"}
-      // className="sign-in-container"
       sx={{
         display: "flex",
         height: { xs: "100%", sm: "100vh" },
-        // height: { xs: "100%" },
         backgroundImage: `url('/monthly.jpeg')`,
         width: "100%",
         backgroundSize: "auto",

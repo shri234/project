@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import axios from "axios";
 import { useState } from "react";
-import { STATUS, handleKeyPrevent } from "../../utill";
+import { STATUS, dialog_timeout, handleKeyPrevent } from "../../utill";
 import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
 
 const style = {
@@ -60,7 +60,7 @@ export default function PayoutModal({
             ...prevStatus,
             success: false,
           }));
-        }, 5000);
+        }, dialog_timeout);
         window.location.href = "/spin";
         setOpenLoader(false);
       })
@@ -70,6 +70,37 @@ export default function PayoutModal({
       });
   };
 
+  const handlePayout = async () => {
+    if (amount === 0 || isNaN(amount)) {
+      setStatus(true);
+      setStatusDlg((prevStatus) => ({
+        ...prevStatus,
+        warning: true,
+      }));
+      setTimeout(() => {
+        setStatus(false);
+        setStatusDlg((prevStatus) => ({
+          ...prevStatus,
+          warning: false,
+        }));
+      }, dialog_timeout);
+    } else if (walletAmount > amount) {
+      handleRedeem();
+    } else {
+      setStatus(true);
+      setStatusDlg((prevStatus) => ({
+        ...prevStatus,
+        error: true,
+      }));
+      setTimeout(() => {
+        setStatus(false);
+        setStatusDlg((prevStatus) => ({
+          ...prevStatus,
+          error: false,
+        }));
+      }, dialog_timeout);
+    }
+  };
   return (
     <div>
       <Modal
@@ -132,37 +163,7 @@ export default function PayoutModal({
                 />
               </Box>
               <Button
-                onClick={() => {
-                  if (amount === 0) {
-                    setStatus(true);
-                    setStatusDlg((prevStatus) => ({
-                      ...prevStatus,
-                      warning: true,
-                    }));
-                    setTimeout(() => {
-                      setStatus(false);
-                      setStatusDlg((prevStatus) => ({
-                        ...prevStatus,
-                        warning: false,
-                      }));
-                    }, 5000);
-                  } else if (walletAmount > amount) {
-                    handleRedeem();
-                  } else {
-                    setStatus(true);
-                    setStatusDlg((prevStatus) => ({
-                      ...prevStatus,
-                      error: true,
-                    }));
-                    setTimeout(() => {
-                      setStatus(false);
-                      setStatusDlg((prevStatus) => ({
-                        ...prevStatus,
-                        error: false,
-                      }));
-                    }, 5000);
-                  }
-                }}
+                onClick={handlePayout}
                 sx={{
                   background: "green",
                   color: "#fff",

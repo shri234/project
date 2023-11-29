@@ -1,12 +1,21 @@
 import { Box, Divider, Input } from "@mui/material";
-import { FC, useState,useEffect } from "react";
+import { FC, useState, useEffect } from "react";
 import axios from "axios";
 import BackOfficeNavbar from "./NavBar";
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
 import Filteration from "./Filteration";
 import Loader from "../loader/Loader";
+import { is5pmto6pm } from "../../utill";
+import { Ticket, TicketPublish } from "../Result/TicketPublish";
+import { TicketFilter } from "../Result/TicketFilter";
 
 const Result: FC<{ title: string }> = ({ title }) => {
+  const [ticket, setTicket] = useState<Ticket>({
+    firstdigit: "",
+    seconddigit: "",
+    thirddigit: "",
+    fourthdigit: "",
+  });
   const [openDigit, setOpenDigit] = useState("");
   const [result_or_ticket, setStatus] = useState("");
   const [ticketrate, setTicketRate] = useState<string>("");
@@ -19,7 +28,6 @@ const Result: FC<{ title: string }> = ({ title }) => {
   const [priceThirdDigit, setPriceThirdDigit] = useState("");
   const [priceFourthDigit, setPriceFourthDigit] = useState("");
   const [loader, setLoader] = useState(false);
-  const [ticketRate,setTicketrate]=useState(0)
 
   const handleTicketRate = async () => {
     const body = { ticketRate: ticketrate };
@@ -122,11 +130,11 @@ const Result: FC<{ title: string }> = ({ title }) => {
           },
         }
       );
-      console.log(response.data.data.priceRate_splitup[0])
+      console.log(response.data.data.priceRate_splitup[0]);
       setPriceFirstDigit(response.data.data.priceRate_splitup[0]);
       setPriceSecondtDigit(response.data.data.priceRate_splitup[1]);
-      setPriceThirdDigit(response.data.data.priceRate_splitup[2])
-      setPriceFourthDigit(response.data.data.priceRate_splitup[3])
+      setPriceThirdDigit(response.data.data.priceRate_splitup[2]);
+      setPriceFourthDigit(response.data.data.priceRate_splitup[3]);
     } catch (err) {
       console.log(err);
     }
@@ -136,6 +144,7 @@ const Result: FC<{ title: string }> = ({ title }) => {
     fetchData1();
   }, []);
 
+  console.log(ticket, "TIcket");
   return (
     isAuthenticated("admin") && (
       <Box>
@@ -235,19 +244,29 @@ const Result: FC<{ title: string }> = ({ title }) => {
                     </Box>
                     <Box>
                       <Input
-                      value={firstdigit}
-                      onChange={(e) => setFirstDigit(e.target.value)}
-                      sx={{
-                        width: "40px",
-                        borderRadius: "5px",
-                        border: "none",
-                        boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
-                      }}
-                    />
+                        value={firstdigit}
+                        onChange={(e) => {
+                          setFirstDigit(e.target.value);
+                          setTicket((pre) => ({
+                            ...pre,
+                            firstdigit: e.target.value,
+                          }));
+                        }}
+                        sx={{
+                          width: "40px",
+                          borderRadius: "5px",
+                          border: "none",
+                          boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
+                        }}
+                      />
                     </Box>
                   </Box>
                   {openDigit === "digit_1" && (
-                    <Filteration setFiltered={setFirstDigit} />
+                    <Filteration
+                      setFiltered={setFirstDigit}
+                      setTicket={setTicket}
+                      name="firstdigit"
+                    />
                   )}
                   <Box
                     sx={{
@@ -270,26 +289,36 @@ const Result: FC<{ title: string }> = ({ title }) => {
                           prev === "digit_2" ? "" : "digit_2"
                         );
                         sessionStorage.setItem("digit", "2");
-                        sessionStorage.setItem("digit1",firstdigit)
+                        sessionStorage.setItem("digit1", firstdigit);
                       }}
                     >
                       Number 2:
                     </Box>
                     <Box>
-                     <Input
-                     value={seconddigit}
-                     onChange={(e) => setSecondDigit(e.target.value)}
-                     sx={{
-                       width: "40px",
-                       borderRadius: "5px",
-                       border: "none",
-                       boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
-                     }}
-                   />
+                      <Input
+                        value={seconddigit}
+                        onChange={(e) => {
+                          setSecondDigit(e.target.value);
+                          setTicket((pre) => ({
+                            ...pre,
+                            seconddigit: e.target.value,
+                          }));
+                        }}
+                        sx={{
+                          width: "40px",
+                          borderRadius: "5px",
+                          border: "none",
+                          boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
+                        }}
+                      />
                     </Box>
                   </Box>
                   {openDigit === "digit_2" && (
-                    <Filteration setFiltered={setSecondDigit} />
+                    <Filteration
+                      setFiltered={setFirstDigit}
+                      setTicket={setTicket}
+                      name="seconddigit"
+                    />
                   )}
 
                   <Box
@@ -313,26 +342,36 @@ const Result: FC<{ title: string }> = ({ title }) => {
                           prev === "digit_3" ? "" : "digit_3"
                         );
                         sessionStorage.setItem("digit", "3");
-                        sessionStorage.setItem("digit2",seconddigit)
+                        sessionStorage.setItem("digit2", seconddigit);
                       }}
                     >
                       Number 3:
                     </Box>
                     <Box>
-                    <Input
-                    value={thirddigit}
-                    onChange={(e) => setThirdDigit(e.target.value)}
-                    sx={{
-                      width: "40px",
-                      borderRadius: "5px",
-                      border: "none",
-                      boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
-                    }}
-                  />
+                      <Input
+                        value={thirddigit}
+                        onChange={(e) => {
+                          setThirdDigit(e.target.value);
+                          setTicket((pre) => ({
+                            ...pre,
+                            thirddigit: e.target.value,
+                          }));
+                        }}
+                        sx={{
+                          width: "40px",
+                          borderRadius: "5px",
+                          border: "none",
+                          boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
+                        }}
+                      />
                     </Box>
                   </Box>
                   {openDigit === "digit_3" && (
-                    <Filteration setFiltered={setThirdDigit} />
+                    <Filteration
+                      setFiltered={setFirstDigit}
+                      setTicket={setTicket}
+                      name="thirddigit"
+                    />
                   )}
 
                   <Box
@@ -356,134 +395,41 @@ const Result: FC<{ title: string }> = ({ title }) => {
                           prev === "digit_4" ? "" : "digit_4"
                         );
                         sessionStorage.setItem("digit", "4");
-                        sessionStorage.setItem("digit3",thirddigit)
+                        sessionStorage.setItem("digit3", thirddigit);
                       }}
                     >
                       Number 4:
                     </Box>
                     <Box>
-                     <Input
-                     value={fourthdigit}
-                     onChange={(e) => setFourthDigit(e.target.value)}
-                     sx={{
-                       width: "40px",
-                       borderRadius: "5px",
-                       border: "none",
-                       boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
-                     }}
-                   />
+                      <Input
+                        value={fourthdigit}
+                        onChange={(e) => {
+                          setFourthDigit(e.target.value);
+                          setTicket((pre) => ({
+                            ...pre,
+                            fourthdigit: e.target.value,
+                          }));
+                        }}
+                        sx={{
+                          width: "40px",
+                          borderRadius: "5px",
+                          border: "none",
+                          boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
+                        }}
+                      />
                     </Box>
                   </Box>
                   {openDigit === "digit_4" && (
-                    <Filteration setFiltered={setFourthDigit} />
+                    <Filteration
+                      setFiltered={setFirstDigit}
+                      setTicket={setTicket}
+                      name="fourthdigit"
+                    />
                   )}
                 </Box>
+                {/* <TicketFilter ticket={ticket} setTicket={setTicket} /> */}
                 <Divider sx={{ my: 1 }} />
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    px: 2,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "start",
-                      gap: "2px",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        p: 1,
-                        borderRadius: "5px",
-                        background: "#d67349",
-                        color: "#fff",
-                        fontWeight: "600",
-                      }}
-                    >
-                      Result:
-                    </Box>
-                    <Box>
-                      <Input
-                        value={firstdigit}
-                        onChange={(e) => setFirstDigit(e.target.value)}
-                        sx={{
-                          width: "40px",
-                          borderRadius: "5px",
-                          border: "none",
-                          boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
-                        }}
-                      />
-                    </Box>
-                    <Box>
-                      <Input
-                        value={seconddigit}
-                        onChange={(e) => setSecondDigit(e.target.value)}
-                        sx={{
-                          width: "40px",
-
-                          borderRadius: "5px",
-                          border: "none",
-                          boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
-                        }}
-                      />
-                    </Box>
-                    <Box>
-                      <Input
-                        value={thirddigit}
-                        onChange={(e) => setThirdDigit(e.target.value)}
-                        sx={{
-                          width: "40px",
-
-                          borderRadius: "5px",
-                          border: "none",
-                          boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
-                        }}
-                      />
-                    </Box>
-                    <Box component={"div"} sx={{ borderRadius: "0px" }}>
-                      <Input
-                        value={fourthdigit}
-                        onChange={(e) => setFourthDigit(e.target.value)}
-                        sx={{
-                          width: "40px",
-
-                          borderRadius: "5px",
-                          border: "none",
-                          boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
-                        }}
-                      />
-                    </Box>
-                  </Box>
-                  <Box
-                    onClick={() => {
-                      if (
-                        firstdigit &&
-                        seconddigit &&
-                        thirddigit &&
-                        fourthdigit
-                      ) {
-                        setLoader((pre) => !pre);
-                        handlePublishResult();
-                      } else {
-                        alert("Fill all digits");
-                      }
-                    }}
-                    sx={{
-                      p: 1,
-                      borderRadius: "5px",
-                      background: "#7a1160",
-                      color: "#fff",
-                      fontWeight: "600",
-                      cursor: "pointer",
-                    }}
-                  >
-                    PUBLISH
-                  </Box>
-                </Box>
+                <TicketPublish ticket={ticket} setTicket={setTicket} />
               </>
             )}
 
@@ -528,11 +474,13 @@ const Result: FC<{ title: string }> = ({ title }) => {
                     </Box>
                   </Box>
                   <Box
-                    onClick={handleTicketRate}
+                    onClick={() => {
+                      is5pmto6pm() && handleTicketRate();
+                    }}
                     sx={{
                       p: 1.25,
-                      background: "#0bb329",
-                      cursor: "pointer",
+                      background: is5pmto6pm() ? "#0bb329" : "grey",
+                      cursor: is5pmto6pm() ? "pointer" : "no-drop",
                       borderRadius: "5px",
                       color: "#fff",
                       fontWeight: 600,
@@ -687,13 +635,15 @@ const Result: FC<{ title: string }> = ({ title }) => {
                       </Box>
                     </Box>
                     <Box
-                      onClick={handlePriceRate}
+                      onClick={() => {
+                        is5pmto6pm() && handlePriceRate();
+                      }}
                       sx={{
                         display: { xs: "none", sm: "block" },
                         p: 1.25,
-                        background: "#0bb329",
+                        background: is5pmto6pm() ? "#0bb329" : "grey",
                         borderRadius: "5px",
-                        cursor: "pointer",
+                        cursor: is5pmto6pm() ? "pointer" : "no-drop",
                         color: "#fff",
                         fontWeight: 600,
                       }}

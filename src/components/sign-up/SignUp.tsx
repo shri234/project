@@ -4,6 +4,8 @@ import "./signup.css";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Box from "@mui/material/Box";
+import { STATUS, dialog_timeout } from "../../utill";
+import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
 
 const SignUpComponent: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -12,6 +14,8 @@ const SignUpComponent: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const [refer_id, setReferralId] = useState<string>("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [status, setStatus] = useState(false);
+  const [error, setError] = useState("");
   const [formErrors, setFormErrors] = useState({
     name: "",
     mobile: "",
@@ -106,19 +110,19 @@ const SignUpComponent: React.FC = () => {
       referralId: refer_id,
       role: sessionStorage.getItem("Role")?.toLocaleLowerCase(),
     };
-    try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_IP}/user/signup`,
-        body
-      );
 
-      window.location.href = "/login";
-    } catch (error) {
-      if (error) {
-        alert("user already exists");
-      }
-      console.error(error);
-    }
+    await axios
+      .post(`${process.env.REACT_APP_IP}/user/signup`, body)
+      .then(() => {
+        window.location.href = "/login";
+      })
+      .catch((error) => {
+        setStatus(true);
+        setError(error.response.data);
+        setTimeout(() => {
+          setStatus(false);
+        }, dialog_timeout);
+      });
   };
 
   const togglePasswordVisibility = () => {
@@ -212,6 +216,13 @@ const SignUpComponent: React.FC = () => {
         <button className="signup-button" onClick={handleSignUp}>
           Sign Up
         </button>
+        {status && (
+          <CustomizedStatusDialogs
+            setOpenStatusDlg={setStatus}
+            description={error}
+            status={STATUS.ERROR}
+          />
+        )}
       </div>
     </Box>
   );

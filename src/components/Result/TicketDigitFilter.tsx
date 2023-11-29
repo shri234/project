@@ -1,17 +1,16 @@
 import Box from "@mui/material/Box";
 import axios from "axios";
 import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
-import { Ticket } from "../Result/TicketPublish";
+import { Ticket } from "./TicketPublish";
 
-const Filteration: FC<{
-  setFiltered: Dispatch<SetStateAction<string>>;
+const TicketDigitFilter: FC<{
   setTicket: Dispatch<SetStateAction<Ticket>>;
   name: string;
-}> = ({ setFiltered, name, setTicket }) => {
+}> = ({ setTicket, name }) => {
   const [digits, setDigits] = useState<any[]>([]);
 
   const [LowestValue, setLowestValue] = useState<number>();
-  console.log(name);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -35,8 +34,11 @@ const Filteration: FC<{
           }
         );
         setDigits(response.data.data);
-        setFiltered(response.data.LowestValue);
-        setTicket((pre) => ({ ...pre, [name]: response.data.LowestValue }));
+        setTicket((prev_ticket) => ({
+          ...prev_ticket,
+          [name]: response.data.LowestValue,
+        }));
+
         setLowestValue(response.data.LowestValue);
       } catch (err) {
         console.log(err);
@@ -119,4 +121,4 @@ const Filteration: FC<{
     </Box>
   );
 };
-export default Filteration;
+export default TicketDigitFilter;
