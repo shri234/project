@@ -62,6 +62,7 @@ export default function CustomizedTables() {
       
         if(eventData){
           console.log(eventData)
+             setDigits(eventData)
           if (eventData && eventData.message === 'connected') {
             // Handle the connected message
             console.log('Server connected:', eventData);
