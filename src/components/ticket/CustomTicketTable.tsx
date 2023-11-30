@@ -11,6 +11,10 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { NoDataFoundTable } from "../custom-table/NoDataFound";
 
+interface EventData {
+  ticket:[]
+}
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -33,6 +37,68 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 export default function CustomizedTables() {
   const [digits, setDigits] = useState<any[]>([]);
+
+
+  const fetchData = async () => {
+    try {
+      // const response = await axios.get(
+      //   `${
+      //     process.env.REACT_APP_IP
+      //   }/ticket/getWallet?userId=${sessionStorage.getItem("userId")}`,
+      //   {
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //   }
+      // );
+    
+      const eventSource = new EventSource(`${
+        process.env.REACT_APP_IP
+      }/ticket/sse2`)
+
+      eventSource.onmessage = (event) => {
+        try{
+        const eventData=JSON.parse(event.data);
+      
+        if(eventData){
+          console.log(eventData)
+          if (eventData && eventData.message === 'connected') {
+            // Handle the connected message
+            console.log('Server connected:', eventData);
+          setDigits(eventData)
+          }
+    
+        } 
+        else{
+          console.log("inside");
+        }
+      }
+      catch(err){
+        console.log(err)
+      }
+      };
+  
+      // Handle SSE errors
+      eventSource.onerror = (error) => {
+        console.error('EventSource failed:', error);
+        eventSource.close();
+      };
+  
+      // if (setWalletAmount) setWalletAmount(response.data.data.amount);
+      // setBalance(response.data.data.amount);
+
+       // Cleanup SSE connection on component unmount
+      return () => {
+        eventSource.close();
+      };
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(()=>{
+    fetchData()
+    },[])
 
   const fetchTableData = async () => {
     try {
