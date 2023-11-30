@@ -1,11 +1,97 @@
 import { Box } from "@mui/material";
-import { FC } from "react";
+import { FC,useEffect,useState } from "react";
 import { WinningTicketInterface } from "./UserTicketBuy";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
-
+import axios from "axios";
+interface EventData {
+  result_ticket:string
+}
 export const WinningTicket: FC<{ winning_ticket: WinningTicketInterface }> = ({
   winning_ticket,
 }) => {
+  const [result, setResult] = useState<string[]>([]);
+
+  const fetchData = async () => {
+    try {
+      // const response = await axios.get(
+      //   `${
+      //     process.env.REACT_APP_IP
+      //   }/ticket/getWallet?userId=${sessionStorage.getItem("userId")}`,
+      //   {
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //   }
+      // );
+    
+      const eventSource = new EventSource(`${
+        process.env.REACT_APP_IP
+      }/ticket/sse1`)
+
+      eventSource.onmessage = (event) => {
+        try{
+        const eventData: EventData = JSON.parse(event.data);
+        if(eventData){
+          console.log(eventData.result_ticket, typeof eventData.result_ticket,eventData);
+        setResult(eventData.result_ticket.split("")) 
+        } 
+        else{
+          console.log("inside");
+        }
+      }
+      catch(err){
+        console.log(err)
+      }
+      };
+  
+      // Handle SSE errors
+      eventSource.onerror = (error) => {
+        console.error('EventSource failed:', error);
+        eventSource.close();
+      };
+  
+      // if (setWalletAmount) setWalletAmount(response.data.data.amount);
+      // setBalance(response.data.data.amount);
+
+       // Cleanup SSE connection on component unmount
+      return () => {
+        eventSource.close();
+      };
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(()=>{
+    fetchData()
+        },[])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_IP}/ticket/result`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log(response.data.data)
+        const tmp: [] = response.data.data.result_ticket.split("").map(Number);
+        console.log(tmp)
+        setResult(tmp);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchData();
+    // else {
+    //   setResult([]);
+    // }
+   
+  }, []);
+
   return (
     <Box
       className="result"
@@ -36,16 +122,16 @@ export const WinningTicket: FC<{ winning_ticket: WinningTicketInterface }> = ({
           gap: "2px",
         }}
       >
-        <ResultTicketDigit value={winning_ticket.first} />
-        <ResultTicketDigit value={winning_ticket.second} />
-        <ResultTicketDigit value={winning_ticket.third} />
-        <ResultTicketDigit value={winning_ticket.fourth} />
+        <ResultTicketDigit value={result[0]} />
+        <ResultTicketDigit value={result[1]} />
+        <ResultTicketDigit value={result[2]} />
+        <ResultTicketDigit value={result[3]} />
       </Box>
     </Box>
   );
 };
 
-const ResultTicketDigit: FC<{ value: null | number }> = ({ value }) => {
+const ResultTicketDigit: FC<{ value: null | string }> = ({ value }) => {
   return value !== null ? (
     <Box
       component={"div"}
