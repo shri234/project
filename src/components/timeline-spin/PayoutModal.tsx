@@ -85,7 +85,7 @@ export default function PayoutModal({
         }));
       }, dialog_timeout);
     } else if (walletAmount > amount) {
-      handleRedeem();
+     await handleRedeem();
     } else {
       setStatus(true);
       setStatusDlg((prevStatus) => ({
