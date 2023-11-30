@@ -7,7 +7,7 @@ import "./Carousel.css";
 
 interface Winner {
   name: string;
-  amountWon: number;
+  amountWon: string;
   imageUrl: string;
 }
 
@@ -37,7 +37,7 @@ const WinnerCarousel: React.FC<WinnerCarouselProps> = ({ winners }) => {
               className="winner-image"
             />
             <h4>{winner.name}</h4>
-            <p>Won {winner.amountWon}Rs.</p>
+            <p>Won {winner.amountWon} &nbsp;Rs.</p>
           </Box>
         ))}
       </Carousel>

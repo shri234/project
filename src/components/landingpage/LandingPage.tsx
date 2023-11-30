@@ -24,25 +24,25 @@ const winnersData = [
     name: "MARIA FERGUSON",
     imageUrl:
       "https://res.cloudinary.com/diqqf3eq2/image/upload/v1595959131/person-2_ipcjws.jpg",
-    amountWon: 100,
+    amountWon: "1,00,000",
   },
   {
     name: "JOHN DOE",
     imageUrl:
       "https://res.cloudinary.com/diqqf3eq2/image/upload/v1595959121/person-1_aufeoq.jpg",
-    amountWon: 100,
+    amountWon: "2,00,000",
   },
   {
     name: "PETER SMITH",
     imageUrl:
       "https://res.cloudinary.com/diqqf3eq2/image/upload/v1586883417/person-3_ipa0mj.jpg",
-    amountWon: 100,
+    amountWon: "5,00,000",
   },
   {
     name: "SUSAN ANDERSEN",
     imageUrl:
       "https://res.cloudinary.com/diqqf3eq2/image/upload/v1586883334/person-1_rfzshl.jpg",
-    amountWon: 100,
+    amountWon: "4,00,000",
   },
 ];
 
@@ -116,7 +116,6 @@ const LandingPage = () => {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    // boxShadow: `rgba(0, 0, 0, 0.35) 0px 5px 15px;`,
                   }}
                 >
                   <Box
@@ -129,7 +128,6 @@ const LandingPage = () => {
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
-                      // boxShadow: `rgba(0, 0, 0, 0.35) 0px 5px 15px;`,
                     }}
                     component={"div"}
                     onClick={() => {
@@ -159,7 +157,7 @@ const LandingPage = () => {
                     mt: "4px",
                   }}
                 >
-                  "Win Upto 1 lakh"
+                  "Win Upto 2 lakh"
                 </Box>
               </Box>
               <Box
@@ -183,7 +181,6 @@ const LandingPage = () => {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    // boxShadow: `rgba(0, 0, 0, 0.35) 0px 5px 15px;`,
                   }}
                 >
                   <Box
@@ -196,7 +193,6 @@ const LandingPage = () => {
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
-                      // boxShadow: `rgba(0, 0, 0, 0.35) 0px 5px 15px;`,
                     }}
                     component={"div"}
                     onClick={() => {
@@ -226,7 +222,7 @@ const LandingPage = () => {
                     mt: "4px",
                   }}
                 >
-                  "Win Upto 5 lakh"
+                  "Win Upto 6 lakh"
                 </Box>
               </Box>
               <Box
@@ -250,7 +246,6 @@ const LandingPage = () => {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    // boxShadow: `rgba(0, 0, 0, 0.35) 0px 5px 15px;`,
                   }}
                 >
                   <Box
@@ -263,7 +258,6 @@ const LandingPage = () => {
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
-                      // boxShadow: `rgba(0, 0, 0, 0.35) 0px 5px 15px;`,
                     }}
                     component={"div"}
                     onClick={() => {
@@ -293,7 +287,7 @@ const LandingPage = () => {
                     mt: "4px",
                   }}
                 >
-                  "Win Upto 15 lakh"
+                  "37 lakh or 10k per daily upto 1 year"
                 </Box>
               </Box>
             </Box>

@@ -52,7 +52,7 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
   };
 
   const fetchData = async () => {
-    if (alreadyticketcount1 + ticket_count <= 15) {
+    if (alreadyticketcount1 + ticket_count <= 15 && ticket_price > 0) {
       if (walletamount >= ticket_count * ticket_price) {
         try {
           const body = { ticketCount: alreadyticketcount + ticket_count };
@@ -203,7 +203,9 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
           {status && status_dlg.warning && (
             <CustomizedStatusDialogs
               setOpenStatusDlg={setStatus}
-              description={`You already bought ${alreadyticketcount1} tickets you can buy  Only ${15 - alreadyticketcount1} tickets`}
+              description={`You already bought ${alreadyticketcount1} tickets you can buy  Only ${
+                15 - alreadyticketcount1
+              } tickets`}
               status={STATUS.WARNING}
             />
           )}

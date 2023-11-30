@@ -7,6 +7,7 @@ import PayoutModal from "./PayoutModal";
 
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
 import Loader from "../loader/Loader";
+import { initialRendering } from "../../api/userProfile";
 
 const TimelineSpin: React.FC = () => {
   const [walletAmount, setWalletAmount] = useState<number>(0);
@@ -19,6 +20,7 @@ const TimelineSpin: React.FC = () => {
   const handleLoginType = (type: string, path: string) => {
     window.location.href = `/${path}`;
   };
+
   return (
     isAuthenticated("user") && (
       <Box
@@ -63,7 +65,25 @@ const TimelineSpin: React.FC = () => {
             PAY IN
           </Button>
           <Button
-            onClick={() => setPayoutOpen(true)}
+            onClick={async () => {
+              await initialRendering().then((res) => {
+                if (
+                  res.data.data[0].username &&
+                  res.data.data[0].mobileNumber &&
+                  res.data.data[0].email &&
+                  res.data.data[0].accountNo &&
+                  res.data.data[0].panNo &&
+                  res.data.data[0].aadharNo &&
+                  res.data.data[0].IFSC &&
+                  res.data.data[0].address
+                  // &&res.data[0].upi_id
+                ) {
+                  setPayoutOpen(true);
+                } else {
+                  window.location.href = "/profile";
+                }
+              });
+            }}
             sx={{
               background: "#b30c2e",
               color: "#fff",
@@ -76,6 +96,7 @@ const TimelineSpin: React.FC = () => {
             PAY OUT
           </Button>
         </Box>
+
         <Box
           sx={{
             display: "flex",
