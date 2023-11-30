@@ -27,7 +27,7 @@ export const handleLogout = async () => {
 
 export const is5pmto6pm = (): boolean => {
   const now = new Date();
-  if (now.getHours() >= 17 && now.getHours() < 18) return true;
+  if (now.getHours() >= 1 && now.getHours() < 18) return true;
   return false;
 };
 export const handleKeyPrevent = (
