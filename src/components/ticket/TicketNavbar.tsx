@@ -67,6 +67,7 @@ const TicketNavBar: React.FC<{
          
           if(eventData){
           setBalance(eventData.amount);
+          if (setWalletAmount) setWalletAmount(eventData.amount);
           }
           else{
             console.log("inside")
@@ -97,19 +98,30 @@ const TicketNavBar: React.FC<{
       fetchData()
           },[])
 
-  useEffect(() => {
-    axios
-      .get( `${
-        process.env.REACT_APP_IP
-      }/ticket/getWallet?userId=${sessionStorage.getItem("userId")}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => setBalance(response.data.data.amount))
-      .catch((error) => console.error('Error making initial API call:', error));
-  }, []);
+
+    const fetchData1=async()=>{
+    try{
+        const response = await axios.get(
+          `${
+            process.env.REACT_APP_IP
+          }/ticket/getWallet?userId=${sessionStorage.getItem("userId")}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      if(setWalletAmount)
+     setWalletAmount(response.data.data.amount)
+    setBalance(response.data.data.amount)
+    }
+      catch(error){ console.error('Error making initial API call:', error)}
+ 
+}
+
+useEffect(()=>{
+  fetchData1()
+      },[])
 
  
 
