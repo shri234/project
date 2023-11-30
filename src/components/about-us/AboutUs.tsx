@@ -54,16 +54,15 @@ const AboutUs = () => {
               How we work
             </Typography>
             <Typography variant="body1" paragraph>
-              Spin and Win is an exciting Rewards Program offered by Spin Mining
-              Game. Every day, you have the opportunity to spin the wheel and
-              win up to ₹10,000 in cash prizes. When you participate in the Spin
-              & Win Wheel by Spin Mining Game, the amount is instantly added to
-              your Spin Mining Game wallet.Money Mining game provides customer
-              support to manage any queries or concerns you may have.
+              Spin and Win is an exciting Rewards Program offered by Money
+              Minning Game. Every day, you have the opportunity to spin the
+              wheel and daily win up to 2 lakh in cash prizes. When you
+              participate in the Spin & Win Wheel by Money Minning Game, the
+              amount is instantly added to your Money Minning Game wallet.Money
+              Mining game provides customer support to manage any queries or
+              concerns you may have contact us{" "}
+              <span style={{ color: "blue" }}>9025134872</span>.
             </Typography>
-            {/* <Button variant="contained" color="primary">
-              See more
-            </Button> */}
           </Box>
         </Box>
       </Box>

@@ -2,6 +2,7 @@ import { Dispatch, FC, SetStateAction } from "react";
 import { is5pmto6pm } from "../../utill";
 import Box from "@mui/material/Box";
 import { Input } from "@mui/material";
+import axios from "axios";
 
 export interface Ticket {
   firstdigit: string;
@@ -19,7 +20,41 @@ export interface TicketDigit {
 export const TicketPublish: FC<{
   ticket: Ticket;
   setTicket: Dispatch<SetStateAction<Ticket>>;
-}> = ({ ticket, setTicket }) => {
+  setLoader: Dispatch<SetStateAction<boolean>>;
+}> = ({ ticket, setTicket, setLoader }) => {
+  const handlePublishResult = async () => {
+    setLoader(true);
+    const body = [
+      { digit: ticket.firstdigit },
+      { digit: ticket.seconddigit },
+      { digit: ticket.thirddigit },
+      { digit: ticket.fourthdigit },
+    ];
+
+    const formatteddate = `${new Date().getFullYear()}-${
+      new Date().getMonth() + 1
+    }-${new Date().getDate()}`;
+
+    await axios
+      .post(
+        `${process.env.REACT_APP_IP}/ticket/publishResult?date=${formatteddate}`,
+        body
+      )
+      .then((res) => {
+        setLoader(false);
+        if (res.status === 200) {
+          window.alert(
+            `Result Published successfully! There are ${res.data.Winners} winners.`
+          );
+        }
+        window.location.href = "/daily-result";
+      })
+      .catch((error) => {
+        setLoader(false);
+        console.log(error);
+      });
+  };
+
   return (
     <Box
       sx={{
@@ -83,8 +118,8 @@ export const TicketPublish: FC<{
               ticket.thirddigit &&
               ticket.fourthdigit
             ) {
-              //   setLoader((pre) => !pre);
-              //   handlePublishResult();
+              setLoader((pre) => !pre);
+              handlePublishResult();
             } else {
               alert("Fill all digits");
             }

@@ -7,6 +7,7 @@ import axios from "axios";
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
 import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
 import { STATUS, dialog_timeout } from "../../utill";
+import { initialRendering } from "../../api/userProfile";
 
 const Profile = () => {
   const [name, setName] = useState("");
@@ -17,18 +18,13 @@ const Profile = () => {
   const [accountno, setAccountNo] = useState("");
   const [pan, setPan] = useState("");
   const [ifsc, setIfsc] = useState("");
+  const [upi_id, setUpiId] = useState("");
   const [status, setStatus] = useState(false);
 
   // Handlers for each button
-  const initialRendering = async () => {
-    await axios
-      .get(
-        `${
-          process.env.REACT_APP_IP
-        }/user/getUserData?userId=${sessionStorage.getItem("userId")}`
-      )
+  useEffect(() => {
+    initialRendering()
       .then((res) => {
-        console.log(res.data);
         if (res.data.data.length > 0) {
           setName(res.data.data[0].username);
           setPhone(res.data.data[0].mobileNumber);
@@ -38,12 +34,13 @@ const Profile = () => {
           setAadhar(res.data.data[0].aadharNo);
           setIfsc(res.data.data[0].IFSC);
           setAddress(res.data.data[0].address);
+          // setUpiId(res.data[0].upi_id);
         }
       })
       .catch((error) => {
         console.log(error);
       });
-  };
+  }, []);
 
   const handleUpdate = async () => {
     const body = {
@@ -52,6 +49,7 @@ const Profile = () => {
       panNo: pan,
       aadharNo: aadhar,
       address: address,
+      upi_id: upi_id,
     };
 
     await axios
@@ -103,7 +101,6 @@ const Profile = () => {
                 my: 2,
               }}
             >
-              {" "}
               User Profile
             </Box>
             <Stack direction="column" spacing={2}>
@@ -115,7 +112,8 @@ const Profile = () => {
                 <input
                   type="text"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  disabled
+                  // onChange={(e) => setName(e.target.value)}
                   placeholder="Enter your Name"
                   style={inputStyle}
                 />
@@ -208,6 +206,19 @@ const Profile = () => {
                   value={ifsc}
                   onChange={(e) => setIfsc(e.target.value)}
                   placeholder="Enter your IFSC code"
+                  style={inputStyle}
+                />
+              </Box>
+              <Box
+                component="div"
+                sx={{ display: "flex", alignItems: "center" }}
+              >
+                <Box sx={{ minWidth: "100px" }}>UPI:</Box>
+                <input
+                  type="text"
+                  value={upi_id}
+                  onChange={(e) => setUpiId(e.target.value)}
+                  placeholder="Enter your upi"
                   style={inputStyle}
                 />
               </Box>

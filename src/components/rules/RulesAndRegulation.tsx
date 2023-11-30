@@ -2,6 +2,7 @@ import { Box, ListItemButton } from "@mui/material";
 import React from "react";
 import ListItem from "@mui/material/ListItem";
 import List from "@mui/material/List";
+import { rules_data } from "./rules";
 const rules = [
   {
     id: 1,
@@ -91,7 +92,7 @@ const RulesAndRegulation = () => {
           mt: 5,
         }}
       >
-        {rules.map((rule) => {
+        {rules_data.map((rule) => {
           return (
             <List
               key={rule.id}
@@ -118,7 +119,18 @@ const RulesAndRegulation = () => {
               >
                 {rule.id}
               </ListItemButton>
-              <ListItem>{rule.description}</ListItem>
+              <ListItem sx={{ display: "flex", flexDirection: "column" }}>
+                <span
+                  style={{
+                    fontWeight: "bold",
+                    color: "#fff",
+                    fontSize: "1.5rem",
+                  }}
+                >
+                  {rule.name}
+                </span>
+                {rule.rules}
+              </ListItem>
             </List>
           );
         })}
