@@ -22,7 +22,9 @@ export interface WinningTicketInterface {
   third: null | number;
   fourth: null | number;
 }
-
+interface EventData {
+  amount:number
+}
 const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
   const [ticketcount, setTicketCount] = useState(0);
   const [renderCount, setRenderCount] = useState(0);
@@ -45,6 +47,10 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
   });
 
   const [tmp_spinner, setTmpSpinner] = useState(0);
+
+
+
+
 
   useEffect(() => {
     const updateCountdown = () => {
@@ -148,7 +154,6 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
             },
           }
         );
-
         console.log(response.data.data, "Winner Response");
         setWinner(response.data.data);
       } catch (err) {
@@ -169,16 +174,19 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
             },
           }
         );
+        console.log(response.data.data)
         const tmp: [] = response.data.data.result_ticket.split("").map(Number);
+        console.log(tmp)
         setResult(tmp);
       } catch (err) {
         console.log(err);
       }
     };
-    if (new Date().getHours() === 18) fetchData();
-    else {
-      setResult([]);
-    }
+    fetchData();
+    // else {
+    //   setResult([]);
+    // }
+   
   }, []);
 
   return (
