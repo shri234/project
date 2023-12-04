@@ -1,15 +1,29 @@
 import Box from "@mui/material/Box";
 import React, { ChangeEventHandler, FC, useEffect, useState } from "react";
-import { is5pmto6pm } from "../../utill";
-import axios from "axios";
+import {
+  dailyPublishTicketRateIsAvailable,
+  monthlyPublishTicketRateIsAvailable,
+  weeklyPublishTicketRateIsAvailable,
+} from "../../utill";
+import { getWinningPriceRate } from "../../api/getWinningPriceRate";
+import { publishPriceRate } from "../../api/publishPriceRate";
 
-export const WinningPriceTicket: FC = () => {
+export const WinningPriceTicket: FC<{ path: string }> = ({ path }) => {
   const [price, setPrice] = useState({
     priceFirstDigit: "",
     priceSecondDigit: "",
     priceThirdDigit: "",
     priceFourthDigit: "",
   });
+
+  const handlePath = () => {
+    return path === "Daily"
+      ? "daily"
+      : path === "Weekly"
+      ? "weekly"
+      : "monthly";
+  };
+
   const handlePriceRate = async () => {
     const body = {
       splitup:
@@ -18,8 +32,7 @@ export const WinningPriceTicket: FC = () => {
         price.priceThirdDigit +
         price.priceFourthDigit,
     };
-    await axios
-      .put(`${process.env.REACT_APP_IP}/ticket/updatePriceRate`, body)
+    await publishPriceRate(handlePath(), body)
       .then((res) => {
         if (res.status === 200) {
           window.alert("Success! Price rate splitup added");
@@ -29,33 +42,22 @@ export const WinningPriceTicket: FC = () => {
         console.log(error);
       });
   };
-  const fetchData1 = async () => {
-    try {
-      const formatteddate = `${new Date().getFullYear()}-${
-        new Date().getMonth() + 1
-      }-${new Date().getDate()}`;
-      const response = await axios.get(
-        `${process.env.REACT_APP_IP}/ticket/getPriceRate?date=${formatteddate}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log(response.data.data.priceRate_splitup[0]);
-      setPrice({
-        priceFirstDigit: response.data.data.priceRate_splitup[0],
-        priceSecondDigit: response.data.data.priceRate_splitup[1],
-        priceThirdDigit: response.data.data.priceRate_splitup[2],
-        priceFourthDigit: response.data.data.priceRate_splitup[3],
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
   useEffect(() => {
-    fetchData1();
+    (async () => {
+      await getWinningPriceRate(handlePath())
+        .then((response) => {
+          setPrice({
+            priceFirstDigit: response.data.data.priceRate_splitup[0],
+            priceSecondDigit: response.data.data.priceRate_splitup[1],
+            priceThirdDigit: response.data.data.priceRate_splitup[2],
+            priceFourthDigit: response.data.data.priceRate_splitup[3],
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    })();
   }, []);
   return (
     <React.Fragment>
@@ -133,14 +135,38 @@ export const WinningPriceTicket: FC = () => {
           </Box>
           <Box
             onClick={() => {
-              is5pmto6pm() && handlePriceRate();
+              if (handlePath() === "daily") {
+                dailyPublishTicketRateIsAvailable() && handlePriceRate();
+              } else if (handlePath() === "weekly") {
+                weeklyPublishTicketRateIsAvailable() && handlePriceRate();
+              } else if (handlePath() === "monthly") {
+                monthlyPublishTicketRateIsAvailable() && handlePriceRate();
+              }
             }}
             sx={{
               display: { xs: "none", sm: "block" },
               p: 1.25,
-              background: is5pmto6pm() ? "#0bb329" : "grey",
               borderRadius: "5px",
-              cursor: is5pmto6pm() ? "pointer" : "no-drop",
+              background:
+                handlePath() === "daily" && dailyPublishTicketRateIsAvailable()
+                  ? "#0bb329"
+                  : handlePath() === "weekly" &&
+                    weeklyPublishTicketRateIsAvailable()
+                  ? "#0bb329"
+                  : handlePath() === "monthly" &&
+                    monthlyPublishTicketRateIsAvailable()
+                  ? "#0bb329"
+                  : "grey",
+              cursor:
+                handlePath() === "daily" && dailyPublishTicketRateIsAvailable()
+                  ? "pointer"
+                  : handlePath() === "weekly" &&
+                    weeklyPublishTicketRateIsAvailable()
+                  ? "pointer"
+                  : handlePath() === "monthly" &&
+                    monthlyPublishTicketRateIsAvailable()
+                  ? "pointer"
+                  : "no-drop",
               color: "#fff",
               fontWeight: 600,
             }}

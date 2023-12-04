@@ -7,6 +7,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import "./AgentCreate.css";
 import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
 import { STATUS } from "../../utill";
+import { agentCreation } from "../../api/agentCreation";
 
 const AgentCreation = () => {
   const [name, setName] = useState("");
@@ -109,8 +110,8 @@ const AgentCreation = () => {
       password: password,
       mobileNumber: mobile,
     };
-    await axios
-      .post(`${process.env.REACT_APP_IP}/user/addAgent`, body)
+
+    await agentCreation(body)
       .then((res) => {
         setOpenStatusDlg(true);
 

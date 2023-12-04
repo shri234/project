@@ -83,7 +83,6 @@ The Second prize was you will get 10000 RS weekly for the whole of the year .
 In the third round If you got a four digit number the same as a spinned four digit you
 have won third prize .
 The third prize was you will get 10000 RS monthly for the whole of the year .
-●
 then you need any enquiry about spin game and more information about our rules
 and regulation don't hestic to call our back office team
 our whatsapp number 9025134872`,

@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Avatar, Menu, MenuItem, Tooltip } from "@mui/material";
+import { handleLogout } from "../../utill";
 
 const settings = ["Logout"];
 const MasterNavbar: React.FC<{ path: string }> = ({ path }) => {
@@ -19,6 +20,7 @@ const MasterNavbar: React.FC<{ path: string }> = ({ path }) => {
 
   const handleCloseUserMenu = (name: string) => {
     if (name === "Logout") {
+      handleLogout();
       window.location.href = "/";
     }
   };

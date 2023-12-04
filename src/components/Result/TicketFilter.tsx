@@ -1,17 +1,14 @@
 import { Box } from "@mui/material";
 import React, { Dispatch, FC, SetStateAction, useState } from "react";
 import { PublishTicketDigit, Ticket, TicketDigit } from "./TicketPublish";
-import Filteration from "../admin/Filteration";
+
 import TicketDigitFilter from "./TicketDigitFilter";
-// type TicketIndex = {
-//   [key: string]: string;
-//   // other properties...
-// };
 
 export const TicketFilter: FC<{
   ticket: Ticket;
   setTicket: Dispatch<SetStateAction<Ticket>>;
-}> = ({ ticket, setTicket }) => {
+  path: string;
+}> = ({ ticket, setTicket, path }) => {
   const digit = [
     { name: "firstdigit", id: 1 },
     { name: "seconddigit", id: 2 },
@@ -27,6 +24,7 @@ export const TicketFilter: FC<{
           name={value.name}
           ticket={ticket}
           setTicket={setTicket}
+          path={path}
         />
       ))}
     </React.Fragment>
@@ -38,7 +36,8 @@ const FilterDigit: FC<{
   name: string;
   ticket: Ticket;
   setTicket: Dispatch<SetStateAction<Ticket>>;
-}> = ({ setTicket, ticket, name, id }) => {
+  path: string;
+}> = ({ setTicket, ticket, name, id, path }) => {
   const [digit, setDigit] = useState<TicketDigit>({
     digit1: false,
     digit2: false,
@@ -47,22 +46,40 @@ const FilterDigit: FC<{
   });
 
   const handleDigit = () => {
-    if (id === 1)
+    if (id === 1) {
+      sessionStorage.setItem("filter_number", "");
+
+      sessionStorage.setItem("digit", "1");
+      sessionStorage.removeItem("digit1");
+      sessionStorage.removeItem("digit2");
+      sessionStorage.removeItem("digit3");
+
       setDigit((pre) => ({
         ...pre,
         digit1: !pre["digit1"],
       }));
-    else if (id === 2) {
+    } else if (id === 2) {
+      sessionStorage.setItem("filter_number", ticket.firstdigit.toString());
+
+      sessionStorage.setItem("digit1", "2");
+      sessionStorage.removeItem("digit2");
+      sessionStorage.removeItem("digit3");
       setDigit((pre) => ({
         ...pre,
         digit2: !pre["digit2"],
       }));
     } else if (id === 3) {
+      sessionStorage.setItem("filter_number", ticket.thirddigit.toString());
+
+      sessionStorage.setItem("digit2", "3");
+      sessionStorage.removeItem("digit3");
       setDigit((pre) => ({
         ...pre,
         digit3: !pre["digit3"],
       }));
     } else if (id === 4) {
+      sessionStorage.setItem("filter_number", ticket.fourthdigit.toString());
+      sessionStorage.setItem("digit3", "4");
       setDigit((pre) => ({
         ...pre,
         digit4: !pre["digit4"],
@@ -106,13 +123,37 @@ const FilterDigit: FC<{
       </Box>
 
       {digit.digit1 ? (
-        <TicketDigitFilter setTicket={setTicket} name={name} />
+        <TicketDigitFilter
+          ticket={ticket}
+          setTicket={setTicket}
+          name={name}
+          filter_value={0}
+          path={path}
+        />
       ) : digit.digit2 ? (
-        <TicketDigitFilter setTicket={setTicket} name={name} />
+        <TicketDigitFilter
+          setTicket={setTicket}
+          name={name}
+          ticket={ticket}
+          filter_value={parseInt(ticket.firstdigit)}
+          path={path}
+        />
       ) : digit.digit3 ? (
-        <TicketDigitFilter setTicket={setTicket} name={name} />
+        <TicketDigitFilter
+          setTicket={setTicket}
+          name={name}
+          ticket={ticket}
+          filter_value={parseInt(ticket.seconddigit)}
+          path={path}
+        />
       ) : digit.digit4 ? (
-        <TicketDigitFilter setTicket={setTicket} name={name} />
+        <TicketDigitFilter
+          setTicket={setTicket}
+          name={name}
+          ticket={ticket}
+          filter_value={parseInt(ticket.thirddigit)}
+          path={path}
+        />
       ) : (
         <></>
       )}

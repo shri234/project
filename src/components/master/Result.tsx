@@ -1,20 +1,11 @@
 import { Box, Divider, Input, Pagination } from "@mui/material";
 import { FC, useState, useEffect, Dispatch, SetStateAction } from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import axios from "axios";
+
 import MasterNavbar from "./Navbar";
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
-import { TicketResult } from "./PlayHistory";
+
 import Loader from "../loader/Loader";
-import Filteration from "../admin/Filteration";
 import MasterHistoryTable from "./HistoryTable";
-import { is5pmto6pm } from "../../utill";
 import { Ticket, TicketPublish } from "../Result/TicketPublish";
 import { TicketRatePublish } from "../Result/TicketRatePublish";
 import { WinningPriceTicket } from "../Result/WinningPrice";
@@ -27,13 +18,9 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
     thirddigit: "",
     fourthdigit: "",
   });
-  const [openDigit, setOpenDigit] = useState("");
+
   const [result_or_ticket, setStatus] = useState("");
 
-  const [firstdigit, setFirstDigit] = useState("");
-  const [seconddigit, setSecondDigit] = useState("");
-  const [thirddigit, setThirdDigit] = useState("");
-  const [fourthdigit, setFourthDigit] = useState("");
   const [loader, setLoader] = useState(false);
 
   return (
@@ -124,20 +111,49 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
               <>
                 <Divider sx={{ my: 1 }} />
                 <h2>{title} Spin Result</h2>
-                <TicketFilter ticket={ticket} setTicket={setTicket} />
-                <Divider sx={{ my: 1 }} />
-                <TicketPublish
-                  setLoader={setLoader}
+                <TicketFilter
                   ticket={ticket}
                   setTicket={setTicket}
+                  path={title}
                 />
+                <Divider sx={{ my: 1 }} />
+
+                {title === "Monthly" ? (
+                  <>
+                    <TicketPublish
+                      setLoader={setLoader}
+                      ticket={ticket}
+                      setTicket={setTicket}
+                      path={title}
+                    />
+                    <TicketPublish
+                      setLoader={setLoader}
+                      ticket={ticket}
+                      setTicket={setTicket}
+                      path={title}
+                    />
+                    <TicketPublish
+                      setLoader={setLoader}
+                      ticket={ticket}
+                      setTicket={setTicket}
+                      path={title}
+                    />
+                  </>
+                ) : (
+                  <TicketPublish
+                    setLoader={setLoader}
+                    ticket={ticket}
+                    setTicket={setTicket}
+                    path={title}
+                  />
+                )}
               </>
             )}
 
             {result_or_ticket === "ticket" && (
               <>
-                <TicketRatePublish />
-                <WinningPriceTicket />
+                <TicketRatePublish path={title} />
+                {title !== "Monthly" && <WinningPriceTicket path={title} />}
               </>
             )}
 

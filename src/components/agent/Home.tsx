@@ -1,14 +1,12 @@
-import { Box, Pagination } from "@mui/material";
+import { Box } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import AgentNavbar from "./Navbar";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { formattedDate } from "../../utill";
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
 import { CustomPagination } from "../custom-table/CustomPagination";
@@ -16,6 +14,7 @@ import { CustomTableHead } from "../custom-table/CustomTableHead";
 import { TableLoader } from "../custom-table/TableLoader";
 import { NoDataFoundTable } from "../custom-table/NoDataFound";
 import Loader from "../loader/Loader";
+import { getAllReferredUsersData } from "../../api/getAllReferredUserdata";
 const table_head = ["S.No", "Username", "Created At", "Play History"];
 // "Total Amount Win"
 
@@ -32,42 +31,52 @@ const AgentHome = () => {
   const [open_loader, setOpenLoader] = useState(false);
   const [table_loader, setOpenTableLoader] = useState(false);
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_IP}/user/getAllUsers?referralId=${agentid}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      setAgentUserData(response.data.data);
-      let count = 0;
-      if (response.data.data.count < 10) {
-        count = Math.ceil(response.data.data.count / 10) + 1;
-      } else {
-        count = Math.ceil(response.data.count / 10);
-      }
-      setPageCount(count);
-      setOpenLoader(false);
-      setOpenTableLoader(false);
-    } catch (err) {
-      console.log(err);
-      setOpenLoader(false);
-      setOpenTableLoader(false);
-    }
-  };
-
   useEffect(() => {
     setOpenLoader(true);
-    fetchData();
+    (async () => {
+      await getAllReferredUsersData(agentid!, current_page)
+        .then((res) => {
+          setAgentUserData(res.data.data);
+          let count = 0;
+          if (res.data.data.count < 10) {
+            count = Math.ceil(res.data.data.count / 10) + 1;
+          } else {
+            count = Math.ceil(res.data.count / 10);
+          }
+          setPageCount(count);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
+        })
+        .catch((error) => {
+          console.log(error);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
+        });
+    })();
   }, []);
 
   useEffect(() => {
-    setOpenTableLoader(true);
-    fetchData();
+    setOpenLoader(true);
+    (async () => {
+      await getAllReferredUsersData(agentid!, current_page)
+        .then((res) => {
+          setAgentUserData(res.data.data);
+          let count = 0;
+          if (res.data.data.count < 10) {
+            count = Math.ceil(res.data.data.count / 10) + 1;
+          } else {
+            count = Math.ceil(res.data.count / 10);
+          }
+          setPageCount(count);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
+        })
+        .catch((error) => {
+          console.log(error);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
+        });
+    })();
   }, [current_page]);
 
   return (

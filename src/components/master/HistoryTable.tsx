@@ -15,6 +15,7 @@ import { TableLoader } from "../custom-table/TableLoader";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Loader from "../loader/Loader";
+import { getAllTicketHistoryData } from "../../api/getAllTicketHistoryData";
 
 const table_head = ["S.No", "Username", "Ticket"];
 
@@ -25,42 +26,52 @@ const MasterHistoryTable = () => {
   const [open_loader, setOpenLoader] = useState(false);
   const [table_loader, setOpenTableLoader] = useState(false);
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_IP}/ticket/getAllHistory?&pageno=${current_page}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      setHistoryData(response.data.data);
-
-      let count = 0;
-      if (response.data.data.count < 10) {
-        count = Math.ceil(response.data.data.count / 10) + 1;
-      } else {
-        count = Math.ceil(response.data.count / 10);
-      }
-      setPageCount(count);
-      setOpenLoader(false);
-      setOpenTableLoader(false);
-    } catch (err) {
-      setOpenTableLoader(false);
-      console.log(err);
-    }
-  };
-
   useEffect(() => {
     setOpenLoader(true);
-    fetchData();
+    (async () => {
+      await getAllTicketHistoryData(current_page)
+        .then((response) => {
+          setHistoryData(response.data.data);
+
+          let count = 0;
+          if (response.data.data.count < 10) {
+            count = Math.ceil(response.data.data.count / 10) + 1;
+          } else {
+            count = Math.ceil(response.data.count / 10);
+          }
+          setPageCount(count);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
+        })
+        .catch((err) => {
+          setOpenTableLoader(false);
+          console.log(err);
+        });
+    })();
   }, []);
 
   useEffect(() => {
     setOpenTableLoader(true);
-    fetchData();
+    (async () => {
+      await getAllTicketHistoryData(current_page)
+        .then((response) => {
+          setHistoryData(response.data.data);
+
+          let count = 0;
+          if (response.data.data.count < 10) {
+            count = Math.ceil(response.data.data.count / 10) + 1;
+          } else {
+            count = Math.ceil(response.data.count / 10);
+          }
+          setPageCount(count);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
+        })
+        .catch((err) => {
+          setOpenTableLoader(false);
+          console.log(err);
+        });
+    })();
   }, [current_page]);
 
   return (

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./TimelineSpin.css";
 import { Box, Button } from "@mui/material";
 import TicketNavBar from "../ticket/TicketNavbar";
@@ -6,14 +6,26 @@ import PayInModal from "./PayInModal";
 import PayoutModal from "./PayoutModal";
 
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
-import Loader from "../loader/Loader";
 import { initialRendering } from "../../api/userProfile";
+import useUserWalletAndTicketCount from "../../swr/wallet_ticket_count";
+import Loader from "../loader/Loader";
 
 const TimelineSpin: React.FC = () => {
-  const [walletAmount, setWalletAmount] = useState<number>(0);
+  const { user_wallet_and_ticket_count, isLoading, refetch } =
+    useUserWalletAndTicketCount("daily");
+
+  const [walletAmount, setWalletAmount] = useState(0);
+
+  useEffect(() => {
+    refetch().then((res) => {
+      if (res)
+        setWalletAmount(
+          res.data !== undefined && res.data !== null ? res.data.amount : 0
+        );
+    });
+  }, [isLoading, user_wallet_and_ticket_count]);
 
   const [open, setOpen] = useState(false);
-  const [open_loader, setOpenLoader] = useState(false);
 
   const [open_payout, setPayoutOpen] = React.useState(false);
 
@@ -22,7 +34,10 @@ const TimelineSpin: React.FC = () => {
   };
 
   return (
-    isAuthenticated("user") && (
+    isAuthenticated("user") &&
+    (isLoading ? (
+      <Loader />
+    ) : (
       <Box
         sx={{
           height: { xs: "100%", sm: "100vh" },
@@ -30,16 +45,18 @@ const TimelineSpin: React.FC = () => {
           width: "100%",
         }}
       >
-        <TicketNavBar name={""} setWalletAmount={setWalletAmount} />
+        <TicketNavBar name={""} wallet_amount={walletAmount} />
 
         {open && <PayInModal setOpen={setOpen} />}
         {open_payout && (
           <PayoutModal
             setPayoutOpen={setPayoutOpen}
-            walletAmount={walletAmount !== undefined ? walletAmount : 0}
+            walletAmount={walletAmount}
+            refetch={refetch}
+            setWalletAmount={setWalletAmount}
           />
         )}
-        {open_loader && <Loader />}
+
         <Box
           component={"div"}
           sx={{
@@ -75,8 +92,8 @@ const TimelineSpin: React.FC = () => {
                   res.data.data[0].panNo &&
                   res.data.data[0].aadharNo &&
                   res.data.data[0].IFSC &&
-                  res.data.data[0].address
-                  // &&res.data[0].upi_id
+                  res.data.data[0].address &&
+                  res.data.data[0].upi_id
                 ) {
                   setPayoutOpen(true);
                 } else {
@@ -388,7 +405,7 @@ const TimelineSpin: React.FC = () => {
           </Box>
         </Box>
       </Box>
-    )
+    ))
   );
 };
 

@@ -10,10 +10,8 @@ import Box from "@mui/material/Box";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { NoDataFoundTable } from "../custom-table/NoDataFound";
-
-interface EventData {
-  ticket:[]
-}
+import { tableTicketDatas } from "../../api/tableTicketdatas";
+import useTableTicketData from "../../swr/table_ticket_data";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -35,100 +33,30 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export default function CustomizedTables() {
-  const [digits, setDigits] = useState<any[]>([]);
-
-
-  const fetchData = async () => {
-    try {
-      // const response = await axios.get(
-      //   `${
-      //     process.env.REACT_APP_IP
-      //   }/ticket/getWallet?userId=${sessionStorage.getItem("userId")}`,
-      //   {
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //   }
-      // );
-    
-      const eventSource = new EventSource(`${
-        process.env.REACT_APP_IP
-      }/ticket/sse2`)
-
-      eventSource.onmessage = (event) => {
-        try{
-        const eventData=JSON.parse(event.data);
-      
-        if(eventData){
-          console.log(eventData)
-             setDigits(eventData)
-          if (eventData && eventData.message === 'connected') {
-            // Handle the connected message
-            console.log('Server connected:', eventData);
-          setDigits(eventData)
-          }
-    
-        } 
-        else{
-          console.log("inside");
-        }
-      }
-      catch(err){
-        console.log(err)
-      }
-      };
-  
-      // Handle SSE errors
-      eventSource.onerror = (error) => {
-        console.error('EventSource failed:', error);
-        eventSource.close();
-      };
-  
-      // if (setWalletAmount) setWalletAmount(response.data.data.amount);
-      // setBalance(response.data.data.amount);
-
-       // Cleanup SSE connection on component unmount
-      return () => {
-        eventSource.close();
-      };
-    } catch (err) {
-      console.log(err);
-    }
+export default function CustomizedTables({ name }: { name: string }) {
+  const handlePath = (): string => {
+    return name === "Daily Spin"
+      ? "daily"
+      : name === "Weekly Spin"
+      ? "weekly"
+      : "monthly";
   };
 
-  useEffect(()=>{
-    fetchData()
-    },[])
+  const { use_table_tickets_data, table_ticket_isLoading, tableTicketRefetch } =
+    useTableTicketData(handlePath());
 
-  const fetchTableData = async () => {
-    try {
-      const formatteddate = `${new Date().getFullYear()}-${
-        new Date().getMonth() + 1
-      }-${new Date().getDate()}`;
-
-      const response = await axios.get(
-        `${
-          process.env.REACT_APP_IP
-        }/ticket/getTickets?userId=${sessionStorage.getItem(
-          "userId"
-        )}&&date=${formatteddate}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      setDigits(response.data.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  const [digits, setDigits] = useState<any[]>(
+    use_table_tickets_data !== undefined ? use_table_tickets_data.data : []
+  );
 
   useEffect(() => {
-    fetchTableData();
-  }, []);
-
+    tableTicketRefetch().then((res) => {
+      if (res !== undefined)
+        if (res.data !== undefined && res.data !== null) {
+          setDigits(res.data);
+        }
+    });
+  }, [table_ticket_isLoading, use_table_tickets_data]);
   return (
     <Box component={"div"} sx={{ display: "flex", justifyContent: "center" }}>
       <TableContainer component={Paper} sx={{ maxWidth: "300px", mt: 2 }}>
@@ -139,7 +67,7 @@ export default function CustomizedTables() {
               <StyledTableCell align="center">Your Ticket</StyledTableCell>
             </TableRow>
           </TableHead>
-          {digits.length > 0 ? (
+          {!table_ticket_isLoading && digits.length > 0 ? (
             <TableBody>
               {digits.map((row, index) => (
                 <StyledTableRow key={row.ticketId}>

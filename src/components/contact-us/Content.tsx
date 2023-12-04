@@ -1,15 +1,9 @@
 import { Button, FormControl, InputLabel, OutlinedInput } from "@mui/material";
 import Box from "@mui/material/Box";
 import React, { useState, FormEvent } from "react";
-import axios from "axios";
 import { STATUS, dialog_timeout } from "../../utill";
 import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
-
-interface FormData {
-  fullName: string;
-  email: string;
-  message: string;
-}
+import { contactUs } from "../../api/contactUs";
 
 const Contact: React.FC = () => {
   const [username, setUserName] = useState("");
@@ -53,12 +47,9 @@ const Contact: React.FC = () => {
         email: email,
         message: message,
       };
-      try {
-        const response = await axios.post(
-          `${process.env.REACT_APP_IP}/user/sendMail`,
-          body
-        );
-        if (response.status == 200) {
+
+      await contactUs(body)
+        .then((res) => {
           setStatus(true);
 
           setTimeout(() => {
@@ -66,10 +57,10 @@ const Contact: React.FC = () => {
           }, dialog_timeout);
 
           window.location.href = "/";
-        }
-      } catch (err) {
-        console.log(err);
-      }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
   };
 

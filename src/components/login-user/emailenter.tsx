@@ -2,10 +2,10 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
-import axios from "axios";
 import { useState } from "react";
 import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
 import { STATUS, dialog_timeout } from "../../utill";
+import { forgotPassword } from "../../api/forgotPassword";
 
 const style = {
   position: "absolute" as "absolute",
@@ -46,23 +46,19 @@ export default function EmailModal({
         email: email,
       };
 
-      try {
-        const response = await axios.post(
-          `${process.env.REACT_APP_IP}/user/sendPasswordMail`,
-          body
-        );
-        if (response.status == 200) {
+      await forgotPassword(body)
+        .then((res) => {
           setStatus(true);
           setTimeout(() => {
             setStatus(false);
           }, dialog_timeout);
           window.location.href = "/login";
-        }
-      } catch (err) {
-        setEmailError("email id is not exist...");
-        setEmail("");
-        console.log(err);
-      }
+        })
+        .catch((err) => {
+          setEmailError("email id is not exist...");
+          setEmail("");
+          console.log(err);
+        });
     }
   };
 

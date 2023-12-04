@@ -6,6 +6,7 @@ import axios from "axios";
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
 import { handleLogout } from "../../utill";
 import Loader from "../loader/Loader";
+import { agentProfile } from "../../api/getAgentProfile";
 
 function getAgentId() {
   let agentId = sessionStorage.getItem("agentId");
@@ -19,29 +20,21 @@ const AgentProfile = () => {
   const [agentcode, setAgentCode] = useState("");
   const [open_loader, setOpenLoader] = useState(false);
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_IP}/user/getAgent?agentId=${agentid}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      setAgentName(response.data.data.username);
-      setAgentPhone(response.data.data.mobileNumber);
-      setAgentCode(response.data.data.agentId);
-      setOpenLoader(false);
-    } catch (err) {
-      setOpenLoader(false);
-      console.log(err);
-    }
-  };
-
   useEffect(() => {
     setOpenLoader(true);
-    fetchData();
+    (async () => {
+      await agentProfile(agentid!)
+        .then((res) => {
+          setAgentName(res.data.data.username);
+          setAgentPhone(res.data.data.mobileNumber);
+          setAgentCode(res.data.data.agentId);
+          setOpenLoader(false);
+        })
+        .catch((error) => {
+          setOpenLoader(false);
+          console.log(error);
+        });
+    })();
   }, []);
 
   return (
@@ -73,6 +66,7 @@ const AgentProfile = () => {
             <Box component="div" sx={{ display: "flex", alignItems: "center" }}>
               <Box sx={{ width: "100px" }}>Name:</Box>
               <input
+                readOnly
                 type="text"
                 value={agentname}
                 onChange={(e) => setAgentName(e.target.value)}
@@ -82,6 +76,7 @@ const AgentProfile = () => {
             <Box component="div" sx={{ display: "flex", alignItems: "center" }}>
               <Box sx={{ width: "100px" }}>Phone:</Box>
               <input
+                readOnly
                 type="tel"
                 value={agentPhone}
                 onChange={(e) => setAgentPhone(e.target.value)}
@@ -91,6 +86,7 @@ const AgentProfile = () => {
             <Box component="div" sx={{ display: "flex", alignItems: "center" }}>
               <Box sx={{ width: "100px" }}>Mail:</Box>
               <input
+                readOnly
                 type="email"
                 value={agentemail}
                 onChange={(e) => setAgentEmail(e.target.value)}
@@ -100,6 +96,7 @@ const AgentProfile = () => {
             <Box component="div" sx={{ display: "flex", alignItems: "center" }}>
               <Box sx={{ width: "100px" }}>Code:</Box>
               <input
+                readOnly
                 type="text"
                 value={agentcode}
                 onChange={(e) => setAgentCode(e.target.value)}

@@ -15,6 +15,8 @@ import { CustomTableHead } from "../custom-table/CustomTableHead";
 import Loader from "../loader/Loader";
 import { TableLoader } from "../custom-table/TableLoader";
 import { NoDataFoundTable } from "../custom-table/NoDataFound";
+import { getAllUsersData } from "../../api/getAllUsersData";
+import { searchUserName } from "../../api/searchUsername";
 
 const table_head = [
   "Name",
@@ -22,6 +24,7 @@ const table_head = [
   "Phone",
   "Address",
   "Acc. No",
+  "UPI ID",
   "IFSC",
   "PAN No",
   "Aadhar No",
@@ -36,60 +39,66 @@ const BackOfficeUserDetail = () => {
   const [current_page, setCurrentPage] = useState(0);
   const [open_loader, setOpenLoader] = useState(false);
   const [table_loader, setOpenTableLoader] = useState(false);
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_IP}/user/getAllUserData?pageno=${current_page}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      setUserDetailData(response.data.data);
-      let count = 0;
-      if (response.data.data.count < 10) {
-        count = Math.ceil(response.data.data.count / 10) + 1;
-      } else {
-        count = Math.ceil(response.data.count / 10);
-      }
-      setPageCount(count);
-      setOpenLoader(false);
-      setOpenTableLoader(false);
-    } catch (err) {
-      console.log(err);
-      setOpenLoader(false);
-      setOpenTableLoader(false);
-    }
-  };
 
   const fetchSearchData = async () => {
     setOpenTableLoader(true);
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_IP}/user/searchUser?username=${search_username}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      setOpenTableLoader(false);
-      setUserDetailData(response.data.data);
-    } catch (err) {
-      setOpenTableLoader(false);
-      console.log(err);
-    }
+    await searchUserName(search_username)
+      .then((response) => {
+        setOpenTableLoader(false);
+        setUserDetailData(response.data.data);
+      })
+      .catch((error) => {
+        setOpenTableLoader(false);
+        console.log(error);
+      });
   };
 
   useEffect(() => {
     setOpenLoader(true);
-    fetchData();
+    (async () => {
+      await getAllUsersData(current_page)
+        .then((response) => {
+          setUserDetailData(response.data.data);
+          let count = 0;
+          if (response.data.data.count < 10) {
+            count = Math.ceil(response.data.data.count / 10) + 1;
+          } else {
+            count = Math.ceil(response.data.count / 10);
+          }
+          setPageCount(count);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
+        });
+    })();
   }, []);
 
   useEffect(() => {
     setOpenTableLoader(true);
-    fetchData();
+    (async () => {
+      await getAllUsersData(current_page)
+        .then((response) => {
+          setUserDetailData(response.data.data);
+          let count = 0;
+          if (response.data.data.count < 10) {
+            count = Math.ceil(response.data.data.count / 10) + 1;
+          } else {
+            count = Math.ceil(response.data.count / 10);
+          }
+          setPageCount(count);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
+        });
+    })();
   }, [current_page]);
 
   return (
@@ -157,6 +166,7 @@ const BackOfficeUserDetail = () => {
                     <TableCell align="center">{row.mobileNumber}</TableCell>
                     <TableCell align="center">{row.address}</TableCell>
                     <TableCell align="center">{row.accountNo}</TableCell>
+                    <TableCell align="center">{row.upi_id}</TableCell>
                     <TableCell align="center">{row.IFSC}</TableCell>
                     <TableCell align="center">{row.panNo}</TableCell>
                     <TableCell align="center">{row.aadharNo}</TableCell>

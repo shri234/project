@@ -61,7 +61,10 @@ const AboutUs = () => {
               amount is instantly added to your Money Minning Game wallet.Money
               Mining game provides customer support to manage any queries or
               concerns you may have contact us{" "}
-              <span style={{ color: "blue" }}>9025134872</span>.
+              <span style={{ color: "#D81159", fontWeight: "bold" }}>
+                9025134872
+              </span>
+              .
             </Typography>
           </Box>
         </Box>

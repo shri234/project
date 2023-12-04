@@ -1,45 +1,46 @@
 import Box from "@mui/material/Box";
-import { is5pmto6pm } from "../../utill";
+import {
+  dailyPublishTicketRateIsAvailable,
+  is5pmto6pm,
+  monthlyPublishTicketRateIsAvailable,
+  weeklyPublishTicketRateIsAvailable,
+} from "../../utill";
 import axios from "axios";
-import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
+import { ticketPriceData } from "../../api/ticketPriceRate";
+import { publishTicketRate } from "../../api/publishTicketRate";
 
-export const TicketRatePublish: FC = () => {
+export const TicketRatePublish: FC<{ path: string }> = ({ path }) => {
   const [ticketrate, setTicketRate] = useState<string>("");
+  const handlePath = () => {
+    return path === "Daily"
+      ? "daily"
+      : path === "Weekly"
+      ? "weekly"
+      : "monthly";
+  };
   const handleTicketRate = async () => {
     const body = { ticketRate: ticketrate };
 
-    await axios
-      .post(`${process.env.REACT_APP_IP}/ticket/addTicketRate`, body)
-      .then((res) => {
-        if (res.status === 200) {
-          window.alert("Success! Ticket rate added");
-        }
+    await publishTicketRate(handlePath(), body)
+      .then(() => {
+        window.alert("Success! Ticket rate added");
       })
       .catch((error) => {
         console.log(error);
       });
   };
-  const fetchData = async () => {
-    try {
-      const formatteddate = `${new Date().getFullYear()}-${
-        new Date().getMonth() + 1
-      }-${new Date().getDate()}`;
-      const response = await axios.get(
-        `${process.env.REACT_APP_IP}/ticket/getTicketRate?date=${formatteddate}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      setTicketRate(response.data.data.ticketRate);
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
   useEffect(() => {
-    fetchData();
+    (async () => {
+      await ticketPriceData(handlePath())
+        .then((res) => {
+          setTicketRate(res.data.data.ticketRate);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    })();
   }, []);
 
   return (
@@ -83,12 +84,36 @@ export const TicketRatePublish: FC = () => {
       </Box>
       <Box
         onClick={() => {
-          is5pmto6pm() && handleTicketRate();
+          if (handlePath() === "daily") {
+            dailyPublishTicketRateIsAvailable() && handleTicketRate();
+          } else if (handlePath() === "weekly") {
+            weeklyPublishTicketRateIsAvailable() && handleTicketRate();
+          } else if (handlePath() === "monthly") {
+            monthlyPublishTicketRateIsAvailable() && handleTicketRate();
+          }
         }}
         sx={{
           p: 1.25,
-          background: is5pmto6pm() ? "#0bb329" : "grey",
-          cursor: is5pmto6pm() ? "pointer" : "no-drop",
+          background:
+            handlePath() === "daily" && dailyPublishTicketRateIsAvailable()
+              ? "#0bb329"
+              : handlePath() === "weekly" &&
+                weeklyPublishTicketRateIsAvailable()
+              ? "#0bb329"
+              : handlePath() === "monthly" &&
+                monthlyPublishTicketRateIsAvailable()
+              ? "#0bb329"
+              : "grey",
+          cursor:
+            handlePath() === "daily" && dailyPublishTicketRateIsAvailable()
+              ? "pointer"
+              : handlePath() === "weekly" &&
+                weeklyPublishTicketRateIsAvailable()
+              ? "pointer"
+              : handlePath() === "monthly" &&
+                monthlyPublishTicketRateIsAvailable()
+              ? "pointer"
+              : "no-drop",
           borderRadius: "5px",
           color: "#fff",
           fontWeight: 600,

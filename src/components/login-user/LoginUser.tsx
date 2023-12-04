@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import "./login-user.css";
 import axios from "axios";
 import IconButton from "@mui/material/IconButton";
-import InputAdornment from "@mui/material/InputAdornment";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Box from "@mui/material/Box";
 import EmailModal from "./emailenter";
+import { loginPost } from "../../api/login";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState<string>("");
@@ -40,35 +40,33 @@ const Login: React.FC = () => {
       role: sessionStorage.getItem("Role")?.toLocaleLowerCase(),
     };
 
-    try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_IP}/user/login`,
-        body
-      );
-      sessionStorage.setItem("is_logged", "true");
-      sessionStorage.setItem("username", response.data.user.username);
-      sessionStorage.setItem("referralID", response.data.user.referralId);
-      sessionStorage.setItem("role", response.data.user.role);
-      sessionStorage.setItem("userId", response.data.user.userId);
-      sessionStorage.setItem("email", response.data.user.email);
-      sessionStorage.setItem("agentId", response.data.user.agentId);
+    await loginPost(body)
+      .then((response) => {
+        sessionStorage.setItem("is_logged", "true");
+        sessionStorage.setItem("username", response.data.user.username);
+        sessionStorage.setItem("referralID", response.data.user.referralId);
+        sessionStorage.setItem("role", response.data.user.role);
+        sessionStorage.setItem("userId", response.data.user.userId);
+        sessionStorage.setItem("email", response.data.user.email);
+        sessionStorage.setItem("agentId", response.data.user.agentId);
 
-      if (response.data.user.role === "user") {
-        window.location.href = "/spin";
-      } else if (response.data.user.role === "admin") {
-        window.location.href = "/admin";
-      } else if (response.data.user.role === "agent") {
-        window.location.href = "/agent";
-      } else if (response.data.user.role === "back-office") {
-        window.location.href = "/back-office";
-      } else if (response.data.user.role === "master") {
-        window.location.href = "/master";
-      }
-    } catch (error) {
-      console.error(error);
-      setUsernameError("Login failed. Please check your credentials.");
-      setPasswordError("Login failed. Please check your credentials.");
-    }
+        if (response.data.user.role === "user") {
+          window.location.href = "/spin";
+        } else if (response.data.user.role === "admin") {
+          window.location.href = "/admin";
+        } else if (response.data.user.role === "agent") {
+          window.location.href = "/agent";
+        } else if (response.data.user.role === "back-office") {
+          window.location.href = "/back-office";
+        } else if (response.data.user.role === "master") {
+          window.location.href = "/master";
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        setUsernameError("Login failed. Please check your credentials.");
+        setPasswordError("Login failed. Please check your credentials.");
+      });
   };
 
   const handleClickShowPassword = () => {

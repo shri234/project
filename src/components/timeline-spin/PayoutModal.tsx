@@ -6,6 +6,9 @@ import axios from "axios";
 import { useState } from "react";
 import { STATUS, dialog_timeout, handleKeyPrevent } from "../../utill";
 import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
+import Loader from "../loader/Loader";
+import { IconButton } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 const style = {
   position: "absolute" as "absolute",
@@ -21,10 +24,13 @@ const style = {
 export default function PayoutModal({
   setPayoutOpen,
   walletAmount,
+  setWalletAmount,
+  refetch,
 }: {
   setPayoutOpen: React.Dispatch<React.SetStateAction<boolean>>;
-
   walletAmount: number;
+  setWalletAmount: any;
+  refetch: any;
 }) {
   const [amount, setAmount] = useState(0);
   const [status, setStatus] = useState(false);
@@ -36,7 +42,6 @@ export default function PayoutModal({
   });
 
   const handleRedeem = async () => {
-    setOpenLoader(true);
     const userId = sessionStorage.getItem("userId");
 
     const body = {
@@ -45,10 +50,13 @@ export default function PayoutModal({
       amount: amount,
       email: sessionStorage.getItem("email"),
     };
-
     await axios
       .post(`${process.env.REACT_APP_IP}/payment/redeem`, body)
-      .then((res) => {
+      .then(async (res) => {
+        refetch().then((res: { data: { amount: any } }) => {
+          setWalletAmount(res.data.amount);
+        });
+
         setStatus(true);
         setStatusDlg((prevStatus) => ({
           ...prevStatus,
@@ -56,12 +64,13 @@ export default function PayoutModal({
         }));
         setTimeout(() => {
           setStatus(false);
+          setPayoutOpen(false);
           setStatusDlg((prevStatus) => ({
             ...prevStatus,
             success: false,
           }));
         }, dialog_timeout);
-        window.location.href = "/spin";
+
         setOpenLoader(false);
       })
       .catch((error) => {
@@ -72,6 +81,7 @@ export default function PayoutModal({
 
   const handlePayout = async () => {
     if (amount === 0 || isNaN(amount)) {
+      setOpenLoader(false);
       setStatus(true);
       setStatusDlg((prevStatus) => ({
         ...prevStatus,
@@ -85,8 +95,9 @@ export default function PayoutModal({
         }));
       }, dialog_timeout);
     } else if (walletAmount > amount) {
-     await handleRedeem();
+      await handleRedeem();
     } else {
+      setOpenLoader(false);
       setStatus(true);
       setStatusDlg((prevStatus) => ({
         ...prevStatus,
@@ -105,7 +116,6 @@ export default function PayoutModal({
     <div>
       <Modal
         open={true}
-        onClose={() => setPayoutOpen(false)}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -132,50 +142,81 @@ export default function PayoutModal({
             />
           )}
           <Box sx={style}>
-            <Box
-              sx={{
-                color: "#092b61",
-                fontWeight: "bold",
-                my: 1,
-                fontSize: "18px",
-              }}
-            >
-              Withdraw
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: { xs: "column", sm: "row" },
-                gap: { xs: 2, sm: 0 },
-                justifyContent: { xs: "start", sm: "center" },
-                alignItems: "center",
-              }}
-            >
-              <Box>
-                <input
-                  type="number"
-                  min={0}
-                  placeholder="Enter amount..."
-                  value={amount === 0 ? "" : amount}
-                  onChange={(e) => {
-                    handleKeyPrevent(e) && setAmount(parseInt(e.target.value));
+            {loader ? (
+              <Loader />
+            ) : (
+              <>
+                <Box
+                  component={"div"}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row-reverse",
+                    mt: "-10px",
                   }}
-                />
-              </Box>
-              <Button
-                onClick={handlePayout}
-                sx={{
-                  background: "green",
-                  color: "#fff",
-                  fontWeight: "650",
-                  ":hover": {
-                    background: "green",
-                  },
-                }}
-              >
-                Redeem
-              </Button>
-            </Box>
+                >
+                  <IconButton
+                    aria-label="close"
+                    onClick={() => {
+                      setPayoutOpen(false);
+                    }}
+                    sx={{
+                      p: 0,
+                      marginLeft: "auto",
+                    }}
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                </Box>
+                <Box
+                  sx={{
+                    color: "#092b61",
+                    fontWeight: "bold",
+                    my: 1,
+                    fontSize: "18px",
+                  }}
+                >
+                  Withdraw
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: { xs: "column", sm: "row" },
+                    gap: { xs: 2, sm: 0 },
+                    justifyContent: { xs: "start", sm: "center" },
+                    alignItems: "center",
+                  }}
+                >
+                  <Box>
+                    <input
+                      type="number"
+                      min={0}
+                      placeholder="Enter amount..."
+                      value={amount === 0 ? "" : amount}
+                      onChange={(e) => {
+                        handleKeyPrevent(e) &&
+                          setAmount(parseInt(e.target.value));
+                      }}
+                    />
+                  </Box>
+                  <Button
+                    onClick={async () => {
+                      setOpenLoader(true);
+                      await handlePayout();
+                    }}
+                    sx={{
+                      background: "green",
+                      color: "#fff",
+                      fontWeight: "650",
+                      ":hover": {
+                        background: "green",
+                      },
+                    }}
+                  >
+                    Redeem
+                  </Button>
+                </Box>
+              </>
+            )}
           </Box>
         </>
       </Modal>

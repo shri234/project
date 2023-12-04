@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import axios from "axios";
 import "./signup.css";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Box from "@mui/material/Box";
 import { STATUS, dialog_timeout } from "../../utill";
 import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
+import { SignUp } from "../../api/signUp";
 
 const SignUpComponent: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -111,10 +111,18 @@ const SignUpComponent: React.FC = () => {
       role: sessionStorage.getItem("Role")?.toLocaleLowerCase(),
     };
 
-    await axios
-      .post(`${process.env.REACT_APP_IP}/user/signup`, body)
-      .then(() => {
-        window.location.href = "/login";
+    await SignUp(body)
+      .then((res) => {
+        if (res.name === "AxiosError") {
+          setStatus(true);
+          setError(res.response.data);
+          setTimeout(() => {
+            setStatus(false);
+          }, dialog_timeout);
+        } else {
+          window.location.href = "/login";
+        }
+        console.log(res);
       })
       .catch((error) => {
         setStatus(true);

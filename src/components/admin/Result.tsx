@@ -90,21 +90,26 @@ const Result: FC<{ title: string }> = ({ title }) => {
               <>
                 <Divider sx={{ my: 1 }} />
                 <h2>{title} Spin Result</h2>
-                <TicketFilter ticket={ticket} setTicket={setTicket} />
+                <TicketFilter
+                  ticket={ticket}
+                  setTicket={setTicket}
+                  path={title}
+                />
                 <Divider sx={{ my: 1 }} />
                 <TicketPublish
                   ticket={ticket}
                   setTicket={setTicket}
                   setLoader={setLoader}
+                  path={title}
                 />
               </>
             )}
 
             {result_or_ticket === "ticket" && (
               <>
-                <TicketRatePublish />
+                <TicketRatePublish path={title} />
 
-                <WinningPriceTicket />
+                <WinningPriceTicket path={title} />
               </>
             )}
           </Box>

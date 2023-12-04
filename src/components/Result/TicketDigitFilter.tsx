@@ -2,50 +2,42 @@ import Box from "@mui/material/Box";
 import axios from "axios";
 import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { Ticket } from "./TicketPublish";
+import { minimumTicketFilter } from "../../api/minimumTicketFIlter";
 
 const TicketDigitFilter: FC<{
   setTicket: Dispatch<SetStateAction<Ticket>>;
   name: string;
-}> = ({ setTicket, name }) => {
+  filter_value: number;
+  ticket: Ticket;
+  path: string;
+}> = ({ setTicket, name, filter_value, ticket, path }) => {
   const [digits, setDigits] = useState<any[]>([]);
 
   const [LowestValue, setLowestValue] = useState<number>();
 
+  const handlePath = () => {
+    return path === "Daily"
+      ? "daily"
+      : path === "Weekly"
+      ? "weekly"
+      : "monthly";
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const formatteddate = `${new Date().getFullYear()}-${
-          new Date().getMonth() + 1
-        }-${new Date().getDate()}`;
-        const response = await axios.get(
-          `${
-            process.env.REACT_APP_IP
-          }/ticket/getMinimum?digit=${sessionStorage.getItem(
-            "digit"
-          )}&digit1=${sessionStorage.getItem(
-            "digit1"
-          )}&digit2=${sessionStorage.getItem(
-            "digit2"
-          )}&digit3=${sessionStorage.getItem("digit3")}&date=${formatteddate}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        setDigits(response.data.data);
-        setTicket((prev_ticket) => ({
-          ...prev_ticket,
-          [name]: response.data.LowestValue,
-        }));
+    minimumTicketFilter(handlePath(), filter_value)
+      .then((res) => {
+        setDigits(res.data.data);
+        if (ticket[name as keyof Ticket].length === 0)
+          setTicket((prev_ticket) => ({
+            ...prev_ticket,
+            [name]: res.data.LowestValue,
+          }));
 
-        setLowestValue(response.data.LowestValue);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    fetchData();
+        setLowestValue(res.data.LowestValue);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
 
   return (
