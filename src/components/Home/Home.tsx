@@ -51,7 +51,7 @@ const HomeLand: React.FC = () => {
           className="role-button agent"
           onClick={() => handleLoginType("Agent", "monthly")}
         >
-          Monthly
+          Month
         </button>
       </div>
     </Box>
