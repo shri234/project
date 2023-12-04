@@ -17,6 +17,7 @@ import { NoDataFoundTable } from "../custom-table/NoDataFound";
 import { TableLoader } from "../custom-table/TableLoader";
 import { CustomTableHead } from "../custom-table/CustomTableHead";
 import Loader from "../loader/Loader";
+import { getPlayHistoryData } from "../../api/getPlayHistorydata";
 
 const table_head = ["S.No", "Date", "Ticket"];
 
@@ -31,43 +32,41 @@ const AgentPlayHistory = () => {
   const [pageCount, setPageCount] = useState(0);
   const [open_loader, setOpenLoader] = useState(false);
   const [table_loader, setOpenTableLoader] = useState(false);
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_IP}/ticket/getHistory?username=${username}&pageno=${current_page}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      setPlayHistoryData(response.data.data);
-
-      let count = 0;
-      if (response.data.data.count < 10) {
-        count = Math.ceil(response.data.data.count / 10) + 1;
-      } else {
-        count = Math.ceil(response.data.count / 10);
-      }
-      setPageCount(count);
-      setOpenLoader(false);
-      setOpenTableLoader(false);
-    } catch (err) {
-      console.log(err);
-      setOpenLoader(false);
-      setOpenTableLoader(false);
-    }
-  };
 
   useEffect(() => {
     setOpenLoader(true);
-    fetchData();
+    (async () => {
+      await getPlayHistoryData(username!, current_page)
+        .then((res) => {
+          setPlayHistoryData(res.data.data);
+
+          let count = 0;
+          if (res.data.data.count < 10) {
+            count = Math.ceil(res.data.data.count / 10) + 1;
+          } else {
+            count = Math.ceil(res.data.count / 10);
+          }
+          setPageCount(count);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
+        })
+        .catch((error) => {
+          console.log(error);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
+        });
+    })();
   }, []);
 
   useEffect(() => {
     setOpenTableLoader(true);
-    fetchData();
+    (async () => {
+      await getPlayHistoryData(username!, current_page)
+        .then((res) => {})
+        .catch((error) => {
+          console.log(error);
+        });
+    })();
   }, [current_page]);
 
   return (

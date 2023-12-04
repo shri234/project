@@ -34,7 +34,7 @@ const Profile = () => {
           setAadhar(res.data.data[0].aadharNo);
           setIfsc(res.data.data[0].IFSC);
           setAddress(res.data.data[0].address);
-          // setUpiId(res.data[0].upi_id);
+          setUpiId(res.data.data[0].upi_id);
         }
       })
       .catch((error) => {
@@ -213,12 +213,12 @@ const Profile = () => {
                 component="div"
                 sx={{ display: "flex", alignItems: "center" }}
               >
-                <Box sx={{ minWidth: "100px" }}>UPI:</Box>
+                <Box sx={{ minWidth: "100px" }}>UPI ID:</Box>
                 <input
                   type="text"
                   value={upi_id}
                   onChange={(e) => setUpiId(e.target.value)}
-                  placeholder="Enter your upi"
+                  placeholder="Enter your upi id"
                   style={inputStyle}
                 />
               </Box>

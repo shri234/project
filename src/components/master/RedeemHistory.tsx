@@ -17,6 +17,7 @@ import { CustomTableHead } from "../custom-table/CustomTableHead";
 import { CustomPagination } from "../custom-table/CustomPagination";
 import { TableLoader } from "../custom-table/TableLoader";
 import { NoDataFoundTable } from "../custom-table/NoDataFound";
+import { getRedeemHistory } from "../../api/getRedeemHistory";
 
 const table_head = ["S.No", "Date", "Amount"];
 
@@ -26,45 +27,52 @@ const RedeemHistory = () => {
   const [pageCount, setPageCount] = useState(0);
   const [open_loader, setOpenLoader] = useState(false);
   const [table_loader, setOpenTableLoader] = useState(false);
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(
-        `${
-          process.env.REACT_APP_IP
-        }/ticket/getWalletHistory?userId=${sessionStorage.getItem(
-          "userid"
-        )}&pageno=${current_page}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      setWalletHistory(response.data.data);
-      let count = 0;
-      if (response.data.data.count < 10) {
-        count = Math.ceil(response.data.data.count / 10) + 1;
-      } else {
-        count = Math.ceil(response.data.count / 10);
-      }
-      setPageCount(count);
-      setOpenLoader(false);
-      setOpenTableLoader(false);
-    } catch (err) {
-      console.log(err);
-      setOpenLoader(false);
-      setOpenTableLoader(false);
-    }
-  };
-
   useEffect(() => {
     setOpenLoader(true);
-    fetchData();
+    (async () => {
+      await getRedeemHistory(current_page)
+        .then((response) => {
+          setWalletHistory(response.data.data);
+          let count = 0;
+          if (response.data.data.count < 10) {
+            count = Math.ceil(response.data.data.count / 10) + 1;
+          } else {
+            count = Math.ceil(response.data.count / 10);
+          }
+          setPageCount(count);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
+        });
+    })();
   }, []);
 
   useEffect(() => {
     setOpenTableLoader(true);
-    fetchData();
+    (async () => {
+      await getRedeemHistory(current_page)
+        .then((response) => {
+          setWalletHistory(response.data.data);
+          let count = 0;
+          if (response.data.data.count < 10) {
+            count = Math.ceil(response.data.data.count / 10) + 1;
+          } else {
+            count = Math.ceil(response.data.count / 10);
+          }
+          setPageCount(count);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
+        });
+    })();
   }, [current_page]);
 
   return (

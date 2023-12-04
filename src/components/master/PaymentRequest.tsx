@@ -21,6 +21,9 @@ import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
 import { STATUS } from "../../utill";
 import { CustomPagination } from "../custom-table/CustomPagination";
 import MasterNavbar from "./Navbar";
+import { getPaymentRequestData } from "../../api/getPaymentRequestData";
+import { deltePaymentRequest } from "../../api/deletePaymentRequest";
+import { updatePaymentRequest } from "../../api/updatePaymentRequest";
 
 const table_head = ["User Name", "Mail", "Request Amount", "Confirm", "Delete"];
 
@@ -38,17 +41,109 @@ const PaymentRequest = () => {
     delete_error: false,
   });
 
-  const fetchData = async () => {
-    try {
-      await axios
-        .get(
-          `${process.env.REACT_APP_IP}/payment/getRedeem?pageno=${current_page}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
+  const handleRedeem = async (redeemId: number) => {
+    setOpenTableLoader(true);
+    const body = {};
+    await updatePaymentRequest(redeemId, body)
+      .then(async (res) => {
+        setOpenStatusDlg(true);
+        await getPaymentRequestData(current_page).then((response) => {
+          setPaymentRequest(response.data.data);
+          let count = 0;
+          if (response.data.data.count < 10) {
+            count = Math.ceil(response.data.data.count / 10) + 1;
+          } else {
+            count = Math.ceil(response.data.count / 10);
           }
-        )
+          setPageCount(count);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
+          setOpenTableLoader(false);
+        });
+
+        setStatus((prevStatus) => ({
+          ...prevStatus,
+          paid: true,
+        }));
+        setTimeout(() => {
+          setOpenStatusDlg(false);
+          setStatus((prevStatus) => ({
+            ...prevStatus,
+            paid: false,
+          }));
+        }, 5000);
+      })
+      .catch((error) => {
+        setOpenTableLoader(false);
+        setOpenStatusDlg(true);
+        setStatus((prevStatus) => ({
+          ...prevStatus,
+          paid_error: true,
+        }));
+        setTimeout(() => {
+          setOpenStatusDlg(false);
+          setStatus((prevStatus) => ({
+            ...prevStatus,
+            paid_error: false,
+          }));
+        }, 5000);
+        console.error(error);
+      });
+  };
+
+  const handleDeleteRedeem = async (redeemId: number) => {
+    setOpenTableLoader(true);
+    await deltePaymentRequest(redeemId)
+      .then(async () => {
+        setOpenStatusDlg(true);
+        await getPaymentRequestData(current_page).then((response) => {
+          setPaymentRequest(response.data.data);
+          let count = 0;
+          if (response.data.data.count < 10) {
+            count = Math.ceil(response.data.data.count / 10) + 1;
+          } else {
+            count = Math.ceil(response.data.count / 10);
+          }
+          setPageCount(count);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
+          setOpenTableLoader(false);
+        });
+
+        setStatus((prevStatus) => ({
+          ...prevStatus,
+          delete: true,
+        }));
+        setTimeout(() => {
+          setOpenStatusDlg(false);
+          setStatus((prevStatus) => ({
+            ...prevStatus,
+            delete: false,
+          }));
+        }, 5000);
+      })
+      .catch((err) => {
+        setOpenTableLoader(false);
+        setOpenStatusDlg(true);
+        setStatus((prevStatus) => ({
+          ...prevStatus,
+          delete_error: true,
+        }));
+        setTimeout(() => {
+          setOpenStatusDlg(false);
+          setStatus((prevStatus) => ({
+            ...prevStatus,
+            delete_error: false,
+          }));
+        }, 5000);
+        console.error(err);
+      });
+  };
+
+  useEffect(() => {
+    setOpenLoader(true);
+    (async () => {
+      await getPaymentRequestData(current_page)
         .then((response) => {
           setPaymentRequest(response.data.data);
           let count = 0;
@@ -60,106 +155,37 @@ const PaymentRequest = () => {
           setPageCount(count);
           setOpenLoader(false);
           setOpenTableLoader(false);
+        })
+        .catch((error) => {
+          console.log(error);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
         });
-    } catch (err) {
-      console.log(err);
-      setOpenLoader(false);
-      setOpenTableLoader(false);
-    }
-  };
-
-  const handleRedeem = async (redeemId: number) => {
-    try {
-      setOpenTableLoader(true);
-      const body = {};
-      await axios.put(
-        `${process.env.REACT_APP_IP}/payment/updateRedeem?redeemId=${redeemId}`,
-        body
-      );
-      setOpenStatusDlg(true);
-      setStatus((prevStatus) => ({
-        ...prevStatus,
-        paid: true,
-      }));
-      setTimeout(() => {
-        setOpenStatusDlg(false);
-        setStatus((prevStatus) => ({
-          ...prevStatus,
-          paid: false,
-        }));
-      }, 5000);
-      await fetchData().then(() => {
-        setOpenTableLoader(false);
-      });
-    } catch (err) {
-      setOpenTableLoader(false);
-      setOpenStatusDlg(true);
-      setStatus((prevStatus) => ({
-        ...prevStatus,
-        paid_error: true,
-      }));
-      setTimeout(() => {
-        setOpenStatusDlg(false);
-        setStatus((prevStatus) => ({
-          ...prevStatus,
-          paid_error: false,
-        }));
-      }, 5000);
-      console.error(err);
-    }
-  };
-
-  const handleDeleteRedeem = async (redeemId: number) => {
-    setOpenTableLoader(true);
-    try {
-      await axios
-        .delete(
-          `${process.env.REACT_APP_IP}/payment/deleteRedeem?redeemId=${redeemId}`
-        )
-        .then(async () => {
-          setOpenStatusDlg(true);
-          setStatus((prevStatus) => ({
-            ...prevStatus,
-            delete: true,
-          }));
-          setTimeout(() => {
-            setOpenStatusDlg(false);
-            setStatus((prevStatus) => ({
-              ...prevStatus,
-              delete: false,
-            }));
-          }, 5000);
-
-          await fetchData().then(() => {
-            setOpenTableLoader(false);
-          });
-        });
-    } catch (err) {
-      setOpenTableLoader(false);
-      setOpenStatusDlg(true);
-      setStatus((prevStatus) => ({
-        ...prevStatus,
-        delete_error: true,
-      }));
-      setTimeout(() => {
-        setOpenStatusDlg(false);
-        setStatus((prevStatus) => ({
-          ...prevStatus,
-          delete_error: false,
-        }));
-      }, 5000);
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    setOpenLoader(true);
-    fetchData();
+    })();
   }, []);
 
   useEffect(() => {
     setOpenTableLoader(true);
-    fetchData();
+    (async () => {
+      await getPaymentRequestData(current_page)
+        .then((response) => {
+          setPaymentRequest(response.data.data);
+          let count = 0;
+          if (response.data.data.count < 10) {
+            count = Math.ceil(response.data.data.count / 10) + 1;
+          } else {
+            count = Math.ceil(response.data.count / 10);
+          }
+          setPageCount(count);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
+        })
+        .catch((error) => {
+          console.log(error);
+          setOpenLoader(false);
+          setOpenTableLoader(false);
+        });
+    })();
   }, [current_page]);
 
   return (

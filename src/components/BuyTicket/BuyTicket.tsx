@@ -1,30 +1,59 @@
 import { FC } from "react";
 import Box from "@mui/material/Box";
-import BuyTicketNavBar from "./BuyTicketNavbar"; // Ensure this import is correct
+import BuyTicketNavBar from "./BuyTicketNavbar";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import moment from "moment";
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
 import "./BuyTicket.css";
 import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
 import { STATUS } from "../../utill";
+import { ticketPriceData } from "../../api/ticketPriceRate";
+import useUserWalletAndTicketCount from "../../swr/wallet_ticket_count";
+import { buyTicketCount } from "../../api/buyTicketCount";
 
 const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
+  const handlePath = (): string => {
+    return name === "Daily Spin"
+      ? "daily"
+      : name === "Weekly Spin"
+      ? "weekly"
+      : "monthly";
+  };
+
+  const { user_wallet_and_ticket_count, isLoading, refetch } =
+    useUserWalletAndTicketCount(handlePath());
+
   const [ticket_count, setTicketCount] = useState(0);
   const [walletamount, setWalletAmount] = useState(0);
   const [ticket_price, setTicketprice] = useState(0);
   const [alreadyticketcount, setBeforeTicketCount] = useState(0);
   const [alreadyticketcount1, setAlreadyTicketCount] = useState(0);
   const [status, setStatus] = useState(false);
-  const [loader, setOpenLoader] = useState(false);
   const [status_dlg, setStatusDlg] = useState({
     error: false,
     warning: false,
     success: false,
     info: false,
   });
+
+  useEffect(() => {
+    refetch().then((res) => {
+      setWalletAmount(res !== undefined ? res.data.amount : 0);
+      setAlreadyTicketCount(
+        res !== undefined
+          ? handlePath() === "daily"
+            ? res.data.alreadyDailyTicketCount
+            : handlePath() === "weekly"
+            ? res.data.alreadyWeeklyTicketCount
+            : handlePath() === "monthly"
+            ? res.data.alreadyMonthlyTicketCount
+            : 0
+          : 0
+      );
+    });
+  }, [isLoading, user_wallet_and_ticket_count]);
 
   const increaseCount = () => {
     if (ticket_count < 15 - alreadyticketcount) {
@@ -51,45 +80,40 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
     }
   };
 
-  const fetchData = async () => {
+  const handleBuyTicket = async () => {
     if (alreadyticketcount1 + ticket_count <= 15 && ticket_price > 0) {
       if (walletamount >= ticket_count * ticket_price) {
-        try {
-          const body = { ticketCount: alreadyticketcount + ticket_count };
+        const body = { ticketCount: alreadyticketcount + ticket_count };
 
-          const response = await axios.post(
-            `${
-              process.env.REACT_APP_IP
-            }/ticket/addTicketCount?userId=${sessionStorage.getItem("userId")}`,
-            body
-          );
-
-          setStatus(true);
-          setStatusDlg((prevStatus) => ({
-            ...prevStatus,
-            success: true,
-          }));
-          setTimeout(() => {
-            setStatus(false);
+        await buyTicketCount(body)
+          .then(async () => {
+            setStatus(true);
             setStatusDlg((prevStatus) => ({
               ...prevStatus,
-              success: false,
+              success: true,
             }));
-          }, 5000);
-          if (response.status == 200) {
-            try {
-              const body = {
-                amount: walletamount - ticket_count * ticket_price,
-                userId: sessionStorage.getItem("userId"),
-              };
-              const res = await axios.post(
-                `${process.env.REACT_APP_IP}/ticket/addWalletAmount`,
-                body
-              );
-            } catch (err) {}
+            setTimeout(() => {
+              setStatus(false);
+              setStatusDlg((prevStatus) => ({
+                ...prevStatus,
+                success: false,
+              }));
+            }, 5000);
+
+            const body = {
+              amount: walletamount - ticket_count * ticket_price,
+              userId: sessionStorage.getItem("userId"),
+            };
+            await axios.post(
+              `${process.env.REACT_APP_IP}/ticket/addWalletAmount`,
+              body
+            );
+
             window.location.href = "/daily-buy-ticket";
-          }
-        } catch (err) {}
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       } else {
         setStatus(true);
         setStatusDlg((prevStatus) => ({
@@ -121,48 +145,15 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${
-            process.env.REACT_APP_IP
-          }/ticket/getWallet?userId=${sessionStorage.getItem("userId")}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        setAlreadyTicketCount(response.data.data.alreadyTicketCount);
-        setWalletAmount(response.data.data.amount);
-        setBeforeTicketCount(response.data.data.ticketCount);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    let date = new Date();
-    let datee = moment(date).format("YYYY-MM-DD");
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_IP}/ticket/getTicketRate?date=${datee}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        setTicketprice(response.data.data.ticketRate);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    fetchData();
+    (async () => {
+      await ticketPriceData(handlePath())
+        .then((res) => {
+          setTicketprice(res.data.data.ticketRate);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    })();
   }, []);
 
   return (
@@ -200,12 +191,19 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
               status={STATUS.INFO}
             />
           )}
-          {status && status_dlg.warning && (
+          {status && status_dlg.warning && ticket_price > 0 && (
             <CustomizedStatusDialogs
               setOpenStatusDlg={setStatus}
               description={`You already bought ${alreadyticketcount1} tickets you can buy  Only ${
                 15 - alreadyticketcount1
               } tickets`}
+              status={STATUS.WARNING}
+            />
+          )}
+          {status && status_dlg.warning && ticket_price === 0 && (
+            <CustomizedStatusDialogs
+              setOpenStatusDlg={setStatus}
+              description={`Please wait to add the Ticket amount!`}
               status={STATUS.WARNING}
             />
           )}
@@ -354,7 +352,7 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
                       }));
                     }, 6000);
                   } else {
-                    fetchData();
+                    handleBuyTicket();
                   }
                 }}
               >

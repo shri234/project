@@ -6,42 +6,35 @@ import ContactUS from "../contact-us/ContactUS";
 import RulesAndRegulation from "../rules/RulesAndRegulation";
 import CopyRight from "../copyright/CopyRight";
 
-const segments = [
-  { number: 1, color: "red" },
-  { number: 2, color: "orange" },
-  { number: 3, color: "yellow" },
-  { number: 4, color: "lime" },
-  { number: 5, color: "green" },
-  { number: 6, color: "cyan" },
-  { number: 7, color: "blue" },
-  { number: 8, color: "purple" },
-  { number: 9, color: "violet" },
-  { number: 10, color: "magenta" },
-];
-
 const winnersData = [
   {
     name: "MARIA FERGUSON",
-    imageUrl:
-      "https://res.cloudinary.com/diqqf3eq2/image/upload/v1595959131/person-2_ipcjws.jpg",
+    imageUrl: "/winner_1.jpeg",
     amountWon: "1,00,000",
   },
   {
     name: "JOHN DOE",
-    imageUrl:
-      "https://res.cloudinary.com/diqqf3eq2/image/upload/v1595959121/person-1_aufeoq.jpg",
+    imageUrl: "/winner_2.jpeg",
     amountWon: "2,00,000",
   },
   {
     name: "PETER SMITH",
-    imageUrl:
-      "https://res.cloudinary.com/diqqf3eq2/image/upload/v1586883417/person-3_ipa0mj.jpg",
+    imageUrl: "/winner_3.jpeg",
     amountWon: "5,00,000",
   },
   {
     name: "SUSAN ANDERSEN",
-    imageUrl:
-      "https://res.cloudinary.com/diqqf3eq2/image/upload/v1586883334/person-1_rfzshl.jpg",
+    imageUrl: "/winner_4.jpeg",
+    amountWon: "4,00,000",
+  },
+  {
+    name: "SUSAN ANDERSEN",
+    imageUrl: "/winner_5.jpeg",
+    amountWon: "4,00,000",
+  },
+  {
+    name: "SUSAN ANDERSEN",
+    imageUrl: "/winner_6.jpeg",
     amountWon: "4,00,000",
   },
 ];
@@ -283,11 +276,21 @@ const LandingPage = () => {
                   sx={{
                     color: "#f0f0f0",
                     fontWeight: "700",
-                    fontSize: "1.5rem",
+                    fontSize: "1.4rem",
+                    textAlign: "center",
                     mt: "4px",
                   }}
                 >
-                  "37 lakh or 10k per daily upto 1 year"
+                  <Box component={"div"}>
+                    "37 lakh or 10k <br />
+                    per day upto 1 year"
+                  </Box>
+                  <Box
+                    component={"div"}
+                    sx={{ display: { xs: "block", sm: "none" } }}
+                  >
+                    "37 lakh or 10k per day upto 1 year"
+                  </Box>
                 </Box>
               </Box>
             </Box>

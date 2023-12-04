@@ -1,8 +1,14 @@
 import { Dispatch, FC, SetStateAction } from "react";
-import { is5pmto6pm } from "../../utill";
+import {
+  dailyPublishResultIsAvailable,
+  is5pmto6pm,
+  monthlyPublishResultIsAvailable,
+  weeklyPublishResultIsAvailable,
+} from "../../utill";
 import Box from "@mui/material/Box";
 import { Input } from "@mui/material";
 import axios from "axios";
+import { winningTicketPublish } from "../../api/winningTicketPublish";
 
 export interface Ticket {
   firstdigit: string;
@@ -21,7 +27,16 @@ export const TicketPublish: FC<{
   ticket: Ticket;
   setTicket: Dispatch<SetStateAction<Ticket>>;
   setLoader: Dispatch<SetStateAction<boolean>>;
-}> = ({ ticket, setTicket, setLoader }) => {
+  path: string;
+}> = ({ ticket, setTicket, setLoader, path }) => {
+  const handlePath = () => {
+    return path === "Daily"
+      ? "daily"
+      : path === "Weekly"
+      ? "weekly"
+      : "monthly";
+  };
+
   const handlePublishResult = async () => {
     setLoader(true);
     const body = [
@@ -31,15 +46,7 @@ export const TicketPublish: FC<{
       { digit: ticket.fourthdigit },
     ];
 
-    const formatteddate = `${new Date().getFullYear()}-${
-      new Date().getMonth() + 1
-    }-${new Date().getDate()}`;
-
-    await axios
-      .post(
-        `${process.env.REACT_APP_IP}/ticket/publishResult?date=${formatteddate}`,
-        body
-      )
+    await winningTicketPublish(handlePath(), body)
       .then((res) => {
         setLoader(false);
         if (res.status === 200) {
@@ -111,7 +118,11 @@ export const TicketPublish: FC<{
       <Box
         onClick={() => {
           const now = new Date();
-          if (is5pmto6pm())
+          if (
+            (handlePath() === "daily" && dailyPublishResultIsAvailable()) ||
+            (handlePath() === "weekly" && weeklyPublishResultIsAvailable()) ||
+            (handlePath() === "monthly" && monthlyPublishResultIsAvailable())
+          )
             if (
               ticket.firstdigit &&
               ticket.seconddigit &&
@@ -127,10 +138,24 @@ export const TicketPublish: FC<{
         sx={{
           p: 1,
           borderRadius: "5px",
-          background: is5pmto6pm() ? "#7a1160" : "grey",
+          background:
+            handlePath() === "daily" && dailyPublishResultIsAvailable()
+              ? "#7a1160"
+              : handlePath() === "weekly" && weeklyPublishResultIsAvailable()
+              ? "#7a1160"
+              : handlePath() === "monthly" && monthlyPublishResultIsAvailable()
+              ? "#7a1160"
+              : "grey",
           color: "#fff",
           fontWeight: "600",
-          cursor: is5pmto6pm() ? "pointer" : "no-drop",
+          cursor:
+            handlePath() === "daily" && dailyPublishResultIsAvailable()
+              ? "pointer"
+              : handlePath() === "weekly" && weeklyPublishResultIsAvailable()
+              ? "pointer"
+              : handlePath() === "monthly" && monthlyPublishResultIsAvailable()
+              ? "pointer"
+              : "no-drop",
         }}
       >
         PUBLISH

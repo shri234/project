@@ -1,27 +1,12 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
-import axios from "axios";
-import moment from "moment";
-import { useEffect, useState } from "react";
-import { DialogTitle } from "@mui/material";
-import { handleKeyPrevent } from "../../utill";
 
-const loadRazorpayScript = (src: string) => {
-  return new Promise((resolve) => {
-    const script = document.createElement("script");
-    script.src = src;
-    script.onload = () => {
-      resolve(true);
-    };
-    script.onerror = () => {
-      resolve(false);
-    };
-    document.body.appendChild(script);
-  });
-};
+import { useState } from "react";
+import { handleKeyPrevent } from "../../utill";
+import { amountDeposit } from "../../api/amountDeposit";
+
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -43,27 +28,19 @@ export default function DepsoitModal({
   const [amount, setAmount] = useState(0);
 
   const handleRedeem = async () => {
-    const userId = sessionStorage.getItem("userid");
+    const body = {
+      amount: amount,
+      userId: sessionStorage.getItem("userid"),
+      username: sessionStorage.getItem("userName"),
+    };
 
-    try {
-      const body = {
-        amount: amount,
-        userId: userId,
-        username: sessionStorage.getItem("userName"),
-      };
-      console.log(body);
-      let date = new Date();
-      let datee = moment(date).format("YYYY-MM-DD");
-      console.log(datee);
-      const response = await axios.post(
-        `${process.env.REACT_APP_IP}/ticket/addWallet`,
-        body
-      );
-
-      if (response.status == 200) {
+    amountDeposit(body)
+      .then(() => {
         window.location.href = "/user-details";
-      }
-    } catch (err) {}
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
