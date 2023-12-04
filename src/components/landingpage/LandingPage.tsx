@@ -215,7 +215,7 @@ const LandingPage = () => {
                     mt: "4px",
                   }}
                 >
-                  "Win Upto 6 lakh"
+                  "Win Upto 60 lakh"
                 </Box>
               </Box>
               <Box
