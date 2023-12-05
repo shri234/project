@@ -17,7 +17,12 @@ import { WinningTicket } from "./WinningTicket";
 import { winnerData } from "../../api/winnerData";
 import useUserWalletAndTicketCount from "../../swr/wallet_ticket_count";
 import useWinningTicket from "../../swr/winningTicket";
-import { handleSpinner, spinnerTimeline } from "../../utill";
+import {
+  dailyCountdown,
+  handleSpinner,
+  monthlyCountdown,
+  weeklyCountdown,
+} from "../../utill";
 import { MonthlyWinningTicket } from "./MonthlyWinningTicket";
 
 export interface WinningTicketInterface {
@@ -69,6 +74,28 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
       },
     ]
   );
+  const [monthly_winning_ticket, setMonthlyWinningTicket] = useState<
+    WinningTicketInterface[]
+  >([
+    {
+      first: null,
+      second: null,
+      third: null,
+      fourth: null,
+    },
+    {
+      first: null,
+      second: null,
+      third: null,
+      fourth: null,
+    },
+    {
+      first: null,
+      second: null,
+      third: null,
+      fourth: null,
+    },
+  ]);
   const [renderCount, setRenderCount] = useState(0);
   const [tmp_spinner, setTmpSpinner] = useState(0);
 
@@ -79,6 +106,7 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
           setWalletAmount(
             res.data !== undefined && res.data !== null ? res.data.amount : 0
           );
+
           setTicketCount(
             res.data !== undefined && res.data !== null
               ? handlePath() === "daily"
@@ -99,40 +127,70 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
     winningTicketRefresh().then((res) => {
       if (res !== undefined)
         if (res.data !== undefined && res.data !== null) {
-          const tmp: [] = res.data.data.result_ticket.split("").map(Number);
-          setResult(tmp);
+          if (handlePath() == "monthly") {
+            if (res.data.length > 0) {
+              const tmp_1: [] = res.data[0].winning_ticket[0].result_ticket_1
+                .split("")
+                .map(Number);
+
+              const tmp_2: [] = res.data[1].winning_ticket[0].result_ticket_1
+                .split("")
+                .map(Number);
+
+              const tmp_3: [] = res.data[2].winning_ticket[0].result_ticket_1
+                .split("")
+                .map(Number);
+              const combinedResults = [...tmp_1, ...tmp_2, ...tmp_3];
+              setResult(combinedResults);
+            }
+          } else {
+            const tmp: [] = res.data.data.result_ticket.split("").map(Number);
+            setResult(tmp);
+          }
         }
     });
   }, [winningTicketisLoading, use_winning_ticket]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      spinnerTimeline(name, setTimeLeft);
+      if (name === "Daily Spin") {
+        sessionStorage.setItem("timeline", "daily");
+        const countdownValues = dailyCountdown();
+        setTimeLeft(countdownValues);
+      } else if (name === "Weekly Spin") {
+        sessionStorage.setItem("timeline", "weekly");
+        const countdownValues = weeklyCountdown();
+        setTimeLeft(countdownValues);
+      } else {
+        sessionStorage.setItem("timeline", "monthly");
+        const countdownValues = monthlyCountdown();
+        setTimeLeft(countdownValues);
+      }
     }, 1000);
 
     return () => clearInterval(intervalId);
   }, [name]);
 
   useEffect(() => {
-    handleSpinner(
-      name,
-      result,
-      renderCount,
-      setWinningTicket,
-      setRenderCount,
-      setTmpSpinner
-    );
-  }, [renderCount, result, timeLeft.hours, tmp_spinner, name]);
-
-  useEffect(() => {
-    winnerData(handlePath())
-      .then((res) => {
-        setWinner(res.data.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, [name]);
+    if (result.length > 0)
+      handleSpinner(
+        name,
+        result,
+        renderCount,
+        handlePath() === "monthly" ? setMonthlyWinningTicket : setWinningTicket,
+        setRenderCount,
+        setTmpSpinner
+      );
+  }, [result, timeLeft.hours, tmp_spinner]);
+  // useEffect(() => {
+  //   winnerData(handlePath())
+  //     .then((res) => {
+  //       setWinner(res.data.data);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // }, [name]);
 
   return (
     isAuthenticated("user") && (
@@ -157,7 +215,7 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
             path={path}
             setBuyTicketWarningDlg={setBuyTicketWarningDlg}
           />
-          <Marquee data={winner} />
+          {/* <Marquee data={winner} /> */}
 
           <Box
             component={"div"}
@@ -172,7 +230,7 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
 
             {handlePath() === "monthly" ? (
               <>
-                <MonthlyWinningTicket winning_ticket={winning_ticket} />
+                <MonthlyWinningTicket winning_ticket={monthly_winning_ticket} />
               </>
             ) : (
               <WinningTicket winning_ticket={winning_ticket} />

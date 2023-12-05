@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "./login-user.css";
-import axios from "axios";
 import IconButton from "@mui/material/IconButton";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";

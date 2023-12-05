@@ -1,11 +1,9 @@
 import Box from "@mui/material/Box";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import "./Test.css";
-import axios from "axios";
 
 const SpinnerWheel: React.FC<{ value: number }> = ({ value }) => {
   const wheelRef = useRef<HTMLDivElement>(null);
-  const [result, setResult] = useState([6, 5, 2, 4]);
 
   const spinWheel = async (digit: number) => {
     if (wheelRef.current) {
@@ -39,19 +37,6 @@ const SpinnerWheel: React.FC<{ value: number }> = ({ value }) => {
       }
     }
   }, [value]);
-
-  const resultPublish = async () => {
-    await axios
-      .get("")
-      .then((res) => {
-        if (res.data) {
-          setResult([]);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
 
   const numberStyle = (i: number, clr: string): React.CSSProperties =>
     ({

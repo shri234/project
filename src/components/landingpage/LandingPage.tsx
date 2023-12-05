@@ -215,7 +215,7 @@ const LandingPage = () => {
                     mt: "4px",
                   }}
                 >
-                  "Win Upto 600 lakh"
+                  "Win Upto 6 lakh"
                 </Box>
               </Box>
               <Box
@@ -281,7 +281,10 @@ const LandingPage = () => {
                     mt: "4px",
                   }}
                 >
-                  <Box component={"div"}>
+                  <Box
+                    component={"div"}
+                    sx={{ display: { xs: "none", sm: "block" } }}
+                  >
                     "37 lakh or 10k <br />
                     per day upto 1 year"
                   </Box>

@@ -7,7 +7,7 @@ export const winningTicketPublish = async (path: string, body: any) => {
 
   return await axios
     .post(
-      `${process.env.REACT_APP_IP}/ticket/publishResult?date=${formatteddate}`,
+      `${process.env.REACT_APP_IP}/ticket/publish-${path}-result?date=${formatteddate}`,
       body
     )
     .then((res) => res)

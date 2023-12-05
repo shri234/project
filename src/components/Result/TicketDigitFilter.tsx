@@ -1,5 +1,4 @@
 import Box from "@mui/material/Box";
-import axios from "axios";
 import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { Ticket } from "./TicketPublish";
 import { minimumTicketFilter } from "../../api/minimumTicketFIlter";

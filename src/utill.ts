@@ -63,15 +63,11 @@ export const numbers = [
   { id: 9, value: 9 },
 ];
 
-export const weeklyCountdown = (
-  setTimeLeft: Dispatch<
-    SetStateAction<{
-      hours: string;
-      minutes: string;
-      seconds: string;
-    }>
-  >
-) => {
+export const weeklyCountdown = (): {
+  hours: string;
+  minutes: string;
+  seconds: string;
+} => {
   const now = new Date();
   const targetTime = new Date();
 
@@ -92,27 +88,22 @@ export const weeklyCountdown = (
   const minutes = Math.floor((diffInSeconds % 3600) / 60);
   const seconds = diffInSeconds % 60;
 
-  setTimeLeft({
+  return {
     hours: hours.toString().padStart(2, "0"),
     minutes: minutes.toString().padStart(2, "0"),
     seconds: seconds.toString().padStart(2, "0"),
-  });
+  };
 };
-export const dailyCountdown = (
-  setTimeLeft: Dispatch<
-    SetStateAction<{
-      hours: string;
-      minutes: string;
-      seconds: string;
-    }>
-  >
-) => {
+export const dailyCountdown = (): {
+  hours: string;
+  minutes: string;
+  seconds: string;
+} => {
   const now = new Date();
   const targetTime = new Date();
   if (now.getHours() >= 18) {
     targetTime.setDate(now.getDate() + 1);
   }
-
   targetTime.setHours(18, 0, 0, 0);
 
   const diffInSeconds = Math.round(
@@ -122,22 +113,18 @@ export const dailyCountdown = (
   const minutes = Math.floor((diffInSeconds % 3600) / 60);
   let seconds = diffInSeconds % 60;
 
-  setTimeLeft({
+  return {
     hours: hours.toString().padStart(2, "0"),
     minutes: minutes.toString().padStart(2, "0"),
     seconds: seconds.toString().padStart(2, "0"),
-  });
+  };
 };
 
-export const monthlyCountdown = (
-  setTimeLeft: Dispatch<
-    SetStateAction<{
-      hours: string;
-      minutes: string;
-      seconds: string;
-    }>
-  >
-) => {
+export const monthlyCountdown = (): {
+  hours: string;
+  minutes: string;
+  seconds: string;
+} => {
   const now = new Date();
   const targetTime = new Date();
 
@@ -151,33 +138,33 @@ export const monthlyCountdown = (
   const minutes = Math.floor((diffInSeconds % 3600) / 60);
   const seconds = diffInSeconds % 60;
 
-  setTimeLeft({
+  return {
     hours: hours.toString().padStart(2, "0"),
     minutes: minutes.toString().padStart(2, "0"),
     seconds: seconds.toString().padStart(2, "0"),
-  });
+  };
 };
-export const spinnerTimeline = (
-  name: string,
-  setTimeLeft: Dispatch<
-    SetStateAction<{
-      hours: string;
-      minutes: string;
-      seconds: string;
-    }>
-  >
-) => {
-  if (name === "Daily Spin") {
-    sessionStorage.setItem("timeline", "daily");
-    dailyCountdown(setTimeLeft);
-  } else if (name === "Weekly Spin") {
-    sessionStorage.setItem("timeline", "weekly");
-    weeklyCountdown(setTimeLeft);
-  } else {
-    sessionStorage.setItem("timeline", "monthly");
-    monthlyCountdown(setTimeLeft);
-  }
-};
+// export const spinnerTimeline = (
+//   name: string,
+//   setTimeLeft: Dispatch<
+//     SetStateAction<{
+//       hours: string;
+//       minutes: string;
+//       seconds: string;
+//     }>
+//   >
+// ) => {
+//   if (name === "Daily Spin") {
+//     sessionStorage.setItem("timeline", "daily");
+//     dailyCountdown();
+//   } else if (name === "Weekly Spin") {
+//     sessionStorage.setItem("timeline", "weekly");
+//     weeklyCountdown();
+//   } else {
+//     sessionStorage.setItem("timeline", "monthly");
+//     monthlyCountdown();
+//   }
+// };
 export const handleSpinner = (
   name: string,
   result: never[],
@@ -281,44 +268,111 @@ export const handleSpinner = (
       ]);
     }
     return true;
+  } else if (
+    name === "Monthly Spin" &&
+    new Date().getHours() === 9 &&
+    renderCount < 12
+  ) {
+    const intervalId = setInterval(() => {
+      setRenderCount((prevCount) => {
+        if (prevCount === 0) {
+          setWinningTicket((pre) =>
+            pre.map((ticket, index) =>
+              index === 0 ? { ...ticket, first: result[0] } : ticket
+            )
+          );
+        }
+        if (prevCount === 1) {
+          setWinningTicket((pre) =>
+            pre.map((ticket, index) =>
+              index === 0 ? { ...ticket, second: result[1] } : ticket
+            )
+          );
+        }
+        if (prevCount === 2) {
+          setWinningTicket((pre) =>
+            pre.map((ticket, index) =>
+              index === 0 ? { ...ticket, third: result[2] } : ticket
+            )
+          );
+        }
+        if (prevCount === 3) {
+          setWinningTicket((pre) =>
+            pre.map((ticket, index) =>
+              index === 0 ? { ...ticket, fourth: result[3] } : ticket
+            )
+          );
+        }
+
+        if (prevCount === 4) {
+          setWinningTicket((pre) =>
+            pre.map((ticket, index) =>
+              index === 1 ? { ...ticket, first: result[4] } : ticket
+            )
+          );
+        }
+        if (prevCount === 5) {
+          setWinningTicket((pre) =>
+            pre.map((ticket, index) =>
+              index === 1 ? { ...ticket, second: result[5] } : ticket
+            )
+          );
+        }
+        if (prevCount === 6) {
+          setWinningTicket((pre) =>
+            pre.map((ticket, index) =>
+              index === 1 ? { ...ticket, third: result[6] } : ticket
+            )
+          );
+        }
+        if (prevCount === 7) {
+          setWinningTicket((pre) =>
+            pre.map((ticket, index) =>
+              index === 1 ? { ...ticket, fourth: result[7] } : ticket
+            )
+          );
+        }
+        if (prevCount === 8) {
+          setWinningTicket((pre) =>
+            pre.map((ticket, index) =>
+              index === 2 ? { ...ticket, first: result[8] } : ticket
+            )
+          );
+        }
+        if (prevCount === 9) {
+          setWinningTicket((pre) =>
+            pre.map((ticket, index) =>
+              index === 2 ? { ...ticket, second: result[9] } : ticket
+            )
+          );
+        }
+        if (prevCount === 10) {
+          setWinningTicket((pre) =>
+            pre.map((ticket, index) =>
+              index === 2 ? { ...ticket, third: result[10] } : ticket
+            )
+          );
+        }
+        if (prevCount === 11) {
+          setWinningTicket((pre) =>
+            pre.map((ticket, index) =>
+              index === 2 ? { ...ticket, fourth: result[11] } : ticket
+            )
+          );
+        }
+        return prevCount + 1;
+      });
+    }, 8000);
+
+    setTmpSpinner(result[renderCount]);
+
+    return () => clearInterval(intervalId);
   } else {
-    if (new Date().getHours() === 18) {
-      const intervalId = setInterval(() => {
-        setRenderCount((prevCount) => {
-          if (prevCount === 0) {
-            setWinningTicket((pre) => ({
-              ...pre,
-              first: result[0],
-            }));
-          }
-          if (prevCount === 1) {
-            setWinningTicket((pre) => ({
-              ...pre,
-              second: result[1],
-            }));
-          }
-          if (prevCount === 2) {
-            setWinningTicket((pre) => ({
-              ...pre,
-              third: result[2],
-            }));
-          }
-          if (prevCount === 3) {
-            setWinningTicket((pre) => ({
-              ...pre,
-              fourth: result[3],
-            }));
-            clearInterval(intervalId);
-            return prevCount;
-          }
-          return prevCount + 1;
-        });
-      }, 8000);
-
-      setTmpSpinner(result[renderCount]);
-
-      return () => clearInterval(intervalId);
-    } else {
+    if (
+      name === "Daily Spin" &&
+      new Date().getHours() === 19 &&
+      dailyPublishResultIsAvailable()
+    )
       setWinningTicket([
         {
           first: null,
@@ -327,7 +381,33 @@ export const handleSpinner = (
           fourth: null,
         },
       ]);
-    }
+    else if (
+      name === "Weekly Spin" &&
+      new Date().getHours() === 20 &&
+      weeklyPublishResultIsAvailable()
+    )
+      setWinningTicket([
+        {
+          first: null,
+          second: null,
+          third: null,
+          fourth: null,
+        },
+      ]);
+    else if (
+      name === "Monthly Spin" &&
+      new Date().getHours() === 21 &&
+      renderCount === 12 &&
+      monthlyPublishResultIsAvailable()
+    )
+      setWinningTicket([
+        {
+          first: null,
+          second: null,
+          third: null,
+          fourth: null,
+        },
+      ]);
   }
 };
 
