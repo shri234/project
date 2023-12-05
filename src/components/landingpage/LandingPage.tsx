@@ -281,7 +281,10 @@ const LandingPage = () => {
                     mt: "4px",
                   }}
                 >
-                  <Box component={"div"}>
+                  <Box
+                    component={"div"}
+                    sx={{ display: { xs: "none", sm: "block" } }}
+                  >
                     "37 lakh or 10k <br />
                     per day upto 1 year"
                   </Box>

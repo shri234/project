@@ -8,7 +8,6 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import BackOfficeNavbar from "./NavBar";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
 import { CustomPagination } from "../custom-table/CustomPagination";
 import { CustomTableHead } from "../custom-table/CustomTableHead";

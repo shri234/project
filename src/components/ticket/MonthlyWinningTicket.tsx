@@ -1,10 +1,8 @@
 import { Box } from "@mui/material";
-import React, { FC } from "react";
+import { FC } from "react";
 import { WinningTicketInterface } from "./UserTicketBuy";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
-interface EventData {
-  result_ticket: string;
-}
+
 export const MonthlyWinningTicket: FC<{
   winning_ticket: WinningTicketInterface[];
 }> = ({ winning_ticket }) => {
@@ -57,61 +55,7 @@ export const MonthlyWinningTicket: FC<{
                   fontSize: "1.25rem",
                 }}
               >
-                1st:
-              </Box>
-              <ResultTicketDigit value={ticket.first} />
-              <ResultTicketDigit value={ticket.second} />
-              <ResultTicketDigit value={ticket.third} />
-              <ResultTicketDigit value={ticket.fourth} />
-            </Box>
-          );
-        })}
-        {winning_ticket.map((ticket, index) => {
-          return (
-            <Box
-              key={index}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Box
-                sx={{
-                  fontWeight: "bold",
-                  color: "#fff",
-                  pr: 1,
-                  fontSize: "1.25rem",
-                }}
-              >
-                2nd:
-              </Box>
-              <ResultTicketDigit value={ticket.first} />
-              <ResultTicketDigit value={ticket.second} />
-              <ResultTicketDigit value={ticket.third} />
-              <ResultTicketDigit value={ticket.fourth} />
-            </Box>
-          );
-        })}
-        {winning_ticket.map((ticket, index) => {
-          return (
-            <Box
-              key={index}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Box
-                sx={{
-                  fontWeight: "bold",
-                  color: "#fff",
-                  pr: 1,
-                  fontSize: "1.25rem",
-                }}
-              >
-                3rd:
+                {index + 1}st:
               </Box>
               <ResultTicketDigit value={ticket.first} />
               <ResultTicketDigit value={ticket.second} />

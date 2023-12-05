@@ -1,14 +1,11 @@
 import { Dispatch, FC, SetStateAction } from "react";
 import {
   dailyPublishResultIsAvailable,
-  is5pmto6pm,
   monthlyPublishResultIsAvailable,
   weeklyPublishResultIsAvailable,
 } from "../../utill";
 import Box from "@mui/material/Box";
 import { Input } from "@mui/material";
-import axios from "axios";
-import { winningTicketPublish } from "../../api/winningTicketPublish";
 
 export interface Ticket {
   firstdigit: string;
@@ -28,38 +25,14 @@ export const TicketPublish: FC<{
   setTicket: Dispatch<SetStateAction<Ticket>>;
   setLoader: Dispatch<SetStateAction<boolean>>;
   path: string;
-}> = ({ ticket, setTicket, setLoader, path }) => {
+  handlePublishResult: () => Promise<void>;
+}> = ({ ticket, setTicket, setLoader, path, handlePublishResult }) => {
   const handlePath = () => {
     return path === "Daily"
       ? "daily"
       : path === "Weekly"
       ? "weekly"
       : "monthly";
-  };
-
-  const handlePublishResult = async () => {
-    setLoader(true);
-    const body = [
-      { digit: ticket.firstdigit },
-      { digit: ticket.seconddigit },
-      { digit: ticket.thirddigit },
-      { digit: ticket.fourthdigit },
-    ];
-
-    await winningTicketPublish(handlePath(), body)
-      .then((res) => {
-        setLoader(false);
-        if (res.status === 200) {
-          window.alert(
-            `Result Published successfully! There are ${res.data.Winners} winners.`
-          );
-        }
-        window.location.href = "/daily-result";
-      })
-      .catch((error) => {
-        setLoader(false);
-        console.log(error);
-      });
   };
 
   return (
@@ -117,7 +90,6 @@ export const TicketPublish: FC<{
       </Box>
       <Box
         onClick={() => {
-          const now = new Date();
           if (
             (handlePath() === "daily" && dailyPublishResultIsAvailable()) ||
             (handlePath() === "weekly" && weeklyPublishResultIsAvailable()) ||
@@ -179,6 +151,7 @@ export const PublishTicketDigit: FC<{
           width: "40px",
           borderRadius: "5px",
           border: "none",
+          textAlign: "center",
           boxShadow: `rgba(0, 0, 0, 0.35) 0px 0px 5px;`,
         }}
       />

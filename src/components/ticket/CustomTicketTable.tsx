@@ -8,9 +8,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { NoDataFoundTable } from "../custom-table/NoDataFound";
-import { tableTicketDatas } from "../../api/tableTicketdatas";
 import useTableTicketData from "../../swr/table_ticket_data";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({

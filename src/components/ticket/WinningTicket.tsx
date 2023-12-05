@@ -2,9 +2,7 @@ import { Box } from "@mui/material";
 import React, { FC } from "react";
 import { WinningTicketInterface } from "./UserTicketBuy";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
-interface EventData {
-  result_ticket: string;
-}
+
 export const WinningTicket: FC<{
   winning_ticket: WinningTicketInterface[];
 }> = ({ winning_ticket }) => {
