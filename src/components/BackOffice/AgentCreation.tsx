@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import BackOfficeNavbar from "./NavBar";
-import axios from "axios";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import "./AgentCreate.css";

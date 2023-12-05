@@ -1,17 +1,20 @@
 import Box from "@mui/material/Box";
 import {
+  STATUS,
   dailyPublishTicketRateIsAvailable,
-  is5pmto6pm,
+  dialog_timeout,
   monthlyPublishTicketRateIsAvailable,
   weeklyPublishTicketRateIsAvailable,
 } from "../../utill";
-import axios from "axios";
 import { FC, useEffect, useState } from "react";
 import { ticketPriceData } from "../../api/ticketPriceRate";
 import { publishTicketRate } from "../../api/publishTicketRate";
+import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
 
 export const TicketRatePublish: FC<{ path: string }> = ({ path }) => {
   const [ticketrate, setTicketRate] = useState<string>("");
+  const [status, setStatus] = useState(false);
+  // const [is_ticket_published, setTicketPublished] = useState(false);
   const handlePath = () => {
     return path === "Daily"
       ? "daily"
@@ -24,22 +27,34 @@ export const TicketRatePublish: FC<{ path: string }> = ({ path }) => {
 
     await publishTicketRate(handlePath(), body)
       .then(() => {
-        window.alert("Success! Ticket rate added");
+        setStatus(true);
+        handleTicketPrice();
+        setTimeout(() => {
+          setStatus(false);
+        }, dialog_timeout);
       })
       .catch((error) => {
         console.log(error);
       });
   };
 
+  const handleTicketPrice = async () => {
+    await ticketPriceData(handlePath())
+      .then((res) => {
+        console.log(res);
+
+        if (res.data) {
+          if (res.data.data.ticketRate !== 0)
+            setTicketRate(res.data.data.ticketRate);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   useEffect(() => {
     (async () => {
-      await ticketPriceData(handlePath())
-        .then((res) => {
-          setTicketRate(res.data.data.ticketRate);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      handleTicketPrice();
     })();
   }, []);
 
@@ -75,6 +90,7 @@ export const TicketRatePublish: FC<{ path: string }> = ({ path }) => {
         </Box>
         <Box>
           <input
+            min={0}
             type="number"
             value={ticketrate}
             onChange={(e) => setTicketRate(e.target.value)}
@@ -121,6 +137,13 @@ export const TicketRatePublish: FC<{ path: string }> = ({ path }) => {
       >
         Publish
       </Box>
+      {status && (
+        <CustomizedStatusDialogs
+          setOpenStatusDlg={setStatus}
+          description="Ticket Price added successfully..."
+          status={STATUS.SUCCESS}
+        />
+      )}
     </Box>
   );
 };

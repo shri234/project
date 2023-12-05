@@ -415,7 +415,7 @@ export const dailyPublishTicketRateIsAvailable = (): boolean => {
   const now = new Date();
   const currentHour = now.getHours();
   const currentMinute = now.getMinutes();
-  if (currentHour === 18 && currentMinute >= 0 && currentMinute <= 59) {
+  if (currentHour === 1 && currentMinute >= 0 && currentMinute <= 59) {
     return true;
   }
   return false;
@@ -425,7 +425,7 @@ export const dailyPublishResultIsAvailable = (): boolean => {
   const now = new Date();
   const currentHour = now.getHours();
   const currentMinute = now.getMinutes();
-  if (currentHour === 17 && currentMinute >= 0 && currentMinute <= 59) {
+  if (currentHour === 18 && currentMinute >= 0 && currentMinute <= 59) {
     return true;
   }
   return false;
@@ -437,7 +437,7 @@ export function weeklyPublishResultIsAvailable(): boolean {
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
 
-    if (currentHour === 18 && currentMinute >= 0 && currentMinute <= 59) {
+    if (currentHour === 19 && currentMinute >= 0 && currentMinute <= 59) {
       return true;
     }
   }
@@ -450,7 +450,7 @@ export function weeklyPublishTicketRateIsAvailable(): boolean {
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
 
-    if (currentHour === 19 && currentMinute >= 0 && currentMinute <= 59) {
+    if (currentHour === 18 && currentMinute >= 0 && currentMinute <= 59) {
       return true;
     }
   }
@@ -468,7 +468,7 @@ export function monthlyPublishResultIsAvailable(): boolean {
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
 
-    if (currentHour === 19 && currentMinute >= 0 && currentMinute <= 59) {
+    if (currentHour === 20 && currentMinute >= 0 && currentMinute <= 59) {
       return true;
     }
   }
@@ -486,7 +486,7 @@ export function monthlyPublishTicketRateIsAvailable(): boolean {
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
 
-    if (currentHour === 20 && currentMinute >= 0 && currentMinute <= 59) {
+    if (currentHour === 19 && currentMinute >= 0 && currentMinute <= 59) {
       return true;
     }
   }

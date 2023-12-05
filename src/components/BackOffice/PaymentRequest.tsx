@@ -9,7 +9,6 @@ import Paper from "@mui/material/Paper";
 import { Button, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
 import BackOfficeNavbar from "./NavBar";
 import Loader from "../loader/Loader";

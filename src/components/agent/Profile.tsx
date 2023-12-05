@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import axios from "axios";
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
 import { handleLogout } from "../../utill";
 import Loader from "../loader/Loader";

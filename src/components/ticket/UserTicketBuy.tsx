@@ -4,7 +4,7 @@ import TicketNavBar from "./TicketNavbar";
 import { FC, useEffect } from "react";
 import React, { useState } from "react";
 import SpinnerWheel from "../Test";
-import Marquee from "./marque";
+// import Marquee from "./marque";
 
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
 import Loader from "../loader/Loader";
@@ -14,7 +14,7 @@ import { TicketBuy } from "./TicketBuy";
 import { CountDown } from "./CountDown";
 import { TicketCountandBuyTicket } from "./TicketCountAndBuyTicket";
 import { WinningTicket } from "./WinningTicket";
-import { winnerData } from "../../api/winnerData";
+// import { winnerData } from "../../api/winnerData";
 import useUserWalletAndTicketCount from "../../swr/wallet_ticket_count";
 import useWinningTicket from "../../swr/winningTicket";
 import {
@@ -59,7 +59,7 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
     minutes: "",
     seconds: "",
   });
-  const [winner, setWinner] = useState("");
+  // const [winner, setWinner] = useState("");
 
   const [open, setOpen] = React.useState(false);
   const [result, setResult] = useState([]);
@@ -127,7 +127,7 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
     winningTicketRefresh().then((res) => {
       if (res !== undefined)
         if (res.data !== undefined && res.data !== null) {
-          if (handlePath() == "monthly") {
+          if (handlePath() === "monthly") {
             if (res.data.length > 0) {
               const tmp_1: [] = res.data[0].winning_ticket[0].result_ticket_1
                 .split("")
@@ -144,8 +144,10 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
               setResult(combinedResults);
             }
           } else {
-            const tmp: [] = res.data.data.result_ticket.split("").map(Number);
-            setResult(tmp);
+            if (res.data) {
+              const tmp: [] = res.data.data.result_ticket.split("").map(Number);
+              setResult(tmp);
+            }
           }
         }
     });

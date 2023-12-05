@@ -48,7 +48,7 @@ export default function PayInModal({
               alignItems: "center",
             }}
           >
-            <img src="/qr.jpeg" className="payment-qr" />
+            <img src="/qr.jpeg" className="payment-qr" alt="payment-qr" />
           </Box>
           <Box
             component={"div"}
@@ -60,7 +60,7 @@ export default function PayInModal({
             }}
           >
             <Box>
-              <img src="/star.svg" height={20} width={20} />{" "}
+              <img src="/star.svg" alt="star" height={20} width={20} />{" "}
             </Box>
             <Box
               component={"div"}
@@ -80,7 +80,7 @@ export default function PayInModal({
             }}
           >
             <Box>
-              <img src="/star.svg" height={20} width={20} />{" "}
+              <img src="/star.svg" alt="star" height={20} width={20} />{" "}
             </Box>
             <Box sx={{ textAlign: "justify", fontWeight: "600" }}>
               Any queries text me at whatsapp on the above number
