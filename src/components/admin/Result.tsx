@@ -276,7 +276,9 @@ const Result: FC<{ title: string }> = ({ title }) => {
               <>
                 <TicketRatePublish path={title} />
 
-                <WinningPriceTicket path={title} />
+                {handlePath() !== "monthly" && (
+                  <WinningPriceTicket path={title} />
+                )}
               </>
             )}
           </Box>

@@ -85,7 +85,7 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
       if (walletamount >= ticket_count * ticket_price) {
         const body = { ticketCount: alreadyticketcount + ticket_count };
 
-        await buyTicketCount(body)
+        await buyTicketCount(body, handlePath())
           .then(async () => {
             setStatus(true);
             setStatusDlg((prevStatus) => ({

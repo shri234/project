@@ -8,32 +8,32 @@ import CopyRight from "../copyright/CopyRight";
 
 const winnersData = [
   {
-    name: "MARIA FERGUSON",
+    name: "Sumathi",
     imageUrl: "/winner_1.jpeg",
     amountWon: "1,00,000",
   },
   {
-    name: "JOHN DOE",
+    name: "Priya",
     imageUrl: "/winner_2.jpeg",
     amountWon: "2,00,000",
   },
   {
-    name: "PETER SMITH",
+    name: "Vivek",
     imageUrl: "/winner_3.jpeg",
     amountWon: "5,00,000",
   },
   {
-    name: "SUSAN ANDERSEN",
+    name: "Sid",
     imageUrl: "/winner_4.jpeg",
     amountWon: "4,00,000",
   },
   {
-    name: "SUSAN ANDERSEN",
+    name: "Soniya",
     imageUrl: "/winner_5.jpeg",
     amountWon: "4,00,000",
   },
   {
-    name: "SUSAN ANDERSEN",
+    name: "John",
     imageUrl: "/winner_6.jpeg",
     amountWon: "4,00,000",
   },

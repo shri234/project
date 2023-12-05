@@ -13,7 +13,6 @@ import { TicketResult } from "./PlayHistory";
 import { NoDataFoundTable } from "../custom-table/NoDataFound";
 import { TableLoader } from "../custom-table/TableLoader";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import Loader from "../loader/Loader";
 import { getAllTicketHistoryData } from "../../api/getAllTicketHistoryData";
 

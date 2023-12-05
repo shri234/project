@@ -56,7 +56,7 @@ const Contact: React.FC = () => {
             setStatus(false);
           }, dialog_timeout);
 
-          window.location.href = "/";
+          // window.location.href = "/";
         })
         .catch((error) => {
           console.log(error);
