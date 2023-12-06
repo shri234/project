@@ -7,7 +7,15 @@ import Loader from "../loader/Loader";
 
 export const TicketBuy: FC<{
   ticketcount: number;
-}> = ({ ticketcount }) => {
+  name: string;
+}> = ({ ticketcount, name }) => {
+  const handlePath = (): string => {
+    return name === "Daily Spin"
+      ? "daily"
+      : name === "Weekly Spin"
+      ? "weekly"
+      : "monthly";
+  };
   const [ticket, setTicket] = useState<any[]>([]);
   const [status_dlg, setOpenStatusDlg] = useState(false);
   const [loader, setLoader] = useState(false);
@@ -35,7 +43,10 @@ export const TicketBuy: FC<{
   const handleBuyTicket = async () => {
     const body = { ticket: ticket, userId: sessionStorage.getItem("userId") };
     await axios
-      .post(`${process.env.REACT_APP_IP}/ticket/addticket`, body)
+      .post(
+        `${process.env.REACT_APP_IP}/ticket/add-${handlePath()}-ticket`,
+        body
+      )
       .then((res) => {
         setLoader(false);
         if (res.status === 200) {
@@ -52,7 +63,7 @@ export const TicketBuy: FC<{
             }));
           }, 6000);
         }
-        window.location.href = "/daily";
+        window.location.href = `/${handlePath()}`;
       })
       .catch((error) => {
         setLoader(false);

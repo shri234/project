@@ -131,7 +131,25 @@ const AgentPlayHistory = () => {
                         <TableCell align="center" sx={{ display: "flex" }}>
                           {row.ticket.map((value: any) => {
                             return (
-                              <TicketResult value={value} key={value.id} />
+                              <Box
+                                component={"div"}
+                                sx={{
+                                  // height: "20px",
+                                  // width: "20px",
+                                  p: 0.2,
+                                  fontWeight: "bold",
+                                  // color: "#fff",
+                                  // background:
+                                  //   value.value.status === "true"
+                                  //     ? "green"
+                                  //     : value.value.status === "null"
+                                  //     ? "grey"
+                                  //     : "red",
+                                  // borderRadius: "50%",
+                                }}
+                              >
+                                {value.digit}
+                              </Box>
                             );
                           })}
                         </TableCell>

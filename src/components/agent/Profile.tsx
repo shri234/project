@@ -27,6 +27,7 @@ const AgentProfile = () => {
           setAgentName(res.data.data.username);
           setAgentPhone(res.data.data.mobileNumber);
           setAgentCode(res.data.data.agentId);
+          setAgentEmail(res.data.data.email);
           setOpenLoader(false);
         })
         .catch((error) => {

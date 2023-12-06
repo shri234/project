@@ -28,7 +28,6 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
   const [ticket_count, setTicketCount] = useState(0);
   const [walletamount, setWalletAmount] = useState(0);
   const [ticket_price, setTicketprice] = useState(0);
-  const [alreadyticketcount, setBeforeTicketCount] = useState(0);
   const [alreadyticketcount1, setAlreadyTicketCount] = useState(0);
   const [status, setStatus] = useState(false);
   const [status_dlg, setStatusDlg] = useState({
@@ -56,7 +55,7 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
   }, [isLoading, user_wallet_and_ticket_count]);
 
   const increaseCount = () => {
-    if (ticket_count < 15 - alreadyticketcount) {
+    if (ticket_count < 15 - alreadyticketcount1) {
       setTicketCount(ticket_count + 1);
     } else {
       setStatus(true);
@@ -83,7 +82,7 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
   const handleBuyTicket = async () => {
     if (alreadyticketcount1 + ticket_count <= 15 && ticket_price > 0) {
       if (walletamount >= ticket_count * ticket_price) {
-        const body = { ticketCount: alreadyticketcount + ticket_count };
+        const body = { ticketCount: alreadyticketcount1 + ticket_count };
 
         await buyTicketCount(body, handlePath())
           .then(async () => {
@@ -109,7 +108,7 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
               body
             );
 
-            window.location.href = "/daily-buy-ticket";
+            // window.location.href = `/${handlePath()}-buy-ticket`;
           })
           .catch((error) => {
             console.log(error);

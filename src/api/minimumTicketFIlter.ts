@@ -1,8 +1,10 @@
 import axios from "axios";
+import { Ticket } from "../components/Result/TicketPublish";
 
 export const minimumTicketFilter = async (
   path: string,
-  filter_value: number
+  filter_value: number,
+  ticket: Ticket
 ) => {
   const formatteddate = `${new Date().getFullYear()}-${
     new Date().getMonth() + 1
@@ -17,9 +19,10 @@ export const minimumTicketFilter = async (
         "digit1"
       )}&digit2=${sessionStorage.getItem(
         "digit2"
-      )}&digit3=${sessionStorage.getItem(
-        "digit3"
-      )}&date=${formatteddate}&filter_value=${filter_value}`,
+      )}&digit3=${sessionStorage.getItem("digit3")}&value1=${
+        ticket.firstdigit
+      }&value2=${ticket.seconddigit}&value3=${ticket.thirddigit}
+      &date=${formatteddate}&filter_value=${filter_value}`,
       {
         headers: {
           "Content-Type": "application/json",
