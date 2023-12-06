@@ -11,7 +11,7 @@ function useTableTicketData(path: string) {
       process.env.REACT_APP_IP
     }/ticket/get-${path}-tickets?userId=${sessionStorage.getItem(
       "userId"
-    )}&&date=${formatteddate}`,
+    )}&date=${formatteddate}`,
     fetcher
   );
 

@@ -58,7 +58,7 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
           ? handlePath() === "daily"
             ? res.data.dailyTicketCount
             : handlePath() === "weekly"
-            ? res.data.alreadyWeeklyTicketCount
+            ? res.data.weeklyTicketCount
             : handlePath() === "monthly"
             ? res.data.alreadyMonthlyTicketCount
             : 0
