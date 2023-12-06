@@ -433,11 +433,11 @@ export const dailyPublishResultIsAvailable = (): boolean => {
 
 export function weeklyPublishResultIsAvailable(): boolean {
   const now = new Date();
-  if (now.getDay() === 5) {
+  if (now.getDay()) {
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
 
-    if (currentHour === 19 && currentMinute >= 0 && currentMinute <= 59) {
+    if (currentHour === 23 && currentMinute >= 0 && currentMinute <= 59) {
       return true;
     }
   }
