@@ -24,6 +24,7 @@ import {
   weeklyCountdown,
 } from "../../utill";
 import { MonthlyWinningTicket } from "./MonthlyWinningTicket";
+import { walletData } from "../../api/getWalletAmount";
 
 export interface WinningTicketInterface {
   first: null | number;
@@ -102,10 +103,9 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
     refetch().then((res) => {
       if (res) {
         if (res.data !== null && res.data !== undefined) {
-          setWalletAmount(
-            res.data !== undefined && res.data !== null ? res.data.amount : 0
-          );
-
+          // setWalletAmount(
+          //   res.data !== undefined && res.data !== null ? res.data.amount : 0
+          // );
           setTicketCount(
             res.data !== undefined && res.data !== null
               ? handlePath() === "daily"
@@ -196,6 +196,19 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
   //       console.log(error);
   //     });
   // }, [name]);
+
+  useEffect(() => {
+    (async () => {
+      await walletData()
+        .then((res) => {
+          console.log(res.data)
+          setWalletAmount(res.data.data.amount);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    })();
+  }, []);
 
   return (
     isAuthenticated("user") && (
