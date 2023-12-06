@@ -60,7 +60,6 @@ const AgentCreation = () => {
 
   const handleUserNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newUserName = event.target.value;
-    console.log(userNameRegex.test(newUserName), "Username");
     setName(newUserName);
     setFormErrors({
       ...formErrors,

@@ -1,5 +1,5 @@
 import { Box, Divider } from "@mui/material";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 
 import MasterNavbar from "./Navbar";
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
@@ -13,6 +13,7 @@ import { TicketFilter } from "../Result/TicketFilter";
 import { winningTicketPublish } from "../../api/winningTicketPublish";
 import { monthlyPublishResultIsAvailable } from "../../utill";
 import { MonthlyTicketPublish } from "../Result/MonthlyPublishTicket";
+import { winningTicket } from "../../api/winningTicket";
 
 const MasterResult: FC<{ title: string }> = ({ title }) => {
   const handlePath = () => {
@@ -108,6 +109,75 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
         console.log(error);
       });
   };
+
+  useEffect(() => {
+    winningTicket(handlePath())
+      .then((res) => {
+        if (handlePath() === "monthly") {
+          if (res.data.length > 0) {
+            const tmp_1: string[] =
+              res.data[0].winning_ticket[0].result_ticket_1.split("");
+            if (tmp_1.length > 0) {
+              setMonthlyTicket1(
+                (pre) =>
+                  ({
+                    ...pre,
+                    firstdigit: tmp_1.length > 0 ? tmp_1[0] : "",
+                    seconddigit: tmp_1.length > 0 ? tmp_1[1] : "",
+                    thirddigit: tmp_1.length > 0 ? tmp_1[2] : "",
+                    fourthdigit: tmp_1.length > 0 ? tmp_1[3] : "",
+                  } as Ticket)
+              );
+            }
+            const tmp_2: string[] =
+              res.data[1].winning_ticket[0].result_ticket_1.split("");
+
+            if (tmp_2.length > 0) {
+              setMonthlyTicket2(
+                (pre) =>
+                  ({
+                    ...pre,
+                    firstdigit: tmp_2.length > 0 ? tmp_2[0] : "",
+                    seconddigit: tmp_2.length > 0 ? tmp_2[1] : "",
+                    thirddigit: tmp_2.length > 0 ? tmp_2[2] : "",
+                    fourthdigit: tmp_2.length > 0 ? tmp_2[3] : "",
+                  } as Ticket)
+              );
+            }
+            const tmp_3: string[] =
+              res.data[2].winning_ticket[0].result_ticket_1.split("");
+            if (tmp_2.length > 0) {
+              setMonthlyTicket3(
+                (pre) =>
+                  ({
+                    ...pre,
+                    firstdigit: tmp_3.length > 0 ? tmp_3[0] : "",
+                    seconddigit: tmp_3.length > 0 ? tmp_3[1] : "",
+                    thirddigit: tmp_3.length > 0 ? tmp_3[2] : "",
+                    fourthdigit: tmp_3.length > 0 ? tmp_3[3] : "",
+                  } as Ticket)
+              );
+            }
+          }
+        }
+        if (res.data.data) {
+          const tmp: string[] = res.data.data.result_ticket.split("");
+          if (tmp.length > 0)
+            setTicket(
+              (pre) =>
+                ({
+                  ...pre,
+                  firstdigit: tmp.length > 0 ? tmp[0] : "",
+                  seconddigit: tmp.length > 0 ? tmp[1] : "",
+                  thirddigit: tmp.length > 0 ? tmp[2] : "",
+                  fourthdigit: tmp.length > 0 ? tmp[3] : "",
+                } as Ticket)
+            );
+        }
+      })
+      .catch((error) => {});
+  }, []);
+
   return (
     isAuthenticated("master") && (
       <Box>

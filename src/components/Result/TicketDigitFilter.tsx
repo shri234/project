@@ -23,7 +23,7 @@ const TicketDigitFilter: FC<{
   };
 
   useEffect(() => {
-    minimumTicketFilter(handlePath(), filter_value)
+    minimumTicketFilter(handlePath(), filter_value, ticket)
       .then((res) => {
         setDigits(res.data.data);
         if (ticket[name as keyof Ticket].length === 0)

@@ -98,7 +98,6 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
   ]);
   const [renderCount, setRenderCount] = useState(0);
   const [tmp_spinner, setTmpSpinner] = useState(0);
-
   useEffect(() => {
     refetch().then((res) => {
       if (res) {
@@ -144,9 +143,13 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
               setResult(combinedResults);
             }
           } else {
-            if (res.data) {
-              const tmp: [] = res.data.data.result_ticket.split("").map(Number);
-              setResult(tmp);
+            if (res.data.data) {
+              if (res.data.data.result_ticket !== undefined) {
+                const tmp: [] = res.data.data.result_ticket
+                  .split("")
+                  .map(Number);
+                setResult(tmp);
+              }
             }
           }
         }
@@ -249,7 +252,7 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
           >
             <SpinnerWheel value={tmp_spinner} />
           </Box>
-          <TicketBuy ticketcount={ticketcount} />
+          <TicketBuy ticketcount={ticketcount} name={name} />
           <CustomizedTables name={name} />
         </Box>
       </Box>
