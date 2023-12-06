@@ -12,6 +12,7 @@ import { STATUS } from "../../utill";
 import { ticketPriceData } from "../../api/ticketPriceRate";
 import useUserWalletAndTicketCount from "../../swr/wallet_ticket_count";
 import { buyTicketCount } from "../../api/buyTicketCount";
+import { walletData } from "../../api/getWalletAmount";
 
 const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
   const handlePath = (): string => {
@@ -29,6 +30,7 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
   const [walletamount, setWalletAmount] = useState(0);
   const [ticket_price, setTicketprice] = useState(0);
   const [alreadyticketcount1, setAlreadyTicketCount] = useState(0);
+  const [alreadyticketcount, setAlreadyTicketCount1] = useState(0);
   const [status, setStatus] = useState(false);
   const [status_dlg, setStatusDlg] = useState({
     error: false,
@@ -39,7 +41,7 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
 
   useEffect(() => {
     refetch().then((res) => {
-      setWalletAmount(res !== undefined ? res.data.amount : 0);
+      // setWalletAmount(res !== undefined ? res.data.amount : 0);
       setAlreadyTicketCount(
         res !== undefined
           ? handlePath() === "daily"
@@ -51,6 +53,17 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
             : 0
           : 0
       );
+      setAlreadyTicketCount1(
+        res !== undefined
+          ? handlePath() === "daily"
+            ? res.data.dailyTicketCount
+            : handlePath() === "weekly"
+            ? res.data.alreadyWeeklyTicketCount
+            : handlePath() === "monthly"
+            ? res.data.alreadyMonthlyTicketCount
+            : 0
+          : 0
+      )
     });
   }, [isLoading, user_wallet_and_ticket_count]);
 
@@ -81,9 +94,10 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
 
   const handleBuyTicket = async () => {
     if (alreadyticketcount1 + ticket_count <= 15 && ticket_price > 0) {
+     
       if (walletamount >= ticket_count * ticket_price) {
-        const body = { ticketCount: alreadyticketcount1 + ticket_count };
-
+        const body = { ticketCount: ticket_count,userId:sessionStorage.getItem("userId") };
+        console.log(alreadyticketcount1)
         await buyTicketCount(body, handlePath())
           .then(async () => {
             setStatus(true);
@@ -108,7 +122,7 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
               body
             );
 
-            // window.location.href = `/${handlePath()}-buy-ticket`;
+            window.location.href = `/${handlePath()}-buy-ticket`;
           })
           .catch((error) => {
             console.log(error);
@@ -148,6 +162,18 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
       await ticketPriceData(handlePath())
         .then((res) => {
           setTicketprice(res.data.data.ticketRate);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      await walletData()
+        .then((res) => {
+          setWalletAmount(res.data.data.amount);
         })
         .catch((error) => {
           console.log(error);

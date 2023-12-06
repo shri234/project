@@ -13,3 +13,4 @@ export const buyTicketCount = async (body: any, path: string) => {
     .then((res) => res)
     .catch((error) => error);
 };
+
