@@ -12,13 +12,20 @@ import { CustomTableHead } from "../custom-table/CustomTableHead";
 import { TicketResult } from "./PlayHistory";
 import { NoDataFoundTable } from "../custom-table/NoDataFound";
 import { TableLoader } from "../custom-table/TableLoader";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import Loader from "../loader/Loader";
 import { getAllTicketHistoryData } from "../../api/getAllTicketHistoryData";
 
 const table_head = ["S.No", "Username", "Ticket"];
 
-const MasterHistoryTable = () => {
+const MasterHistoryTable: FC<{ path: string }> = ({ path }) => {
+  const handlePath = () => {
+    return path === "Daily"
+      ? "daily"
+      : path === "Weekly"
+      ? "weekly"
+      : "monthly";
+  };
   const [current_page, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [history_data, setHistoryData] = useState<any[]>([]);
@@ -28,7 +35,7 @@ const MasterHistoryTable = () => {
   useEffect(() => {
     setOpenLoader(true);
     (async () => {
-      await getAllTicketHistoryData(current_page)
+      await getAllTicketHistoryData(current_page, handlePath())
         .then((response) => {
           setHistoryData(response.data.data);
 
@@ -44,7 +51,6 @@ const MasterHistoryTable = () => {
         })
         .catch((err) => {
           setOpenTableLoader(false);
-          console.log(err);
         });
     })();
   }, []);
@@ -52,7 +58,7 @@ const MasterHistoryTable = () => {
   useEffect(() => {
     setOpenTableLoader(true);
     (async () => {
-      await getAllTicketHistoryData(current_page)
+      await getAllTicketHistoryData(current_page, handlePath())
         .then((response) => {
           setHistoryData(response.data.data);
 
@@ -68,7 +74,6 @@ const MasterHistoryTable = () => {
         })
         .catch((err) => {
           setOpenTableLoader(false);
-          console.log(err);
         });
     })();
   }, [current_page]);

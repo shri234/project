@@ -8,9 +8,11 @@ import { TicketFilter } from "../Result/TicketFilter";
 import { TicketRatePublish } from "../Result/TicketRatePublish";
 import { WinningPriceTicket } from "../Result/WinningPrice";
 import { winningTicketPublish } from "../../api/winningTicketPublish";
-import { dailyPublishResultIsAvailable } from "../../utill";
+import { STATUS, dailyPublishResultIsAvailable } from "../../utill";
 import { MonthlyTicketPublish } from "../Result/MonthlyPublishTicket";
 import { winningTicket } from "../../api/winningTicket";
+import usePriceData from "../../swr/price_data";
+import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
 
 const Result: FC<{ title: string }> = ({ title }) => {
   const handlePath = () => {
@@ -20,6 +22,15 @@ const Result: FC<{ title: string }> = ({ title }) => {
       ? "weekly"
       : "monthly";
   };
+  const { price_data, pricedataIsLoading, pricedataRefetch } = usePriceData(
+    handlePath()
+  );
+  const [price, setPrice] = useState({
+    priceFirstDigit: "",
+    priceSecondDigit: "",
+    priceThirdDigit: "",
+    priceFourthDigit: "",
+  });
   const [ticket, setTicket] = useState<Ticket>({
     firstdigit: "",
     seconddigit: "",
@@ -48,8 +59,22 @@ const Result: FC<{ title: string }> = ({ title }) => {
   const [result_or_ticket, setStatus] = useState("");
 
   const [loader, setLoader] = useState(false);
-
+  const [open_publish_dlg, setOpenPublishDlg] = useState(false);
+  const isPriceRatePublished = () => {
+    if (
+      price.priceFirstDigit &&
+      price.priceSecondDigit &&
+      price.priceThirdDigit &&
+      price.priceFourthDigit
+    )
+      return true;
+    return false;
+  };
   const handlePublishResult = async () => {
+    if (!isPriceRatePublished()) {
+      setOpenPublishDlg(true);
+      return;
+    }
     setLoader(true);
     const body = [
       { digit: ticket.firstdigit },
@@ -97,6 +122,18 @@ const Result: FC<{ title: string }> = ({ title }) => {
         console.log(error);
       });
   };
+
+  useEffect(() => {
+    pricedataRefetch().then((res) => {
+      if (res?.data?.priceRate_splitup)
+        setPrice({
+          priceFirstDigit: res.data.priceRate_splitup[0].first_digit,
+          priceSecondDigit: res.data.priceRate_splitup[0].second_digit,
+          priceThirdDigit: res.data.priceRate_splitup[0].third_digit,
+          priceFourthDigit: res.data.priceRate_splitup[0].fourth_digit,
+        });
+    });
+  }, [price_data, pricedataIsLoading]);
 
   useEffect(() => {
     winningTicket(handlePath())
@@ -171,6 +208,13 @@ const Result: FC<{ title: string }> = ({ title }) => {
       <Box>
         <BackOfficeNavbar path="/admin" />
         {loader && <Loader />}
+        {open_publish_dlg && (
+          <CustomizedStatusDialogs
+            setOpenStatusDlg={setOpenPublishDlg}
+            description="Price Rate need to publish"
+            status={STATUS.WARNING}
+          />
+        )}
         <Box
           component={"div"}
           sx={{
@@ -337,6 +381,7 @@ const Result: FC<{ title: string }> = ({ title }) => {
                     setTicket={setTicket}
                     path={title}
                     handlePublishResult={handlePublishResult}
+                    isPriceRatePublished={isPriceRatePublished()}
                   />
                 )}
               </>

@@ -8,11 +8,11 @@ function useWinningTicket(path: string) {
   );
 
   return {
-    use_winning_ticket: data,
+    user_winning_ticket: data,
     winningTicketisLoading: !data && !error,
     isError: error,
     isValidating,
-    winningTicketRefetch: mutate,
+    userWinningTicketRefetch: mutate,
   };
 }
 

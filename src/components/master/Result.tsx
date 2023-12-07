@@ -11,9 +11,11 @@ import { TicketRatePublish } from "../Result/TicketRatePublish";
 import { WinningPriceTicket } from "../Result/WinningPrice";
 import { TicketFilter } from "../Result/TicketFilter";
 import { winningTicketPublish } from "../../api/winningTicketPublish";
-import { monthlyPublishResultIsAvailable } from "../../utill";
+import { STATUS, monthlyPublishResultIsAvailable } from "../../utill";
 import { MonthlyTicketPublish } from "../Result/MonthlyPublishTicket";
 import { winningTicket } from "../../api/winningTicket";
+import usePriceData from "../../swr/price_data";
+import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
 
 const MasterResult: FC<{ title: string }> = ({ title }) => {
   const handlePath = () => {
@@ -23,6 +25,15 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
       ? "weekly"
       : "monthly";
   };
+  const { price_data, pricedataIsLoading, pricedataRefetch } = usePriceData(
+    handlePath()
+  );
+  const [price, setPrice] = useState({
+    priceFirstDigit: "",
+    priceSecondDigit: "",
+    priceThirdDigit: "",
+    priceFourthDigit: "",
+  });
   const [ticket, setTicket] = useState<Ticket>({
     firstdigit: "",
     seconddigit: "",
@@ -49,10 +60,25 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
   });
 
   const [result_or_ticket, setStatus] = useState("");
+  const [open_publish_dlg, setOpenPublishDlg] = useState(false);
 
   const [loader, setLoader] = useState(false);
 
+  const isPriceRatePublished = () => {
+    if (
+      price.priceFirstDigit &&
+      price.priceSecondDigit &&
+      price.priceThirdDigit &&
+      price.priceFourthDigit
+    )
+      return true;
+    return false;
+  };
   const handlePublishResult = async () => {
+    if (!isPriceRatePublished()) {
+      setOpenPublishDlg(true);
+      return;
+    }
     setLoader(true);
     const body = [
       { digit: ticket.firstdigit },
@@ -69,14 +95,13 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
             `Result Published successfully! There are ${res.data.Winners} winners.`
           );
         }
-        window.location.href = "/daily-result";
+        // window.location.href = `/${handlePath()}-result`;
       })
       .catch((error) => {
         setLoader(false);
         console.log(error);
       });
   };
-
   const handlePublishMonthlyResult = async () => {
     setLoader(true);
     const body = {
@@ -110,6 +135,17 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
       });
   };
 
+  useEffect(() => {
+    pricedataRefetch().then((res) => {
+      if (res?.data?.priceRate_splitup)
+        setPrice({
+          priceFirstDigit: res.data.priceRate_splitup[0].first_digit,
+          priceSecondDigit: res.data.priceRate_splitup[0].second_digit,
+          priceThirdDigit: res.data.priceRate_splitup[0].third_digit,
+          priceFourthDigit: res.data.priceRate_splitup[0].fourth_digit,
+        });
+    });
+  }, [price_data, pricedataIsLoading]);
   useEffect(() => {
     winningTicket(handlePath())
       .then((res) => {
@@ -183,6 +219,13 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
       <Box>
         <MasterNavbar path="/spin-wheel" />
         {loader && <Loader />}
+        {open_publish_dlg && (
+          <CustomizedStatusDialogs
+            setOpenStatusDlg={setOpenPublishDlg}
+            description="Price Rate need to publish"
+            status={STATUS.WARNING}
+          />
+        )}
         <Box
           component={"div"}
           sx={{
@@ -366,6 +409,7 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
                     setTicket={setTicket}
                     path={title}
                     handlePublishResult={handlePublishResult}
+                    isPriceRatePublished={isPriceRatePublished()}
                   />
                 )}
               </>
@@ -378,7 +422,9 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
               </>
             )}
 
-            {result_or_ticket === "history" && <MasterHistoryTable />}
+            {result_or_ticket === "history" && (
+              <MasterHistoryTable path={title} />
+            )}
           </Box>
         </Box>
       </Box>

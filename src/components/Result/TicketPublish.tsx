@@ -1,11 +1,14 @@
-import { Dispatch, FC, SetStateAction } from "react";
+import { Dispatch, FC, SetStateAction, useState } from "react";
 import {
+  STATUS,
   dailyPublishResultIsAvailable,
+  dialog_timeout,
   monthlyPublishResultIsAvailable,
   weeklyPublishResultIsAvailable,
 } from "../../utill";
 import Box from "@mui/material/Box";
 import { Input } from "@mui/material";
+import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
 
 export interface Ticket {
   firstdigit: string;
@@ -26,7 +29,15 @@ export const TicketPublish: FC<{
   setLoader: Dispatch<SetStateAction<boolean>>;
   path: string;
   handlePublishResult: () => Promise<void>;
-}> = ({ ticket, setTicket, setLoader, path, handlePublishResult }) => {
+  isPriceRatePublished: boolean;
+}> = ({
+  ticket,
+  setTicket,
+  setLoader,
+  path,
+  handlePublishResult,
+  isPriceRatePublished,
+}) => {
   const handlePath = () => {
     return path === "Daily"
       ? "daily"
@@ -34,105 +45,126 @@ export const TicketPublish: FC<{
       ? "weekly"
       : "monthly";
   };
-
+  const [status, setStatus] = useState(false);
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        px: 2,
-      }}
-    >
+    <>
       <Box
         sx={{
           display: "flex",
-          justifyContent: "start",
-          gap: "2px",
+          justifyContent: "space-between",
           alignItems: "center",
+          px: 2,
         }}
       >
         <Box
           sx={{
-            p: 1,
-            borderRadius: "5px",
-            background: "#d67349",
-            color: "#fff",
-            fontWeight: "600",
+            display: "flex",
+            justifyContent: "start",
+            gap: "2px",
+            alignItems: "center",
           }}
         >
-          Result:
+          <Box
+            sx={{
+              p: 1,
+              borderRadius: "5px",
+              background: "#d67349",
+              color: "#fff",
+              fontWeight: "600",
+            }}
+          >
+            Result:
+          </Box>
+          <PublishTicketDigit
+            value={ticket.firstdigit}
+            onChange={(e) => {
+              setTicket({ ...ticket, firstdigit: e.target.value });
+            }}
+          />
+          <PublishTicketDigit
+            value={ticket.seconddigit}
+            onChange={(e) => {
+              setTicket({ ...ticket, seconddigit: e.target.value });
+            }}
+          />
+          <PublishTicketDigit
+            value={ticket.thirddigit}
+            onChange={(e) => {
+              setTicket({ ...ticket, thirddigit: e.target.value });
+            }}
+          />
+          <PublishTicketDigit
+            value={ticket.fourthdigit}
+            onChange={(e) => {
+              setTicket({ ...ticket, fourthdigit: e.target.value });
+            }}
+          />
         </Box>
-        <PublishTicketDigit
-          value={ticket.firstdigit}
-          onChange={(e) => {
-            setTicket({ ...ticket, firstdigit: e.target.value });
-          }}
-        />
-        <PublishTicketDigit
-          value={ticket.seconddigit}
-          onChange={(e) => {
-            setTicket({ ...ticket, seconddigit: e.target.value });
-          }}
-        />
-        <PublishTicketDigit
-          value={ticket.thirddigit}
-          onChange={(e) => {
-            setTicket({ ...ticket, thirddigit: e.target.value });
-          }}
-        />
-        <PublishTicketDigit
-          value={ticket.fourthdigit}
-          onChange={(e) => {
-            setTicket({ ...ticket, fourthdigit: e.target.value });
-          }}
-        />
-      </Box>
-      <Box
-        onClick={() => {
-          if (
-            (handlePath() === "daily" && dailyPublishResultIsAvailable()) ||
-            (handlePath() === "weekly" && weeklyPublishResultIsAvailable()) ||
-            (handlePath() === "monthly" && monthlyPublishResultIsAvailable())
-          )
+        <Box
+          onClick={() => {
             if (
-              ticket.firstdigit &&
-              ticket.seconddigit &&
-              ticket.thirddigit &&
-              ticket.fourthdigit
-            ) {
-              setLoader((pre) => !pre);
-              handlePublishResult();
-            } else {
-              alert("Fill all digits");
-            }
-        }}
-        sx={{
-          p: 1,
-          borderRadius: "5px",
-          background:
-            handlePath() === "daily" && dailyPublishResultIsAvailable()
-              ? "#7a1160"
-              : handlePath() === "weekly" && weeklyPublishResultIsAvailable()
-              ? "#7a1160"
-              : handlePath() === "monthly" && monthlyPublishResultIsAvailable()
-              ? "#7a1160"
-              : "grey",
-          color: "#fff",
-          fontWeight: "600",
-          cursor:
-            handlePath() === "daily" && dailyPublishResultIsAvailable()
-              ? "pointer"
-              : handlePath() === "weekly" && weeklyPublishResultIsAvailable()
-              ? "pointer"
-              : handlePath() === "monthly" && monthlyPublishResultIsAvailable()
-              ? "pointer"
-              : "no-drop",
-        }}
-      >
-        PUBLISH
+              (handlePath() === "daily" && dailyPublishResultIsAvailable()) ||
+              (handlePath() === "weekly" && weeklyPublishResultIsAvailable())
+            )
+              if (
+                ticket.firstdigit &&
+                ticket.seconddigit &&
+                ticket.thirddigit &&
+                ticket.fourthdigit
+              ) {
+                setLoader((pre) => !pre);
+                handlePublishResult();
+              } else {
+                setStatus(true);
+                setTimeout(() => {
+                  setStatus(false);
+                }, dialog_timeout);
+              }
+          }}
+          sx={{
+            p: 1,
+            borderRadius: "5px",
+            background:
+              handlePath() === "daily" &&
+              dailyPublishResultIsAvailable() &&
+              !isPriceRatePublished
+                ? "#7a1160"
+                : handlePath() === "weekly" &&
+                  weeklyPublishResultIsAvailable() &&
+                  !isPriceRatePublished
+                ? "#7a1160"
+                : handlePath() === "monthly" &&
+                  monthlyPublishResultIsAvailable()
+                ? "#7a1160"
+                : "grey",
+            color: "#fff",
+            fontWeight: "600",
+            cursor:
+              handlePath() === "daily" &&
+              dailyPublishResultIsAvailable() &&
+              !isPriceRatePublished
+                ? "pointer"
+                : handlePath() === "weekly" &&
+                  weeklyPublishResultIsAvailable() &&
+                  !isPriceRatePublished
+                ? "pointer"
+                : handlePath() === "monthly" &&
+                  monthlyPublishResultIsAvailable()
+                ? "pointer"
+                : "no-drop",
+          }}
+        >
+          PUBLISH
+        </Box>
       </Box>
-    </Box>
+      {status && (
+        <CustomizedStatusDialogs
+          setOpenStatusDlg={setStatus}
+          description="Fill All digits"
+          status={STATUS.WARNING}
+        />
+      )}
+    </>
   );
 };
 

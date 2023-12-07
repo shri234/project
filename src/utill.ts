@@ -415,7 +415,7 @@ export const dailyPublishTicketRateIsAvailable = (): boolean => {
   const now = new Date();
   const currentHour = now.getHours();
   const currentMinute = now.getMinutes();
-  if (currentHour === 16 && currentMinute >= 0 && currentMinute <= 59) {
+  if (currentHour === 17 && currentMinute >= 0 && currentMinute <= 59) {
     return true;
   }
   return false;
@@ -446,11 +446,11 @@ export function weeklyPublishResultIsAvailable(): boolean {
 
 export function weeklyPublishTicketRateIsAvailable(): boolean {
   const now = new Date();
-  if (now.getDay() ) {
+  if (now.getDay() === 5) {
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
 
-    if (currentHour === 19 && currentMinute >= 0 && currentMinute <= 59) {
+    if (currentHour === 18 && currentMinute >= 0 && currentMinute <= 59) {
       return true;
     }
   }

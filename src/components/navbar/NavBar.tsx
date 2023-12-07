@@ -107,7 +107,7 @@ function NavBar() {
             Money minning spinning game
           </Typography>
           <MenuItem sx={{ display: { xs: "none", sm: "block" } }}>
-            <img src="./nav_icon.jpeg" alt="" height={30} width={30} />
+            <img src="./money_mining_logo.jpeg" alt="" height={30} width={30} />
           </MenuItem>
           <Typography
             variant="h5"
@@ -138,7 +138,11 @@ function NavBar() {
             }}
           >
             {pages.map((page) => (
-              <a href={page.path} style={{ textDecoration: "none" }}>
+              <a
+                href={page.path}
+                style={{ textDecoration: "none" }}
+                key={page.name}
+              >
                 <Button
                   key={page.name}
                   onClick={handleCloseNavMenu}
