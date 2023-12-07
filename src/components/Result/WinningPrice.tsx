@@ -1,21 +1,16 @@
 import Box from "@mui/material/Box";
 import React, { ChangeEventHandler, FC, useEffect, useState } from "react";
 import {
-  dailyPublishTicketRateIsAvailable,
-  monthlyPublishTicketRateIsAvailable,
-  weeklyPublishTicketRateIsAvailable,
+  STATUS,
+  dailyPublishResultIsAvailable,
+  dialog_timeout,
+  weeklyPublishResultIsAvailable,
 } from "../../utill";
-import { getWinningPriceRate } from "../../api/getWinningPriceRate";
 import { publishPriceRate } from "../../api/publishPriceRate";
+import usePriceData from "../../swr/price_data";
+import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
 
 export const WinningPriceTicket: FC<{ path: string }> = ({ path }) => {
-  const [price, setPrice] = useState({
-    priceFirstDigit: "",
-    priceSecondDigit: "",
-    priceThirdDigit: "",
-    priceFourthDigit: "",
-  });
-
   const handlePath = () => {
     return path === "Daily"
       ? "daily"
@@ -23,20 +18,33 @@ export const WinningPriceTicket: FC<{ path: string }> = ({ path }) => {
       ? "weekly"
       : "monthly";
   };
+  const [price, setPrice] = useState({
+    priceFirstDigit: "",
+    priceSecondDigit: "",
+    priceThirdDigit: "",
+    priceFourthDigit: "",
+  });
+  const [status, setStatus] = useState(false);
+
+  const { price_data, pricedataIsLoading, pricedataRefetch } = usePriceData(
+    handlePath()
+  );
 
   const handlePriceRate = async () => {
     const body = {
-      splitup:
-        price.priceFirstDigit +
-        price.priceSecondDigit +
-        price.priceThirdDigit +
-        price.priceFourthDigit,
+      splitup: {
+        first_digit: price.priceFirstDigit,
+        second_digit: price.priceSecondDigit,
+        third_digit: price.priceThirdDigit,
+        fourth_digit: price.priceFourthDigit,
+      },
     };
     await publishPriceRate(handlePath(), body)
-      .then((res) => {
-        if (res.status === 200) {
-          window.alert("Success! Price rate splitup added");
-        }
+      .then(() => {
+        setStatus(true);
+        setTimeout(() => {
+          setStatus(false);
+        }, dialog_timeout);
       })
       .catch((error) => {
         console.log(error);
@@ -44,23 +52,25 @@ export const WinningPriceTicket: FC<{ path: string }> = ({ path }) => {
   };
 
   useEffect(() => {
-    (async () => {
-      await getWinningPriceRate(handlePath())
-        .then((response) => {
-          setPrice({
-            priceFirstDigit: response.data.data.priceRate_splitup[0],
-            priceSecondDigit: response.data.data.priceRate_splitup[1],
-            priceThirdDigit: response.data.data.priceRate_splitup[2],
-            priceFourthDigit: response.data.data.priceRate_splitup[3],
-          });
-        })
-        .catch((error) => {
-          console.log(error);
+    pricedataRefetch().then((res) => {
+      if (res?.data?.priceRate_splitup)
+        setPrice({
+          priceFirstDigit: res.data.priceRate_splitup[0].first_digit,
+          priceSecondDigit: res.data.priceRate_splitup[0].second_digit,
+          priceThirdDigit: res.data.priceRate_splitup[0].third_digit,
+          priceFourthDigit: res.data.priceRate_splitup[0].fourth_digit,
         });
-    })();
-  }, []);
+    });
+  }, [price_data, pricedataIsLoading]);
   return (
     <React.Fragment>
+      {status && (
+        <CustomizedStatusDialogs
+          setOpenStatusDlg={setStatus}
+          description="Published Successfully"
+          status={STATUS.SUCCESS}
+        />
+      )}
       <Box
         sx={{
           display: "flex",
@@ -94,8 +104,7 @@ export const WinningPriceTicket: FC<{ path: string }> = ({ path }) => {
               onChange={(e) => {
                 setPrice((prevPrice) => ({
                   ...prevPrice,
-                  priceFirstDigit:
-                    e.target.value.length <= 1 ? e.target.value : "",
+                  priceFirstDigit: e.target.value,
                 }));
               }}
             />
@@ -105,8 +114,7 @@ export const WinningPriceTicket: FC<{ path: string }> = ({ path }) => {
               onChange={(e) => {
                 setPrice((prevPrice) => ({
                   ...prevPrice,
-                  priceSecondDigit:
-                    e.target.value.length <= 1 ? e.target.value : "",
+                  priceSecondDigit: e.target.value,
                 }));
               }}
             />
@@ -116,8 +124,7 @@ export const WinningPriceTicket: FC<{ path: string }> = ({ path }) => {
               onChange={(e) => {
                 setPrice((prevPrice) => ({
                   ...prevPrice,
-                  priceThirdDigit:
-                    e.target.value.length <= 1 ? e.target.value : "",
+                  priceThirdDigit: e.target.value,
                 }));
               }}
             />
@@ -127,8 +134,7 @@ export const WinningPriceTicket: FC<{ path: string }> = ({ path }) => {
               onChange={(e) => {
                 setPrice((prevPrice) => ({
                   ...prevPrice,
-                  priceFourthDigit:
-                    e.target.value.length <= 1 ? e.target.value : "",
+                  priceFourthDigit: e.target.value,
                 }));
               }}
             />
@@ -136,37 +142,38 @@ export const WinningPriceTicket: FC<{ path: string }> = ({ path }) => {
           <Box
             onClick={() => {
               if (handlePath() === "daily") {
-                dailyPublishTicketRateIsAvailable() && handlePriceRate();
+                dailyPublishResultIsAvailable() && handlePriceRate();
               } else if (handlePath() === "weekly") {
-                weeklyPublishTicketRateIsAvailable() && handlePriceRate();
-              } else if (handlePath() === "monthly") {
-                monthlyPublishTicketRateIsAvailable() && handlePriceRate();
+                weeklyPublishResultIsAvailable() && handlePriceRate();
               }
+              //  else if (handlePath() === "monthly") {
+              //   monthlyPublishTicketRateIsAvailable() && handlePriceRate();
+              // }
             }}
             sx={{
               display: { xs: "none", sm: "block" },
               p: 1.25,
               borderRadius: "5px",
               background:
-                handlePath() === "daily" && dailyPublishTicketRateIsAvailable()
+                handlePath() === "daily" && dailyPublishResultIsAvailable()
                   ? "#0bb329"
                   : handlePath() === "weekly" &&
-                    weeklyPublishTicketRateIsAvailable()
+                    weeklyPublishResultIsAvailable()
                   ? "#0bb329"
-                  : handlePath() === "monthly" &&
-                    monthlyPublishTicketRateIsAvailable()
-                  ? "#0bb329"
-                  : "grey",
+                  : // : handlePath() === "monthly" &&
+                    //   monthlyPublishTicketRateIsAvailable()
+                    // ? "#0bb329"
+                    "grey",
               cursor:
-                handlePath() === "daily" && dailyPublishTicketRateIsAvailable()
+                handlePath() === "daily" && dailyPublishResultIsAvailable()
                   ? "pointer"
                   : handlePath() === "weekly" &&
-                    weeklyPublishTicketRateIsAvailable()
+                    weeklyPublishResultIsAvailable()
                   ? "pointer"
-                  : handlePath() === "monthly" &&
-                    monthlyPublishTicketRateIsAvailable()
-                  ? "pointer"
-                  : "no-drop",
+                  : // : handlePath() === "monthly" &&
+                    //   monthlyPublishTicketRateIsAvailable()
+                    // ? "pointer"
+                    "no-drop",
               color: "#fff",
               fontWeight: 600,
             }}
@@ -230,7 +237,7 @@ export const WinningPriceDigit: FC<{
         type="text"
         value={value}
         onChange={onChange}
-        style={{ minWidth: "20px", maxWidth: "60px" }}
+        // style={{ width: "10px" }}
       />
     </Box>
   );

@@ -10,35 +10,25 @@ import { initialRendering } from "../../api/userProfile";
 import useUserWalletAndTicketCount from "../../swr/wallet_ticket_count";
 import Loader from "../loader/Loader";
 import { walletData } from "../../api/getWalletAmount";
+import useUserWallet from "../../swr/wallet_data";
 
-const TimelineSpin: React.FC= () => {
-
-  const { user_wallet_and_ticket_count, isLoading, refetch } =
-    useUserWalletAndTicketCount("weekly");
+const TimelineSpin: React.FC = () => {
+  const {
+    user_wallet,
+    userWalletIsLoading: isLoading,
+    userWalletRefetch: refetch,
+  } = useUserWallet("weekly");
 
   const [walletAmount, setWalletAmount] = useState(0);
 
-  // useEffect(() => {
-  //   refetch().then((res) => {
-  //     if (res)
-  //       setWalletAmount(
-  //         res.data !== undefined && res.data !== null ? res.data.amount : 0
-  //       );
-  //   });
-  // }, [isLoading, user_wallet_and_ticket_count]);
-
   useEffect(() => {
-    (async () => {
-      await walletData()
-        .then((res) => {
-          console.log(res.data)
-          setWalletAmount(res.data.data.amount);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    })();
-  }, []);
+    refetch().then((res) => {
+      if (res?.data) {
+        setWalletAmount(res.data.amount);
+      }
+    });
+  }, [isLoading, user_wallet]);
+
   const [open, setOpen] = useState(false);
 
   const [open_payout, setPayoutOpen] = React.useState(false);

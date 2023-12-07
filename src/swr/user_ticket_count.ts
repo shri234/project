@@ -1,11 +1,14 @@
-import useSWR from "swr";
+import moment from "moment";
 
+import useSWR from "swr";
+let date = new Date();
+let datee = moment(date).format("YYYY-MM-DD");
 export const fetcher = async (...args: Parameters<typeof fetch>) => {
   const res = await fetch(...args);
   return res.json() as any;
 };
 
-function useUserWalletAndTicketCount(path: string) {
+function useUserTicketCount(path: string) {
   const { data, mutate, isValidating, error } = useSWR<any>(
     `${
       process.env.REACT_APP_IP
@@ -16,12 +19,12 @@ function useUserWalletAndTicketCount(path: string) {
   );
 
   return {
-    user_wallet_and_ticket_count: data,
-    user_wallet_ticket_and_count_isLoading: !data && !error,
+    userTicketCount: data,
+    ticketcountIsLoading: !data && !error,
     isError: error,
     isValidating,
-    user_wallet_ticket_and_count_refetch: mutate,
+    ticketcountRefetch: mutate,
   };
 }
 
-export default useUserWalletAndTicketCount;
+export default useUserTicketCount;

@@ -25,6 +25,8 @@ import {
 } from "../../utill";
 import { MonthlyWinningTicket } from "./MonthlyWinningTicket";
 import { walletData } from "../../api/getWalletAmount";
+import useUserTicketCount from "../../swr/user_ticket_count";
+// import useUserWallet from "../../swr/wallet_data";
 
 export interface WinningTicketInterface {
   first: null | number;
@@ -42,14 +44,20 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
       : "monthly";
   };
 
-  const { user_wallet_and_ticket_count, isLoading, refetch } =
-    useUserWalletAndTicketCount(handlePath());
-
   const {
-    use_winning_ticket,
+    user_wallet_and_ticket_count,
+    user_wallet_ticket_and_count_isLoading: isLoading,
+    user_wallet_ticket_and_count_refetch: refetch,
+  } = useUserWalletAndTicketCount(handlePath());
+
+  // const { user_wallet, isLoading, refetch } = useUserWallet(handlePath());
+  const {
+    user_winning_ticket: use_winning_ticket,
     winningTicketisLoading,
-    winningTicketRefetch: winningTicketRefresh,
+    userWinningTicketRefetch: winningTicketRefresh,
   } = useWinningTicket(handlePath());
+  const { userTicketCount, ticketcountIsLoading, ticketcountRefetch } =
+    useUserTicketCount(handlePath());
 
   const [walletAmount, setWalletAmount] = useState(0);
   const [ticketcount, setTicketCount] = useState(0);
@@ -60,7 +68,6 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
     minutes: "",
     seconds: "",
   });
-  // const [winner, setWinner] = useState("");
 
   const [open, setOpen] = React.useState(false);
   const [result, setResult] = useState([]);
@@ -99,28 +106,6 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
   ]);
   const [renderCount, setRenderCount] = useState(0);
   const [tmp_spinner, setTmpSpinner] = useState(0);
-  useEffect(() => {
-    refetch().then((res) => {
-      if (res) {
-        if (res.data !== null && res.data !== undefined) {
-          // setWalletAmount(
-          //   res.data !== undefined && res.data !== null ? res.data.amount : 0
-          // );
-          setTicketCount(
-            res.data !== undefined && res.data !== null
-              ? handlePath() === "daily"
-                ? res.data.dailyTicketCount
-                : handlePath() === "weekly"
-                ? res.data.weeklyTicketCount
-                : handlePath() === "monthly"
-                ? res.data.monthlyTicketCount
-                : 0
-              : 0
-          );
-        }
-      }
-    });
-  }, [isLoading, user_wallet_and_ticket_count]);
 
   useEffect(() => {
     winningTicketRefresh().then((res) => {
@@ -157,6 +142,24 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
   }, [winningTicketisLoading, use_winning_ticket]);
 
   useEffect(() => {
+    ticketcountRefetch().then((res) => {
+      if (res?.data) {
+        setTicketCount(
+          res.data !== undefined && res.data !== null
+            ? handlePath() === "daily"
+              ? res.data.dailyTicketCount
+              : handlePath() === "weekly"
+              ? res.data.weeklyTicketCount
+              : handlePath() === "monthly"
+              ? res.data.monthlyTicketCount
+              : 0
+            : 0
+        );
+      }
+    });
+  }, [userTicketCount, ticketcountIsLoading]);
+
+  useEffect(() => {
     const intervalId = setInterval(() => {
       if (name === "Daily Spin") {
         sessionStorage.setItem("timeline", "daily");
@@ -187,21 +190,12 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
         setTmpSpinner
       );
   }, [result, timeLeft.hours, tmp_spinner]);
-  // useEffect(() => {
-  //   winnerData(handlePath())
-  //     .then((res) => {
-  //       setWinner(res.data.data);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // }, [name]);
 
   useEffect(() => {
     (async () => {
       await walletData()
         .then((res) => {
-          console.log(res.data)
+          console.log(res.data);
           setWalletAmount(res.data.data.amount);
         })
         .catch((error) => {
