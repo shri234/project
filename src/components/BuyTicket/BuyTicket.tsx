@@ -100,7 +100,6 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
           ticketCount: ticket_count,
           userId: sessionStorage.getItem("userId"),
         };
-        console.log(alreadyticketcount1);
         await buyTicketCount(body, handlePath())
           .then(async () => {
             setStatus(true);
