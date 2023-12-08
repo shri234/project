@@ -422,7 +422,7 @@ export const isDailyPublishPossibleAndUserCannotBuyTicket = (): boolean => {
   console.log(now);
   const currentHour = now.getHours();
   const currentMinute = now.getMinutes();
-  consile.log(currentHour,currentMinute)
+  console.log(currentHour,currentMinute)
   if (currentHour === 17 && currentMinute >= 0 && currentMinute <= 59) {
     return true;
   }
