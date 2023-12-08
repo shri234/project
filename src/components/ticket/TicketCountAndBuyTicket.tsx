@@ -63,7 +63,9 @@ export const TicketCountandBuyTicket: FC<{
               isMonthlyPublishIsAvailableandUserCannotBuyTicket())
           ) {
             setBuyTicketWarningDlg((pre) => !pre);
-          } else window.location.href = path;
+          } else {
+            console.log("inside"):
+          }
         }}
       >
         Buy Tickets
