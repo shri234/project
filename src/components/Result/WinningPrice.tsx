@@ -4,6 +4,7 @@ import {
   STATUS,
   dailyTicketResultShowTime,
   dialog_timeout,
+  isDailyPublishPossibleAndUserCannotBuyTicket,
   isWeeklyPublishPossibleandUserCannotBuyTicket,
 } from "../../utill";
 import { publishPriceRate } from "../../api/publishPriceRate";
@@ -64,6 +65,7 @@ export const WinningPriceTicket: FC<{ path: string }> = ({ path }) => {
       }
     });
   }, [price_data, pricedataIsLoading]);
+
   return (
     <React.Fragment>
       {status && (
@@ -146,7 +148,7 @@ export const WinningPriceTicket: FC<{ path: string }> = ({ path }) => {
               if (
                 handlePath() === "daily" &&
                 !is_price_published &&
-                dailyTicketResultShowTime()
+                isDailyPublishPossibleAndUserCannotBuyTicket()
               ) {
                 handlePriceRate();
               } else if (
@@ -164,7 +166,7 @@ export const WinningPriceTicket: FC<{ path: string }> = ({ path }) => {
               background:
                 handlePath() === "daily" &&
                 !is_price_published &&
-                dailyTicketResultShowTime()
+                isDailyPublishPossibleAndUserCannotBuyTicket()
                   ? "#0bb329"
                   : handlePath() === "weekly" &&
                     !is_price_published &&
@@ -174,7 +176,7 @@ export const WinningPriceTicket: FC<{ path: string }> = ({ path }) => {
               cursor:
                 handlePath() === "daily" &&
                 !is_price_published &&
-                dailyTicketResultShowTime()
+                isDailyPublishPossibleAndUserCannotBuyTicket()
                   ? "pointer"
                   : handlePath() === "weekly" &&
                     !is_price_published &&

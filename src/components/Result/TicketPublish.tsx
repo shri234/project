@@ -30,6 +30,7 @@ export const TicketPublish: FC<{
   path: string;
   handlePublishResult: () => Promise<void>;
   isPriceRatePublished: boolean;
+  isResultPublished: boolean;
 }> = ({
   ticket,
   setTicket,
@@ -37,6 +38,7 @@ export const TicketPublish: FC<{
   path,
   handlePublishResult,
   isPriceRatePublished,
+  isResultPublished,
 }) => {
   const handlePath = () => {
     return path === "Daily"
@@ -129,11 +131,12 @@ export const TicketPublish: FC<{
             background:
               handlePath() === "daily" &&
               isDailyPublishPossibleAndUserCannotBuyTicket() &&
-              isPriceRatePublished
+              isPriceRatePublished &&
+              !isResultPublished
                 ? "#7a1160"
                 : handlePath() === "weekly" &&
                   isWeeklyPublishPossibleandUserCannotBuyTicket() &&
-                  isPriceRatePublished
+                  !isPriceRatePublished
                 ? "#7a1160"
                 : handlePath() === "monthly" &&
                   isMonthlyPublishIsAvailableandUserCannotBuyTicket()

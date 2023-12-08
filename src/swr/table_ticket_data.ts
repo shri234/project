@@ -6,7 +6,7 @@ function useTableTicketData(path: string) {
     new Date().getMonth() + 1
   }-${new Date().getDate()}`;
 
-  const { data, mutate, isValidating, error, isLoading } = useSWR<any>(
+  const { data, mutate, isValidating, error } = useSWR<any>(
     `${
       process.env.REACT_APP_IP
     }/ticket/get-${path}-tickets?userId=${sessionStorage.getItem(

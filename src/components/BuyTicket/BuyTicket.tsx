@@ -9,7 +9,6 @@ import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
 import "./BuyTicket.css";
 import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
 import { STATUS } from "../../utill";
-import useUserWalletAndTicketCount from "../../swr/wallet_ticket_count";
 import { buyTicketCount } from "../../api/buyTicketCount";
 import { walletData } from "../../api/getWalletAmount";
 import Loader from "../loader/Loader";
@@ -141,6 +140,7 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
         }, 5000);
       }
     } else {
+      setOpenLoader(false);
       setStatus(true);
       setStatusDlg((prevStatus) => ({
         ...prevStatus,

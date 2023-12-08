@@ -140,19 +140,20 @@ const Login: React.FC = () => {
         <button className="login-button" onClick={handleLogin}>
           Sign In
         </button>
-        <div
-          className="footer-links"
-          style={{ display: "flex", justifyContent: "space-between" }}
-        >
+        {sessionStorage.getItem("Role") === "User" && (
           <div
-            onClick={() => {
-              setOpen(true);
-            }}
-            style={{ color: "#ed644c", fontWeight: "500", cursor: "pointer" }}
+            className="footer-links"
+            style={{ display: "flex", justifyContent: "space-between" }}
           >
-            Forgot Password?
-          </div>
-          {sessionStorage.getItem("Role") === "User" && (
+            <div
+              onClick={() => {
+                setOpen(true);
+              }}
+              style={{ color: "#ed644c", fontWeight: "500", cursor: "pointer" }}
+            >
+              Forgot Password?
+            </div>
+
             <div
               style={{ color: "green", fontWeight: "600", cursor: "pointer" }}
               onClick={() => {
@@ -161,8 +162,8 @@ const Login: React.FC = () => {
             >
               Sign Up
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </Box>
   );

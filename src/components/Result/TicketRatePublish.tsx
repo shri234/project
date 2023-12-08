@@ -3,8 +3,6 @@ import {
   STATUS,
   isDailyPublishPossibleAndUserCannotBuyTicket,
   dialog_timeout,
-  monthlyResultShowTime,
-  weeklyTicketResultShowTime,
   isWeeklyPublishPossibleandUserCannotBuyTicket,
   isMonthlyPublishIsAvailableandUserCannotBuyTicket,
 } from "../../utill";
@@ -43,7 +41,8 @@ export const TicketRatePublish: FC<{ path: string }> = ({ path }) => {
   const handleTicketPrice = async () => {
     await ticketPriceData(handlePath())
       .then((res) => {
-        if (res.data) {
+        console.log(res);
+        if (res.data?.data) {
           if (res.data.data.ticketRate !== 0) {
             setTicketRatePublished(true);
             setTicketRate(res.data.data.ticketRate);

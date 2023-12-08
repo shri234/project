@@ -198,10 +198,10 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
               setResultPublished(true);
             }
           }
-        }
-        if (res.data.data) {
+        } else if (res.data.data) {
           const tmp: string[] = res.data.data.result_ticket.split("");
-          if (tmp.length > 0)
+          console.log("inside", res, tmp, tmp.length);
+          if (tmp.length > 0) {
             setTicket(
               (pre) =>
                 ({
@@ -212,11 +212,14 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
                   fourthdigit: tmp.length > 0 ? tmp[3] : "",
                 } as Ticket)
             );
-          setResultPublished(true);
+            setResultPublished(true);
+          }
         }
       })
       .catch((error) => {});
   }, []);
+
+  console.log(is_result_published);
   return (
     isAuthenticated("master") && (
       <Box>
@@ -421,6 +424,7 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
                     setTicket={setTicket}
                     path={title}
                     handlePublishResult={handlePublishResult}
+                    isResultPublished={is_result_published}
                     isPriceRatePublished={isPriceRatePublished()}
                   />
                 )}
