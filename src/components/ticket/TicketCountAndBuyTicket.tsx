@@ -64,7 +64,7 @@ export const TicketCountandBuyTicket: FC<{
           ) {
             setBuyTicketWarningDlg((pre) => !pre);
           } else {
-            console.log("inside"):
+            console.log("inside")
           }
         }}
       >
