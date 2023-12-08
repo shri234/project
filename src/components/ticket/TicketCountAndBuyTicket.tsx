@@ -53,6 +53,7 @@ export const TicketCountandBuyTicket: FC<{
         component={"div"}
         onClick={() => {
           const now = new Date();
+          console.log(handlePath(),typeof handlePath());
           console.log(now.getHours())
           console.log(now.getMinutes())
           if (
