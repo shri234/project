@@ -419,8 +419,10 @@ export const handleSpinner = (
 
 export const isDailyPublishPossibleAndUserCannotBuyTicket = (): boolean => {
   const now = new Date();
+  console.log(now);
   const currentHour = now.getHours();
   const currentMinute = now.getMinutes();
+  consile.log(currentHour,currentMinute)
   if (currentHour === 17 && currentMinute >= 0 && currentMinute <= 59) {
     return true;
   }
