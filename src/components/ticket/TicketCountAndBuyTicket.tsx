@@ -13,9 +13,9 @@ export const TicketCountandBuyTicket: FC<{
 }> = ({ ticketcount, setBuyTicketWarningDlg, path }) => {
   console.log(path)
   const handlePath = (): string => {
-    return path === "daily-buy-ticket"
+    return path === "/daily-buy-ticket"
       ? "daily"
-      : path === "daily-buy-ticket"
+      : path === "/weekly-buy-ticket"
       ? "weekly"
       : "monthly";
   };
