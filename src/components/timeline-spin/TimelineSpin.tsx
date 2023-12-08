@@ -7,9 +7,7 @@ import PayoutModal from "./PayoutModal";
 
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
 import { initialRendering } from "../../api/userProfile";
-import useUserWalletAndTicketCount from "../../swr/wallet_ticket_count";
 import Loader from "../loader/Loader";
-import { walletData } from "../../api/getWalletAmount";
 import useUserWallet from "../../swr/wallet_data";
 
 const TimelineSpin: React.FC = () => {

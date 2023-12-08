@@ -15,7 +15,6 @@ import { CountDown } from "./CountDown";
 import { TicketCountandBuyTicket } from "./TicketCountAndBuyTicket";
 import { WinningTicket } from "./WinningTicket";
 // import { winnerData } from "../../api/winnerData";
-import useUserWalletAndTicketCount from "../../swr/wallet_ticket_count";
 import useWinningTicket from "../../swr/winningTicket";
 import {
   dailyCountdown,
@@ -24,9 +23,9 @@ import {
   weeklyCountdown,
 } from "../../utill";
 import { MonthlyWinningTicket } from "./MonthlyWinningTicket";
-import { walletData } from "../../api/getWalletAmount";
+// import { walletData } from "../../api/getWalletAmount";
 import useUserTicketCount from "../../swr/user_ticket_count";
-// import useUserWallet from "../../swr/wallet_data";
+import useUserWallet from "../../swr/wallet_data";
 
 export interface WinningTicketInterface {
   first: null | number;
@@ -36,9 +35,7 @@ export interface WinningTicketInterface {
 }
 
 const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
-console.log(name)
   const handlePath = (): string => {
-    
     return name === "Daily Spin"
       ? "daily"
       : name === "Weekly Spin"
@@ -51,9 +48,12 @@ console.log(name)
     winningTicketisLoading,
     userWinningTicketRefetch,
   } = useWinningTicket(handlePath());
+
   const { userTicketCount, ticketcountIsLoading, ticketcountRefetch } =
     useUserTicketCount(handlePath());
-
+  const { user_wallet, userWalletIsLoading, userWalletRefetch } = useUserWallet(
+    handlePath()
+  );
   const [walletAmount, setWalletAmount] = useState(0);
   const [ticketcount, setTicketCount] = useState(0);
 
@@ -64,7 +64,7 @@ console.log(name)
     seconds: "",
   });
 
-  const [open, setOpen] = React.useState(false);
+  // const [open, setOpen] = React.useState(false);
 
   const [result, setResult] = useState([]);
 
@@ -184,16 +184,14 @@ console.log(name)
   }, [result, timeLeft.hours, tmp_spinner, setTmpSpinner, winning_ticket]);
 
   useEffect(() => {
-    (async () => {
-      await walletData()
-        .then((res) => {
-          if (res?.data?.data?.amount) setWalletAmount(res.data.data.amount);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    })();
-  }, []);
+    userWalletRefetch()
+      .then((res) => {
+        if (res?.data?.amount) setWalletAmount(res.data.amount);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [user_wallet, userWalletIsLoading]);
 
   return (
     isAuthenticated("user") && (
@@ -204,7 +202,7 @@ console.log(name)
           width: "100%",
         }}
       >
-        {open && <Loader />}
+        {/* {open && <Loader />} */}
         {buy_ticket_warning_dlg && (
           <BuyTicketWarningDlg
             setBuyTicketWarningDlg={setBuyTicketWarningDlg}

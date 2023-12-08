@@ -191,7 +191,7 @@ const Result: FC<{ title: string }> = ({ title }) => {
         }
         if (res.data.data) {
           const tmp: string[] = res.data.data.result_ticket.split("");
-          if (tmp.length > 0)
+          if (tmp.length > 0) {
             setTicket(
               (pre) =>
                 ({
@@ -202,7 +202,9 @@ const Result: FC<{ title: string }> = ({ title }) => {
                   fourthdigit: tmp.length > 0 ? tmp[3] : "",
                 } as Ticket)
             );
-          setResultPublished(true);
+
+            setResultPublished(true);
+          }
         }
       })
       .catch((error) => {});
@@ -395,6 +397,7 @@ const Result: FC<{ title: string }> = ({ title }) => {
                     setTicket={setTicket}
                     path={title}
                     handlePublishResult={handlePublishResult}
+                    isResultPublished={is_result_published}
                     isPriceRatePublished={isPriceRatePublished()}
                   />
                 )}
