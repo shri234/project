@@ -25,12 +25,6 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
       : "monthly";
   };
 
-  const {
-    user_wallet_and_ticket_count,
-    user_wallet_ticket_and_count_isLoading: isLoading,
-    user_wallet_ticket_and_count_refetch: refetch,
-  } = useUserWalletAndTicketCount(handlePath());
-
   const { ticket_price_rate, ticketpriceRefetch, ticketpriceIsLoading } =
     useTicketPriceRate(handlePath());
 
@@ -100,6 +94,7 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
           ticketCount: ticket_count,
           userId: sessionStorage.getItem("userId"),
         };
+
         await buyTicketCount(body, handlePath())
           .then(async () => {
             setStatus(true);
@@ -123,15 +118,15 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
               `${process.env.REACT_APP_IP}/ticket/addWalletAmount`,
               body
             );
+            window.location.href = `/${handlePath()}-buy-ticket`;
             setOpenLoader(false);
-
-            // window.location.href = `/${handlePath()}-buy-ticket`;
           })
           .catch((error) => {
             setOpenLoader(false);
             console.log(error);
           });
       } else {
+        setOpenLoader(false);
         setStatus(true);
         setStatusDlg((prevStatus) => ({
           ...prevStatus,
@@ -166,7 +161,6 @@ const BuyTicket: FC<{ name: string; path: string }> = ({ name, path }) => {
       if (res?.data) setTicketprice(res.data.ticketRate);
     });
   }, [ticket_price_rate, ticketpriceIsLoading]);
-
   useEffect(() => {
     (async () => {
       await walletData()

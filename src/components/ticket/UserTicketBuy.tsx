@@ -45,16 +45,9 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
   };
 
   const {
-    user_wallet_and_ticket_count,
-    user_wallet_ticket_and_count_isLoading: isLoading,
-    user_wallet_ticket_and_count_refetch: refetch,
-  } = useUserWalletAndTicketCount(handlePath());
-
-  // const { user_wallet, isLoading, refetch } = useUserWallet(handlePath());
-  const {
-    user_winning_ticket: use_winning_ticket,
+    user_winning_ticket,
     winningTicketisLoading,
-    userWinningTicketRefetch: winningTicketRefresh,
+    userWinningTicketRefetch,
   } = useWinningTicket(handlePath());
   const { userTicketCount, ticketcountIsLoading, ticketcountRefetch } =
     useUserTicketCount(handlePath());
@@ -70,6 +63,7 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
   });
 
   const [open, setOpen] = React.useState(false);
+
   const [result, setResult] = useState([]);
 
   const [winning_ticket, setWinningTicket] = useState<WinningTicketInterface[]>(
@@ -108,38 +102,34 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
   const [tmp_spinner, setTmpSpinner] = useState(0);
 
   useEffect(() => {
-    winningTicketRefresh().then((res) => {
+    userWinningTicketRefetch().then((res) => {
       if (res !== undefined)
         if (res.data !== undefined && res.data !== null) {
           if (handlePath() === "monthly") {
-            if (res.data.length > 0) {
+            if (res.data?.length > 0) {
               const tmp_1: [] = res.data[0].winning_ticket[0].result_ticket_1
                 .split("")
                 .map(Number);
 
-              const tmp_2: [] = res.data[1].winning_ticket[0].result_ticket_1
+              const tmp_2: [] = res.data[0].winning_ticket[0].result_ticket_2
                 .split("")
                 .map(Number);
 
-              const tmp_3: [] = res.data[2].winning_ticket[0].result_ticket_1
+              const tmp_3: [] = res.data[0].winning_ticket[0].result_ticket_3
                 .split("")
                 .map(Number);
               const combinedResults = [...tmp_1, ...tmp_2, ...tmp_3];
               setResult(combinedResults);
             }
           } else {
-            if (res.data.data) {
-              if (res.data.data.result_ticket !== undefined) {
-                const tmp: [] = res.data.data.result_ticket
-                  .split("")
-                  .map(Number);
-                setResult(tmp);
-              }
+            if (res?.data?.result_ticket !== undefined) {
+              const tmp: [] = res.data.result_ticket.split("").map(Number);
+              setResult(tmp);
             }
           }
         }
     });
-  }, [winningTicketisLoading, use_winning_ticket]);
+  }, [winningTicketisLoading, user_winning_ticket]);
 
   useEffect(() => {
     ticketcountRefetch().then((res) => {
@@ -189,14 +179,13 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
         setRenderCount,
         setTmpSpinner
       );
-  }, [result, timeLeft.hours, tmp_spinner]);
+  }, [result, timeLeft.hours, tmp_spinner, setTmpSpinner, winning_ticket]);
 
   useEffect(() => {
     (async () => {
       await walletData()
         .then((res) => {
-          console.log(res.data);
-          setWalletAmount(res.data.data.amount);
+          if (res?.data?.data?.amount) setWalletAmount(res.data.data.amount);
         })
         .catch((error) => {
           console.log(error);

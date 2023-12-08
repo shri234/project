@@ -1,10 +1,12 @@
 import Box from "@mui/material/Box";
 import {
   STATUS,
-  dailyPublishTicketRateIsAvailable,
+  isDailyPublishPossibleAndUserCannotBuyTicket,
   dialog_timeout,
-  monthlyPublishTicketRateIsAvailable,
-  weeklyPublishTicketRateIsAvailable,
+  monthlyResultShowTime,
+  weeklyTicketResultShowTime,
+  isWeeklyPublishPossibleandUserCannotBuyTicket,
+  isMonthlyPublishIsAvailableandUserCannotBuyTicket,
 } from "../../utill";
 import { FC, useEffect, useState } from "react";
 import { ticketPriceData } from "../../api/ticketPriceRate";
@@ -14,7 +16,7 @@ import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
 export const TicketRatePublish: FC<{ path: string }> = ({ path }) => {
   const [ticketrate, setTicketRate] = useState<string>("");
   const [status, setStatus] = useState(false);
-  // const [is_ticket_published, setTicketPublished] = useState(false);
+  const [is_ticket_rate_published, setTicketRatePublished] = useState(false);
   const handlePath = () => {
     return path === "Daily"
       ? "daily"
@@ -41,11 +43,11 @@ export const TicketRatePublish: FC<{ path: string }> = ({ path }) => {
   const handleTicketPrice = async () => {
     await ticketPriceData(handlePath())
       .then((res) => {
-        console.log(res);
-
         if (res.data) {
-          if (res.data.data.ticketRate !== 0)
+          if (res.data.data.ticketRate !== 0) {
+            setTicketRatePublished(true);
             setTicketRate(res.data.data.ticketRate);
+          }
         }
       })
       .catch((error) => {
@@ -101,33 +103,44 @@ export const TicketRatePublish: FC<{ path: string }> = ({ path }) => {
       <Box
         onClick={() => {
           if (handlePath() === "daily") {
-            dailyPublishTicketRateIsAvailable() && handleTicketRate();
+            isDailyPublishPossibleAndUserCannotBuyTicket() &&
+              handleTicketRate();
           } else if (handlePath() === "weekly") {
-            weeklyPublishTicketRateIsAvailable() && handleTicketRate();
+            isWeeklyPublishPossibleandUserCannotBuyTicket() &&
+              handleTicketRate();
           } else if (handlePath() === "monthly") {
-            monthlyPublishTicketRateIsAvailable() && handleTicketRate();
+            isMonthlyPublishIsAvailableandUserCannotBuyTicket() &&
+              handleTicketRate();
           }
         }}
         sx={{
           p: 1.25,
           background:
-            handlePath() === "daily" && dailyPublishTicketRateIsAvailable()
+            handlePath() === "daily" &&
+            !is_ticket_rate_published &&
+            isDailyPublishPossibleAndUserCannotBuyTicket()
               ? "#0bb329"
-              : handlePath() === "weekly" &&
-                weeklyPublishTicketRateIsAvailable()
+              : !is_ticket_rate_published &&
+                handlePath() === "weekly" &&
+                isWeeklyPublishPossibleandUserCannotBuyTicket()
               ? "#0bb329"
               : handlePath() === "monthly" &&
-                monthlyPublishTicketRateIsAvailable()
+                !is_ticket_rate_published &&
+                isMonthlyPublishIsAvailableandUserCannotBuyTicket()
               ? "#0bb329"
               : "grey",
           cursor:
-            handlePath() === "daily" && dailyPublishTicketRateIsAvailable()
+            handlePath() === "daily" &&
+            !is_ticket_rate_published &&
+            isDailyPublishPossibleAndUserCannotBuyTicket()
               ? "pointer"
               : handlePath() === "weekly" &&
-                weeklyPublishTicketRateIsAvailable()
+                !is_ticket_rate_published &&
+                isWeeklyPublishPossibleandUserCannotBuyTicket()
               ? "pointer"
               : handlePath() === "monthly" &&
-                monthlyPublishTicketRateIsAvailable()
+                !is_ticket_rate_published &&
+                isMonthlyPublishIsAvailableandUserCannotBuyTicket()
               ? "pointer"
               : "no-drop",
           borderRadius: "5px",

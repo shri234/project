@@ -1,11 +1,24 @@
 import { Box } from "@mui/material";
 import { Dispatch, FC, SetStateAction } from "react";
+import {
+  isDailyPublishPossibleAndUserCannotBuyTicket,
+  isMonthlyPublishIsAvailableandUserCannotBuyTicket,
+  isWeeklyPublishPossibleandUserCannotBuyTicket,
+} from "../../utill";
 
 export const TicketCountandBuyTicket: FC<{
   ticketcount: number;
   setBuyTicketWarningDlg: Dispatch<SetStateAction<boolean>>;
   path: string;
 }> = ({ ticketcount, setBuyTicketWarningDlg, path }) => {
+  const handlePath = (): string => {
+    return path === "daily-buy-ticket"
+      ? "daily"
+      : path === "daily-buy-ticket"
+      ? "weekly"
+      : "monthly";
+  };
+
   return (
     <Box
       sx={{
@@ -40,7 +53,14 @@ export const TicketCountandBuyTicket: FC<{
         component={"div"}
         onClick={() => {
           const now = new Date();
-          if (now.getHours() >= 17 && now.getHours() < 18) {
+          if (
+            (handlePath() === "daily" &&
+              isDailyPublishPossibleAndUserCannotBuyTicket()) ||
+            (handlePath() === "weekly" &&
+              isWeeklyPublishPossibleandUserCannotBuyTicket()) ||
+            (handlePath() === "monthly" &&
+              isMonthlyPublishIsAvailableandUserCannotBuyTicket())
+          ) {
             setBuyTicketWarningDlg((pre) => !pre);
           } else window.location.href = path;
         }}

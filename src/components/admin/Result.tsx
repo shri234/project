@@ -8,7 +8,10 @@ import { TicketFilter } from "../Result/TicketFilter";
 import { TicketRatePublish } from "../Result/TicketRatePublish";
 import { WinningPriceTicket } from "../Result/WinningPrice";
 import { winningTicketPublish } from "../../api/winningTicketPublish";
-import { STATUS, dailyPublishResultIsAvailable } from "../../utill";
+import {
+  STATUS,
+  isMonthlyPublishIsAvailableandUserCannotBuyTicket,
+} from "../../utill";
 import { MonthlyTicketPublish } from "../Result/MonthlyPublishTicket";
 import { winningTicket } from "../../api/winningTicket";
 import usePriceData from "../../swr/price_data";
@@ -57,7 +60,7 @@ const Result: FC<{ title: string }> = ({ title }) => {
   });
 
   const [result_or_ticket, setStatus] = useState("");
-
+  const [is_result_published, setResultPublished] = useState(false);
   const [loader, setLoader] = useState(false);
   const [open_publish_dlg, setOpenPublishDlg] = useState(false);
   const isPriceRatePublished = () => {
@@ -139,9 +142,9 @@ const Result: FC<{ title: string }> = ({ title }) => {
     winningTicket(handlePath())
       .then((res) => {
         if (handlePath() === "monthly") {
-          if (res.data.length > 0) {
+          if (res.data?.data?.length > 0) {
             const tmp_1: string[] =
-              res.data[0].winning_ticket[0].result_ticket_1.split("");
+              res.data?.data[0].winning_ticket[0].result_ticket_1.split("");
             if (tmp_1.length > 0) {
               setMonthlyTicket1(
                 (pre) =>
@@ -155,7 +158,7 @@ const Result: FC<{ title: string }> = ({ title }) => {
               );
             }
             const tmp_2: string[] =
-              res.data[1].winning_ticket[0].result_ticket_1.split("");
+              res.data?.data[0].winning_ticket[0].result_ticket_2.split("");
 
             if (tmp_2.length > 0) {
               setMonthlyTicket2(
@@ -170,8 +173,8 @@ const Result: FC<{ title: string }> = ({ title }) => {
               );
             }
             const tmp_3: string[] =
-              res.data[2].winning_ticket[0].result_ticket_1.split("");
-            if (tmp_2.length > 0) {
+              res.data?.data[0].winning_ticket[0].result_ticket_3.split("");
+            if (tmp_3.length > 0) {
               setMonthlyTicket3(
                 (pre) =>
                   ({
@@ -182,6 +185,7 @@ const Result: FC<{ title: string }> = ({ title }) => {
                     fourthdigit: tmp_3.length > 0 ? tmp_3[3] : "",
                   } as Ticket)
               );
+              setResultPublished(true);
             }
           }
         }
@@ -198,6 +202,7 @@ const Result: FC<{ title: string }> = ({ title }) => {
                   fourthdigit: tmp.length > 0 ? tmp[3] : "",
                 } as Ticket)
             );
+          setResultPublished(true);
         }
       })
       .catch((error) => {});
@@ -317,7 +322,6 @@ const Result: FC<{ title: string }> = ({ title }) => {
                         ticket={monthly_ticket_1}
                         setTicket={setMonthlyTicket1}
                         path={title}
-                        handlePublishResult={handlePublishMonthlyResult}
                       />
                       <br />
                       <MonthlyTicketPublish
@@ -325,7 +329,6 @@ const Result: FC<{ title: string }> = ({ title }) => {
                         ticket={monthly_ticket_2}
                         setTicket={setMonthlyTicket2}
                         path={title}
-                        handlePublishResult={handlePublishMonthlyResult}
                       />
                       <br />
                       <MonthlyTicketPublish
@@ -333,41 +336,52 @@ const Result: FC<{ title: string }> = ({ title }) => {
                         ticket={monthly_ticket_3}
                         setTicket={setMonthlyTicket3}
                         path={title}
-                        handlePublishResult={handlePublishMonthlyResult}
                       />
                       <Box
                         onClick={() => {
                           if (
-                            monthly_ticket_1.firstdigit.length !== 1 &&
-                            monthly_ticket_1.seconddigit.length !== 1 &&
-                            monthly_ticket_1.thirddigit.length !== 1 &&
-                            monthly_ticket_1.fourthdigit.length !== 1 &&
-                            monthly_ticket_2.firstdigit.length !== 1 &&
-                            monthly_ticket_2.seconddigit.length !== 1 &&
-                            monthly_ticket_2.thirddigit.length !== 1 &&
-                            monthly_ticket_2.fourthdigit.length !== 1 &&
-                            monthly_ticket_3.firstdigit.length !== 1 &&
-                            monthly_ticket_3.seconddigit.length !== 1 &&
-                            monthly_ticket_3.thirddigit.length !== 1 &&
-                            monthly_ticket_3.fourthdigit.length !== 1 &&
-                            dailyPublishResultIsAvailable()
+                            !is_result_published &&
+                            monthly_ticket_1.firstdigit.length === 1 &&
+                            monthly_ticket_1.seconddigit.length === 1 &&
+                            monthly_ticket_1.thirddigit.length === 1 &&
+                            monthly_ticket_1.fourthdigit.length === 1 &&
+                            monthly_ticket_2.firstdigit.length === 1 &&
+                            monthly_ticket_2.seconddigit.length === 1 &&
+                            monthly_ticket_2.thirddigit.length === 1 &&
+                            monthly_ticket_2.fourthdigit.length === 1 &&
+                            monthly_ticket_3.firstdigit.length === 1 &&
+                            monthly_ticket_3.seconddigit.length === 1 &&
+                            monthly_ticket_3.thirddigit.length === 1 &&
+                            monthly_ticket_3.fourthdigit.length === 1 &&
+                            isMonthlyPublishIsAvailableandUserCannotBuyTicket()
                           ) {
                             setLoader((pre) => !pre);
                             handlePublishMonthlyResult();
+                          } else {
+                            console.log(
+                              monthly_ticket_1,
+                              monthly_ticket_2,
+                              monthly_ticket_3
+                            );
+                            alert("select");
                           }
                         }}
                         sx={{
                           p: 1,
                           mt: 1,
                           borderRadius: "5px",
-                          background: dailyPublishResultIsAvailable()
-                            ? "#7a1160"
-                            : "grey",
+                          background:
+                            !is_result_published &&
+                            isMonthlyPublishIsAvailableandUserCannotBuyTicket()
+                              ? "#7a1160"
+                              : "grey",
                           color: "#fff",
                           fontWeight: "600",
-                          cursor: dailyPublishResultIsAvailable()
-                            ? "pointer"
-                            : "no-drop",
+                          cursor:
+                            !is_result_published &&
+                            isMonthlyPublishIsAvailableandUserCannotBuyTicket()
+                              ? "pointer"
+                              : "no-drop",
                         }}
                       >
                         PUBLISH

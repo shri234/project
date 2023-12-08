@@ -215,6 +215,14 @@ export default function PayoutModal({
                     Redeem
                   </Button>
                 </Box>
+                <br />
+                <li style={{ fontSize: "16px", fontWeight: "600" }}>
+                  We are charging 10% transaction fees for every transaction.
+                </li>
+                <li style={{ fontSize: "16px", fontWeight: "600" }}>
+                  {" "}
+                  Amount will be credit you bank account within 3 days.
+                </li>
               </>
             )}
           </Box>
