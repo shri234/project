@@ -11,6 +11,7 @@ export const TicketCountandBuyTicket: FC<{
   setBuyTicketWarningDlg: Dispatch<SetStateAction<boolean>>;
   path: string;
 }> = ({ ticketcount, setBuyTicketWarningDlg, path }) => {
+  console.log(path)
   const handlePath = (): string => {
     return path === "daily-buy-ticket"
       ? "daily"
