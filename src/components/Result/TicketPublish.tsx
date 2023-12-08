@@ -1,10 +1,10 @@
 import { Dispatch, FC, SetStateAction, useState } from "react";
 import {
   STATUS,
-  dailyPublishResultIsAvailable,
   dialog_timeout,
-  monthlyPublishResultIsAvailable,
-  weeklyPublishResultIsAvailable,
+  isDailyPublishPossibleAndUserCannotBuyTicket,
+  isMonthlyPublishIsAvailableandUserCannotBuyTicket,
+  isWeeklyPublishPossibleandUserCannotBuyTicket,
 } from "../../utill";
 import Box from "@mui/material/Box";
 import { Input } from "@mui/material";
@@ -103,8 +103,10 @@ export const TicketPublish: FC<{
         <Box
           onClick={() => {
             if (
-              (handlePath() === "daily" && dailyPublishResultIsAvailable()) ||
-              (handlePath() === "weekly" && weeklyPublishResultIsAvailable())
+              (handlePath() === "daily" &&
+                isDailyPublishPossibleAndUserCannotBuyTicket()) ||
+              (handlePath() === "weekly" &&
+                isWeeklyPublishPossibleandUserCannotBuyTicket())
             )
               if (
                 ticket.firstdigit &&
@@ -126,30 +128,30 @@ export const TicketPublish: FC<{
             borderRadius: "5px",
             background:
               handlePath() === "daily" &&
-              dailyPublishResultIsAvailable() &&
-              !isPriceRatePublished
+              isDailyPublishPossibleAndUserCannotBuyTicket() &&
+              isPriceRatePublished
                 ? "#7a1160"
                 : handlePath() === "weekly" &&
-                  weeklyPublishResultIsAvailable() &&
-                  !isPriceRatePublished
+                  isWeeklyPublishPossibleandUserCannotBuyTicket() &&
+                  isPriceRatePublished
                 ? "#7a1160"
                 : handlePath() === "monthly" &&
-                  monthlyPublishResultIsAvailable()
+                  isMonthlyPublishIsAvailableandUserCannotBuyTicket()
                 ? "#7a1160"
                 : "grey",
             color: "#fff",
             fontWeight: "600",
             cursor:
               handlePath() === "daily" &&
-              dailyPublishResultIsAvailable() &&
-              !isPriceRatePublished
+              isDailyPublishPossibleAndUserCannotBuyTicket() &&
+              isPriceRatePublished
                 ? "pointer"
                 : handlePath() === "weekly" &&
-                  weeklyPublishResultIsAvailable() &&
-                  !isPriceRatePublished
+                  isWeeklyPublishPossibleandUserCannotBuyTicket() &&
+                  isPriceRatePublished
                 ? "pointer"
                 : handlePath() === "monthly" &&
-                  monthlyPublishResultIsAvailable()
+                  isMonthlyPublishIsAvailableandUserCannotBuyTicket()
                 ? "pointer"
                 : "no-drop",
           }}

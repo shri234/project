@@ -2,9 +2,9 @@ import Box from "@mui/material/Box";
 import React, { ChangeEventHandler, FC, useEffect, useState } from "react";
 import {
   STATUS,
-  dailyPublishResultIsAvailable,
+  dailyTicketResultShowTime,
   dialog_timeout,
-  weeklyPublishResultIsAvailable,
+  isWeeklyPublishPossibleandUserCannotBuyTicket,
 } from "../../utill";
 import { publishPriceRate } from "../../api/publishPriceRate";
 import usePriceData from "../../swr/price_data";
@@ -25,7 +25,7 @@ export const WinningPriceTicket: FC<{ path: string }> = ({ path }) => {
     priceFourthDigit: "",
   });
   const [status, setStatus] = useState(false);
-
+  const [is_price_published, setIsPricePublished] = useState(false);
   const { price_data, pricedataIsLoading, pricedataRefetch } = usePriceData(
     handlePath()
   );
@@ -53,13 +53,15 @@ export const WinningPriceTicket: FC<{ path: string }> = ({ path }) => {
 
   useEffect(() => {
     pricedataRefetch().then((res) => {
-      if (res?.data?.priceRate_splitup)
+      if (res?.data?.priceRate_splitup) {
         setPrice({
           priceFirstDigit: res.data.priceRate_splitup[0].first_digit,
           priceSecondDigit: res.data.priceRate_splitup[0].second_digit,
           priceThirdDigit: res.data.priceRate_splitup[0].third_digit,
           priceFourthDigit: res.data.priceRate_splitup[0].fourth_digit,
         });
+        setIsPricePublished(true);
+      }
     });
   }, [price_data, pricedataIsLoading]);
   return (
@@ -141,39 +143,44 @@ export const WinningPriceTicket: FC<{ path: string }> = ({ path }) => {
           </Box>
           <Box
             onClick={() => {
-              if (handlePath() === "daily") {
-                dailyPublishResultIsAvailable() && handlePriceRate();
-              } else if (handlePath() === "weekly") {
-                weeklyPublishResultIsAvailable() && handlePriceRate();
+              if (
+                handlePath() === "daily" &&
+                !is_price_published &&
+                dailyTicketResultShowTime()
+              ) {
+                handlePriceRate();
+              } else if (
+                handlePath() === "weekly" &&
+                !is_price_published &&
+                isWeeklyPublishPossibleandUserCannotBuyTicket()
+              ) {
+                handlePriceRate();
               }
-              //  else if (handlePath() === "monthly") {
-              //   monthlyPublishTicketRateIsAvailable() && handlePriceRate();
-              // }
             }}
             sx={{
               display: { xs: "none", sm: "block" },
               p: 1.25,
               borderRadius: "5px",
               background:
-                handlePath() === "daily" && dailyPublishResultIsAvailable()
+                handlePath() === "daily" &&
+                !is_price_published &&
+                dailyTicketResultShowTime()
                   ? "#0bb329"
                   : handlePath() === "weekly" &&
-                    weeklyPublishResultIsAvailable()
+                    !is_price_published &&
+                    isWeeklyPublishPossibleandUserCannotBuyTicket()
                   ? "#0bb329"
-                  : // : handlePath() === "monthly" &&
-                    //   monthlyPublishTicketRateIsAvailable()
-                    // ? "#0bb329"
-                    "grey",
+                  : "grey",
               cursor:
-                handlePath() === "daily" && dailyPublishResultIsAvailable()
+                handlePath() === "daily" &&
+                !is_price_published &&
+                dailyTicketResultShowTime()
                   ? "pointer"
                   : handlePath() === "weekly" &&
-                    weeklyPublishResultIsAvailable()
+                    !is_price_published &&
+                    isWeeklyPublishPossibleandUserCannotBuyTicket()
                   ? "pointer"
-                  : // : handlePath() === "monthly" &&
-                    //   monthlyPublishTicketRateIsAvailable()
-                    // ? "pointer"
-                    "no-drop",
+                  : "no-drop",
               color: "#fff",
               fontWeight: 600,
             }}

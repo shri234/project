@@ -165,6 +165,7 @@ export const monthlyCountdown = (): {
 //     monthlyCountdown();
 //   }
 // };
+
 export const handleSpinner = (
   name: string,
   result: never[],
@@ -173,33 +174,37 @@ export const handleSpinner = (
   setRenderCount: Dispatch<SetStateAction<number>>,
   setTmpSpinner: Dispatch<SetStateAction<number>>
 ) => {
-  if (name === "Daily Spin" && new Date().getHours() === 18) {
-    if (new Date().getHours() === 18) {
+  if (name === "Daily Spin" && dailyTicketResultShowTime()) {
+    if (dailyTicketResultShowTime()) {
       const intervalId = setInterval(() => {
         setRenderCount((prevCount) => {
           if (prevCount === 0) {
-            setWinningTicket((pre) => ({
-              ...pre,
-              first: result[0],
-            }));
+            setWinningTicket((pre) =>
+              pre.map((ticket, index) =>
+                index === 0 ? { ...ticket, first: result[0] } : ticket
+              )
+            );
           }
           if (prevCount === 1) {
-            setWinningTicket((pre) => ({
-              ...pre,
-              second: result[1],
-            }));
+            setWinningTicket((pre) =>
+              pre.map((ticket, index) =>
+                index === 0 ? { ...ticket, second: result[1] } : ticket
+              )
+            );
           }
           if (prevCount === 2) {
-            setWinningTicket((pre) => ({
-              ...pre,
-              third: result[2],
-            }));
+            setWinningTicket((pre) =>
+              pre.map((ticket, index) =>
+                index === 0 ? { ...ticket, third: result[2] } : ticket
+              )
+            );
           }
           if (prevCount === 3) {
-            setWinningTicket((pre) => ({
-              ...pre,
-              fourth: result[3],
-            }));
+            setWinningTicket((pre) =>
+              pre.map((ticket, index) =>
+                index === 0 ? { ...ticket, fourth: result[3] } : ticket
+              )
+            );
             clearInterval(intervalId);
             return prevCount;
           }
@@ -220,33 +225,37 @@ export const handleSpinner = (
         },
       ]);
     }
-  } else if (name === "Weekly Spin" && new Date().getHours() === 19) {
-    if (new Date().getHours() === 19) {
+  } else if (name === "Weekly Spin" && weeklyTicketResultShowTime()) {
+    if (weeklyTicketResultShowTime()) {
       const intervalId = setInterval(() => {
         setRenderCount((prevCount) => {
           if (prevCount === 0) {
-            setWinningTicket((pre) => ({
-              ...pre,
-              first: result[0],
-            }));
+            setWinningTicket((pre) =>
+              pre.map((ticket, index) =>
+                index === 0 ? { ...ticket, first: result[0] } : ticket
+              )
+            );
           }
           if (prevCount === 1) {
-            setWinningTicket((pre) => ({
-              ...pre,
-              second: result[1],
-            }));
+            setWinningTicket((pre) =>
+              pre.map((ticket, index) =>
+                index === 0 ? { ...ticket, second: result[1] } : ticket
+              )
+            );
           }
           if (prevCount === 2) {
-            setWinningTicket((pre) => ({
-              ...pre,
-              third: result[2],
-            }));
+            setWinningTicket((pre) =>
+              pre.map((ticket, index) =>
+                index === 0 ? { ...ticket, third: result[2] } : ticket
+              )
+            );
           }
           if (prevCount === 3) {
-            setWinningTicket((pre) => ({
-              ...pre,
-              fourth: result[3],
-            }));
+            setWinningTicket((pre) =>
+              pre.map((ticket, index) =>
+                index === 0 ? { ...ticket, fourth: result[3] } : ticket
+              )
+            );
             clearInterval(intervalId);
             return prevCount;
           }
@@ -268,11 +277,8 @@ export const handleSpinner = (
       ]);
     }
     return true;
-  } else if (
-    name === "Monthly Spin" &&
-    new Date().getHours() === 9 &&
-    renderCount < 12
-  ) {
+  } else if (name === "Monthly Spin" && monthlyResultShowTime()) {
+    console.log("inside month");
     const intervalId = setInterval(() => {
       setRenderCount((prevCount) => {
         if (prevCount === 0) {
@@ -371,7 +377,7 @@ export const handleSpinner = (
     if (
       name === "Daily Spin" &&
       new Date().getHours() === 19 &&
-      dailyPublishResultIsAvailable()
+      dailyTicketResultShowTime()
     )
       setWinningTicket([
         {
@@ -384,7 +390,7 @@ export const handleSpinner = (
     else if (
       name === "Weekly Spin" &&
       new Date().getHours() === 20 &&
-      weeklyPublishResultIsAvailable()
+      isWeeklyPublishPossibleandUserCannotBuyTicket()
     )
       setWinningTicket([
         {
@@ -398,7 +404,7 @@ export const handleSpinner = (
       name === "Monthly Spin" &&
       new Date().getHours() === 21 &&
       renderCount === 12 &&
-      monthlyPublishResultIsAvailable()
+      isMonthlyPublishIsAvailableandUserCannotBuyTicket()
     )
       setWinningTicket([
         {
@@ -411,7 +417,7 @@ export const handleSpinner = (
   }
 };
 
-export const dailyPublishTicketRateIsAvailable = (): boolean => {
+export const isDailyPublishPossibleAndUserCannotBuyTicket = (): boolean => {
   const now = new Date();
   const currentHour = now.getHours();
   const currentMinute = now.getMinutes();
@@ -421,7 +427,7 @@ export const dailyPublishTicketRateIsAvailable = (): boolean => {
   return false;
 };
 
-export const dailyPublishResultIsAvailable = (): boolean => {
+export const dailyTicketResultShowTime = (): boolean => {
   const now = new Date();
   const currentHour = now.getHours();
   const currentMinute = now.getMinutes();
@@ -431,22 +437,9 @@ export const dailyPublishResultIsAvailable = (): boolean => {
   return false;
 };
 
-export function weeklyPublishResultIsAvailable(): boolean {
+export function isWeeklyPublishPossibleandUserCannotBuyTicket(): boolean {
   const now = new Date();
   if (now.getDay()) {
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-
-    if (currentHour === 23 && currentMinute >= 0 && currentMinute <= 59) {
-      return true;
-    }
-  }
-  return false;
-}
-
-export function weeklyPublishTicketRateIsAvailable(): boolean {
-  const now = new Date();
-  if (now.getDay() === 5) {
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
 
@@ -457,25 +450,20 @@ export function weeklyPublishTicketRateIsAvailable(): boolean {
   return false;
 }
 
-export function monthlyPublishResultIsAvailable(): boolean {
+export function weeklyTicketResultShowTime(): boolean {
   const now = new Date();
-  const lastDayOfMonth = new Date(
-    now.getFullYear(),
-    now.getMonth() + 1,
-    0
-  ).getDate();
-  if (now.getDate() === lastDayOfMonth) {
+  if (now.getDay() === 5) {
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
 
-    if (currentHour === 20 && currentMinute >= 0 && currentMinute <= 59) {
+    if (currentHour === 19 && currentMinute >= 0 && currentMinute <= 59) {
       return true;
     }
   }
   return false;
 }
 
-export function monthlyPublishTicketRateIsAvailable(): boolean {
+export function isMonthlyPublishIsAvailableandUserCannotBuyTicket(): boolean {
   const now = new Date();
   const lastDayOfMonth = new Date(
     now.getFullYear(),
@@ -487,6 +475,24 @@ export function monthlyPublishTicketRateIsAvailable(): boolean {
     const currentMinute = now.getMinutes();
 
     if (currentHour === 19 && currentMinute >= 0 && currentMinute <= 59) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function monthlyResultShowTime(): boolean {
+  const now = new Date();
+  const lastDayOfMonth = new Date(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    0
+  ).getDate();
+  if (now.getDate() === lastDayOfMonth) {
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
+    if (currentHour === 20 && currentMinute >= 0 && currentMinute <= 59) {
       return true;
     }
   }

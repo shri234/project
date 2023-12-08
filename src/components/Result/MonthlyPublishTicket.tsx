@@ -20,7 +20,6 @@ export const MonthlyTicketPublish: FC<{
   setTicket: Dispatch<SetStateAction<Ticket>>;
   setLoader: Dispatch<SetStateAction<boolean>>;
   path: string;
-  handlePublishResult: () => Promise<void>;
 }> = ({ ticket, setTicket }) => {
   return (
     <Box
