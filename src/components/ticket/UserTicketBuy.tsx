@@ -36,7 +36,9 @@ export interface WinningTicketInterface {
 }
 
 const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
+console.log(name)
   const handlePath = (): string => {
+    
     return name === "Daily Spin"
       ? "daily"
       : name === "Weekly Spin"
