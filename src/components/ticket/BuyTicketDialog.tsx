@@ -15,8 +15,10 @@ const style = {
 
 export default function BuyTicketWarningDlg({
   setBuyTicketWarningDlg,
+  description,
 }: {
   setBuyTicketWarningDlg: React.Dispatch<React.SetStateAction<boolean>>;
+  description: string;
 }) {
   return (
     <div>
@@ -31,7 +33,7 @@ export default function BuyTicketWarningDlg({
           component={"div"}
           style={{ color: "red", fontSize: "1.25rem", fontWeight: "bold" }}
         >
-          Cannot Buy a Ticket between 5pm to 6pm.
+          {description}
         </Box>
       </Modal>
     </div>

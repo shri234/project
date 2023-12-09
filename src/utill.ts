@@ -166,254 +166,119 @@ export const monthlyCountdown = (): {
 //   }
 // };
 
-export const handleSpinner = (
-  name: string,
+export const spinResult = async (
   result: never[],
-  renderCount: number,
   setWinningTicket: Dispatch<SetStateAction<WinningTicketInterface[]>>,
-  setRenderCount: Dispatch<SetStateAction<number>>,
   setTmpSpinner: Dispatch<SetStateAction<number>>
-) => {
-  if (name === "Daily Spin" && dailyTicketResultShowTime()) {
-    if (dailyTicketResultShowTime()) {
-      const intervalId = setInterval(() => {
-        setRenderCount((prevCount) => {
+): Promise<void> => {
+  for (let prevCount = 0; prevCount <= 3; prevCount++) {
+    await new Promise((resolve) => {
+      setTmpSpinner(result[prevCount]);
+      setTimeout(resolve, 8000);
+    });
+
+    setWinningTicket((pre) =>
+      pre.map((ticket, index) =>
+        index === 0
+          ? {
+              ...ticket,
+              [prevCount === 0
+                ? "first"
+                : prevCount === 1
+                ? "second"
+                : prevCount === 2
+                ? "third"
+                : "fourth"]: result[prevCount],
+            }
+          : ticket
+      )
+    );
+  }
+};
+
+export const monthlySpinResult = async (
+  result: never[],
+  setMonthlyWinningTicket: Dispatch<SetStateAction<WinningTicketInterface[]>>,
+  setTmpSpinner: Dispatch<SetStateAction<number>>
+): Promise<void> => {
+  for (let prevCount = 0; prevCount <= 11; prevCount++) {
+    setTmpSpinner(result[prevCount]);
+
+    await new Promise((resolve) => setTimeout(resolve, 8000));
+
+    // Update winningTicket array
+    setMonthlyWinningTicket((prevTickets) =>
+      prevTickets.map((ticket, index) => {
+        if (index === 0) {
           if (prevCount === 0) {
-            setWinningTicket((pre) =>
-              pre.map((ticket, index) =>
-                index === 0 ? { ...ticket, first: result[0] } : ticket
-              )
-            );
+            return {
+              ...ticket,
+              first: result[prevCount],
+            };
+          } else if (prevCount === 1) {
+            return {
+              ...ticket,
+              second: result[prevCount],
+            };
+          } else if (prevCount === 2) {
+            return {
+              ...ticket,
+              third: result[prevCount],
+            };
+          } else if (prevCount === 3) {
+            return {
+              ...ticket,
+              fourth: result[prevCount],
+            };
           }
-          if (prevCount === 1) {
-            setWinningTicket((pre) =>
-              pre.map((ticket, index) =>
-                index === 0 ? { ...ticket, second: result[1] } : ticket
-              )
-            );
+        } else if (index === 1) {
+          if (prevCount === 4) {
+            return {
+              ...ticket,
+              first: result[prevCount],
+            };
+          } else if (prevCount === 5) {
+            return {
+              ...ticket,
+              second: result[prevCount],
+            };
+          } else if (prevCount === 6) {
+            return {
+              ...ticket,
+              third: result[prevCount],
+            };
+          } else if (prevCount === 7) {
+            return {
+              ...ticket,
+              fourth: result[prevCount],
+            };
           }
-          if (prevCount === 2) {
-            setWinningTicket((pre) =>
-              pre.map((ticket, index) =>
-                index === 0 ? { ...ticket, third: result[2] } : ticket
-              )
-            );
+        } else if (index === 2) {
+          if (prevCount === 8) {
+            return {
+              ...ticket,
+              first: result[prevCount],
+            };
+          } else if (prevCount === 9) {
+            return {
+              ...ticket,
+              second: result[prevCount],
+            };
+          } else if (prevCount === 10) {
+            return {
+              ...ticket,
+              third: result[prevCount],
+            };
+          } else if (prevCount === 11) {
+            return {
+              ...ticket,
+              fourth: result[prevCount],
+            };
           }
-          if (prevCount === 3) {
-            setWinningTicket((pre) =>
-              pre.map((ticket, index) =>
-                index === 0 ? { ...ticket, fourth: result[3] } : ticket
-              )
-            );
-            clearInterval(intervalId);
-            return prevCount;
-          }
-          return prevCount + 1;
-        });
-      }, 8000);
-
-      setTmpSpinner(result[renderCount]);
-
-      return () => clearInterval(intervalId);
-    } else {
-      setWinningTicket([
-        {
-          first: null,
-          second: null,
-          third: null,
-          fourth: null,
-        },
-      ]);
-    }
-  } else if (name === "Weekly Spin" && weeklyTicketResultShowTime()) {
-    if (weeklyTicketResultShowTime()) {
-      const intervalId = setInterval(() => {
-        setRenderCount((prevCount) => {
-          if (prevCount === 0) {
-            setWinningTicket((pre) =>
-              pre.map((ticket, index) =>
-                index === 0 ? { ...ticket, first: result[0] } : ticket
-              )
-            );
-          }
-          if (prevCount === 1) {
-            setWinningTicket((pre) =>
-              pre.map((ticket, index) =>
-                index === 0 ? { ...ticket, second: result[1] } : ticket
-              )
-            );
-          }
-          if (prevCount === 2) {
-            setWinningTicket((pre) =>
-              pre.map((ticket, index) =>
-                index === 0 ? { ...ticket, third: result[2] } : ticket
-              )
-            );
-          }
-          if (prevCount === 3) {
-            setWinningTicket((pre) =>
-              pre.map((ticket, index) =>
-                index === 0 ? { ...ticket, fourth: result[3] } : ticket
-              )
-            );
-            clearInterval(intervalId);
-            return prevCount;
-          }
-          return prevCount + 1;
-        });
-      }, 8000);
-
-      setTmpSpinner(result[renderCount]);
-
-      return () => clearInterval(intervalId);
-    } else {
-      setWinningTicket([
-        {
-          first: null,
-          second: null,
-          third: null,
-          fourth: null,
-        },
-      ]);
-    }
-    return true;
-  } else if (name === "Monthly Spin" && monthlyResultShowTime()) {
-    console.log("inside month");
-    const intervalId = setInterval(() => {
-      setRenderCount((prevCount) => {
-        if (prevCount === 0) {
-          setWinningTicket((pre) =>
-            pre.map((ticket, index) =>
-              index === 0 ? { ...ticket, first: result[0] } : ticket
-            )
-          );
         }
-        if (prevCount === 1) {
-          setWinningTicket((pre) =>
-            pre.map((ticket, index) =>
-              index === 0 ? { ...ticket, second: result[1] } : ticket
-            )
-          );
-        }
-        if (prevCount === 2) {
-          setWinningTicket((pre) =>
-            pre.map((ticket, index) =>
-              index === 0 ? { ...ticket, third: result[2] } : ticket
-            )
-          );
-        }
-        if (prevCount === 3) {
-          setWinningTicket((pre) =>
-            pre.map((ticket, index) =>
-              index === 0 ? { ...ticket, fourth: result[3] } : ticket
-            )
-          );
-        }
-
-        if (prevCount === 4) {
-          setWinningTicket((pre) =>
-            pre.map((ticket, index) =>
-              index === 1 ? { ...ticket, first: result[4] } : ticket
-            )
-          );
-        }
-        if (prevCount === 5) {
-          setWinningTicket((pre) =>
-            pre.map((ticket, index) =>
-              index === 1 ? { ...ticket, second: result[5] } : ticket
-            )
-          );
-        }
-        if (prevCount === 6) {
-          setWinningTicket((pre) =>
-            pre.map((ticket, index) =>
-              index === 1 ? { ...ticket, third: result[6] } : ticket
-            )
-          );
-        }
-        if (prevCount === 7) {
-          setWinningTicket((pre) =>
-            pre.map((ticket, index) =>
-              index === 1 ? { ...ticket, fourth: result[7] } : ticket
-            )
-          );
-        }
-        if (prevCount === 8) {
-          setWinningTicket((pre) =>
-            pre.map((ticket, index) =>
-              index === 2 ? { ...ticket, first: result[8] } : ticket
-            )
-          );
-        }
-        if (prevCount === 9) {
-          setWinningTicket((pre) =>
-            pre.map((ticket, index) =>
-              index === 2 ? { ...ticket, second: result[9] } : ticket
-            )
-          );
-        }
-        if (prevCount === 10) {
-          setWinningTicket((pre) =>
-            pre.map((ticket, index) =>
-              index === 2 ? { ...ticket, third: result[10] } : ticket
-            )
-          );
-        }
-        if (prevCount === 11) {
-          setWinningTicket((pre) =>
-            pre.map((ticket, index) =>
-              index === 2 ? { ...ticket, fourth: result[11] } : ticket
-            )
-          );
-        }
-        return prevCount + 1;
-      });
-    }, 8000);
-
-    setTmpSpinner(result[renderCount]);
-
-    return () => clearInterval(intervalId);
-  } else {
-    if (
-      name === "Daily Spin" &&
-      new Date().getHours() === 19 &&
-      dailyTicketResultShowTime()
-    )
-      setWinningTicket([
-        {
-          first: null,
-          second: null,
-          third: null,
-          fourth: null,
-        },
-      ]);
-    else if (
-      name === "Weekly Spin" &&
-      new Date().getHours() === 20 &&
-      isWeeklyPublishPossibleandUserCannotBuyTicket()
-    )
-      setWinningTicket([
-        {
-          first: null,
-          second: null,
-          third: null,
-          fourth: null,
-        },
-      ]);
-    else if (
-      name === "Monthly Spin" &&
-      new Date().getHours() === 21 &&
-      renderCount === 12 &&
-      isMonthlyPublishIsAvailableandUserCannotBuyTicket()
-    )
-      setWinningTicket([
-        {
-          first: null,
-          second: null,
-          third: null,
-          fourth: null,
-        },
-      ]);
+        return ticket;
+      })
+    );
   }
 };
 
@@ -424,7 +289,7 @@ export const isDailyPublishPossibleAndUserCannotBuyTicket = (): boolean => {
   if (currentHour === 17 && currentMinute >= 0 && currentMinute <= 59) {
     return true;
   }
-  return true;
+  return false;
 };
 
 export const dailyTicketResultShowTime = (): boolean => {
@@ -434,7 +299,7 @@ export const dailyTicketResultShowTime = (): boolean => {
   if (currentHour === 18 && currentMinute >= 0 && currentMinute <= 59) {
     return true;
   }
-  return true;
+  return false;
 };
 
 export function isWeeklyPublishPossibleandUserCannotBuyTicket(): boolean {
@@ -498,3 +363,11 @@ export function monthlyResultShowTime(): boolean {
   }
   return false;
 }
+
+export const userCannotBuyTicket = (path: string) => {
+  if (path === "daily") return "Cannot Buy a Ticket between 5pm to 6pm.";
+  else if (path === "weekly") return "Cannot Buy a Ticket between 6pm to 7pm.";
+  else if (path === "monthly") return "Cannot Buy a Ticket between 7pm to 8pm.";
+
+  return "";
+};

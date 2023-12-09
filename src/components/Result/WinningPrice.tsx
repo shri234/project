@@ -2,7 +2,6 @@ import Box from "@mui/material/Box";
 import React, { ChangeEventHandler, FC, useEffect, useState } from "react";
 import {
   STATUS,
-  dailyTicketResultShowTime,
   dialog_timeout,
   isDailyPublishPossibleAndUserCannotBuyTicket,
   isWeeklyPublishPossibleandUserCannotBuyTicket,
