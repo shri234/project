@@ -214,7 +214,7 @@ const SignUpComponent: React.FC = () => {
             type="text"
             value={refer_id}
             onChange={(e) => setReferralId(e.target.value)}
-            className={formErrors.refer_id ? "invalid" : null}
+            className={formErrors.refer_id ? "invalid" : ""}
             placeholder="Enter your referral ID"
           />
           {formErrors.refer_id && (
