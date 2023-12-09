@@ -94,7 +94,7 @@ export default function PayoutModal({
           warning: false,
         }));
       }, dialog_timeout);
-    } else if (walletAmount > amount) {
+    } else if (walletAmount >= amount) {
       await handleRedeem();
     } else {
       setOpenLoader(false);

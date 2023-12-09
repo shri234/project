@@ -304,7 +304,7 @@ export const dailyTicketResultShowTime = (): boolean => {
 
 export function isWeeklyPublishPossibleandUserCannotBuyTicket(): boolean {
   const now = new Date();
-  if (now.getDay()) {
+  if (now.getDay() === 5) {
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
 
