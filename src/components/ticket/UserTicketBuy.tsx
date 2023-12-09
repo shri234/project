@@ -7,7 +7,6 @@ import SpinnerWheel from "../Test";
 // import Marquee from "./marque";
 
 import { isAuthenticated } from "../isAuthenticated/IsAuthenticated";
-import Loader from "../loader/Loader";
 import "./UserTicketBuy.css";
 import BuyTicketWarningDlg from "./BuyTicketDialog";
 import { TicketBuy } from "./TicketBuy";
@@ -18,14 +17,20 @@ import { WinningTicket } from "./WinningTicket";
 import useWinningTicket from "../../swr/winningTicket";
 import {
   dailyCountdown,
-  handleSpinner,
+  dailyTicketResultShowTime,
   monthlyCountdown,
+  monthlyResultShowTime,
+  monthlySpinResult,
+  spinResult,
+  userCannotBuyTicket,
   weeklyCountdown,
+  weeklyTicketResultShowTime,
 } from "../../utill";
 import { MonthlyWinningTicket } from "./MonthlyWinningTicket";
 // import { walletData } from "../../api/getWalletAmount";
 import useUserTicketCount from "../../swr/user_ticket_count";
 import useUserWallet from "../../swr/wallet_data";
+import { winningTicket } from "../../api/winningTicket";
 
 export interface WinningTicketInterface {
   first: null | number;
@@ -51,9 +56,11 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
 
   const { userTicketCount, ticketcountIsLoading, ticketcountRefetch } =
     useUserTicketCount(handlePath());
+
   const { user_wallet, userWalletIsLoading, userWalletRefetch } = useUserWallet(
     handlePath()
   );
+
   const [walletAmount, setWalletAmount] = useState(0);
   const [ticketcount, setTicketCount] = useState(0);
 
@@ -100,38 +107,78 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
       fourth: null,
     },
   ]);
-  const [renderCount, setRenderCount] = useState(0);
+
   const [tmp_spinner, setTmpSpinner] = useState(0);
 
   useEffect(() => {
-    userWinningTicketRefetch().then((res) => {
-      if (res !== undefined)
-        if (res.data !== undefined && res.data !== null) {
-          if (handlePath() === "monthly") {
-            if (res.data?.length > 0) {
-              const tmp_1: [] = res.data[0].winning_ticket[0].result_ticket_1
-                .split("")
-                .map(Number);
+    (async () => {
+      await winningTicket(handlePath())
+        .then((res) => {
+          if (res.data?.data) {
+            if (handlePath() === "monthly") {
+              if (res.data.data?.length > 0) {
+                const tmp_1: [] =
+                  res.data.data[0].winning_ticket[0].result_ticket_1
+                    .split("")
+                    .map(Number);
 
-              const tmp_2: [] = res.data[0].winning_ticket[0].result_ticket_2
-                .split("")
-                .map(Number);
+                const tmp_2: [] =
+                  res.data.data[0].winning_ticket[0].result_ticket_2
+                    .split("")
+                    .map(Number);
 
-              const tmp_3: [] = res.data[0].winning_ticket[0].result_ticket_3
-                .split("")
-                .map(Number);
-              const combinedResults = [...tmp_1, ...tmp_2, ...tmp_3];
-              setResult(combinedResults);
-            }
-          } else {
-            if (res?.data?.result_ticket !== undefined) {
-              const tmp: [] = res.data.result_ticket.split("").map(Number);
-              setResult(tmp);
+                const tmp_3: [] =
+                  res.data.data[0].winning_ticket[0].result_ticket_3
+                    .split("")
+                    .map(Number);
+                const combinedResults = [...tmp_1, ...tmp_2, ...tmp_3];
+                setResult(combinedResults);
+              }
+            } else {
+              if (res.data?.data?.result_ticket !== undefined) {
+                const tmp: [] = res.data.data.result_ticket
+                  .split("")
+                  .map(Number);
+                setResult(tmp);
+              }
             }
           }
-        }
-    });
-  }, [winningTicketisLoading, user_winning_ticket]);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    })();
+  }, []);
+
+  // useEffect(() => {
+  //   userWinningTicketRefetch().then((res) => {
+  //     if (res !== undefined)
+  //       if (res.data !== undefined && res.data !== null) {
+  //         if (handlePath() === "monthly") {
+  //           if (res.data?.length > 0) {
+  //             const tmp_1: [] = res.data[0].winning_ticket[0].result_ticket_1
+  //               .split("")
+  //               .map(Number);
+
+  //             const tmp_2: [] = res.data[0].winning_ticket[0].result_ticket_2
+  //               .split("")
+  //               .map(Number);
+
+  //             const tmp_3: [] = res.data[0].winning_ticket[0].result_ticket_3
+  //               .split("")
+  //               .map(Number);
+  //             const combinedResults = [...tmp_1, ...tmp_2, ...tmp_3];
+  //             setResult(combinedResults);
+  //           }
+  //         } else {
+  //           if (res?.data?.result_ticket !== undefined) {
+  //             const tmp: [] = res.data.result_ticket.split("").map(Number);
+  //             setResult(tmp);
+  //           }
+  //         }
+  //       }
+  //   });
+  // }, [winningTicketisLoading, user_winning_ticket]);
 
   useEffect(() => {
     ticketcountRefetch().then((res) => {
@@ -172,16 +219,14 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
   }, [name]);
 
   useEffect(() => {
-    if (result.length > 0)
-      handleSpinner(
-        name,
-        result,
-        renderCount,
-        handlePath() === "monthly" ? setMonthlyWinningTicket : setWinningTicket,
-        setRenderCount,
-        setTmpSpinner
-      );
-  }, [result, timeLeft.hours, tmp_spinner, setTmpSpinner, winning_ticket]);
+    if (name === "Daily Spin" && dailyTicketResultShowTime()) {
+      spinResult(result, setWinningTicket, setTmpSpinner);
+    } else if (name === "Weekly Spin" && weeklyTicketResultShowTime()) {
+      spinResult(result, setWinningTicket, setTmpSpinner);
+    } else if (name === "Monthly Spin" && monthlyResultShowTime()) {
+      monthlySpinResult(result, setMonthlyWinningTicket, setTmpSpinner);
+    }
+  }, [result, name, timeLeft.hours]);
 
   useEffect(() => {
     userWalletRefetch()
@@ -206,6 +251,7 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
         {buy_ticket_warning_dlg && (
           <BuyTicketWarningDlg
             setBuyTicketWarningDlg={setBuyTicketWarningDlg}
+            description={userCannotBuyTicket(handlePath())}
           />
         )}
         <TicketNavBar name={name} wallet_amount={walletAmount} />

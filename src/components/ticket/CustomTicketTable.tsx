@@ -51,7 +51,6 @@ export default function CustomizedTables({ name }: { name: string }) {
     tableTicketRefetch().then((res) => {
       if (res !== undefined)
         if (res.data !== undefined && res.data !== null) {
-          console.log(res.data)
           setDigits(res.data);
         }
     });

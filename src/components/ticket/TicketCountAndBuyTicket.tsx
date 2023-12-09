@@ -11,7 +11,6 @@ export const TicketCountandBuyTicket: FC<{
   setBuyTicketWarningDlg: Dispatch<SetStateAction<boolean>>;
   path: string;
 }> = ({ ticketcount, setBuyTicketWarningDlg, path }) => {
-  console.log(path)
   const handlePath = (): string => {
     return path === "/daily-buy-ticket"
       ? "daily"
@@ -54,9 +53,7 @@ export const TicketCountandBuyTicket: FC<{
         component={"div"}
         onClick={() => {
           const now = new Date();
-          console.log(handlePath(),typeof handlePath());
-          console.log(now.getHours())
-          console.log(now.getMinutes())
+
           if (
             (handlePath() === "daily" &&
               isDailyPublishPossibleAndUserCannotBuyTicket()) ||
@@ -67,7 +64,7 @@ export const TicketCountandBuyTicket: FC<{
           ) {
             setBuyTicketWarningDlg((pre) => !pre);
           } else {
-            window.location.href=path
+            window.location.href = path;
           }
         }}
       >
