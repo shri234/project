@@ -21,7 +21,7 @@ const SignUpComponent: React.FC = () => {
     mobile: "",
     email: "",
     password: "",
-    refer_id: "",
+    refer_id: null,
   });
 
   const emailRegex = /\S+@\S+\.\S+/;
