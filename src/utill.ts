@@ -64,6 +64,7 @@ export const numbers = [
 ];
 
 export const weeklyCountdown = (): {
+  day: string;
   hours: string;
   minutes: string;
   seconds: string;
@@ -84,17 +85,21 @@ export const weeklyCountdown = (): {
   const diffInSeconds = Math.round(
     (targetTime.getTime() - now.getTime()) / 1000
   );
-  const hours = Math.floor(diffInSeconds / 3600);
+  const days = Math.floor(diffInSeconds / 86400);
+  const hours = Math.floor((diffInSeconds % 86400) / 3600);
   const minutes = Math.floor((diffInSeconds % 3600) / 60);
   const seconds = diffInSeconds % 60;
 
   return {
+    day: days.toString().padStart(2, "0"),
     hours: hours.toString().padStart(2, "0"),
     minutes: minutes.toString().padStart(2, "0"),
     seconds: seconds.toString().padStart(2, "0"),
   };
 };
+
 export const dailyCountdown = (): {
+  day: string;
   hours: string;
   minutes: string;
   seconds: string;
@@ -114,6 +119,7 @@ export const dailyCountdown = (): {
   let seconds = diffInSeconds % 60;
 
   return {
+    day: "",
     hours: hours.toString().padStart(2, "0"),
     minutes: minutes.toString().padStart(2, "0"),
     seconds: seconds.toString().padStart(2, "0"),
@@ -121,6 +127,7 @@ export const dailyCountdown = (): {
 };
 
 export const monthlyCountdown = (): {
+  day: string;
   hours: string;
   minutes: string;
   seconds: string;
@@ -134,16 +141,19 @@ export const monthlyCountdown = (): {
   const diffInSeconds = Math.round(
     (targetTime.getTime() - now.getTime()) / 1000
   );
-  const hours = Math.floor(diffInSeconds / 3600);
+  const days = Math.floor(diffInSeconds / 86400); // 1 day = 24 * 60 * 60 seconds
+  const hours = Math.floor((diffInSeconds % 86400) / 3600);
   const minutes = Math.floor((diffInSeconds % 3600) / 60);
   const seconds = diffInSeconds % 60;
 
   return {
+    day: days.toString().padStart(2, "0"),
     hours: hours.toString().padStart(2, "0"),
     minutes: minutes.toString().padStart(2, "0"),
     seconds: seconds.toString().padStart(2, "0"),
   };
 };
+
 // export const spinnerTimeline = (
 //   name: string,
 //   setTimeLeft: Dispatch<

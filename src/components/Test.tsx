@@ -1,31 +1,30 @@
 import Box from "@mui/material/Box";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import "./Test.css";
 
+const spinnerMap = new Map<number, number>();
+
+const valuesForKeys = [38, 80, 120, 150, 190, 225, 260, 300, 335, 10];
+
+for (let i = 9; i >= 0; i--) {
+  spinnerMap.set(i, valuesForKeys[9 - i]);
+}
 const SpinnerWheel: React.FC<{ value: number }> = ({ value }) => {
   const wheelRef = useRef<HTMLDivElement>(null);
-
+  const [spinner, setSpinner] = useState(value);
   const spinWheel = async (digit: number) => {
     if (wheelRef.current) {
-      wheelRef.current.style.transform = `rotate(${3600 + digit}deg)`;
+      wheelRef.current.style.transform = `rotate(${7200 + digit}deg)`;
     }
   };
 
   const ifZerospinWheel = async () => {
     if (wheelRef.current) {
-      wheelRef.current.style.transform = `rotate(${3600 + 10}deg)`;
+      wheelRef.current.style.transform = `rotate(${7200 + 10}deg)`;
     }
   };
 
   useEffect(() => {
-    const spinnerMap = new Map<number, number>();
-
-    const valuesForKeys = [38, 80, 120, 150, 190, 225, 260, 300, 335, 10];
-
-    for (let i = 9; i >= 0; i--) {
-      spinnerMap.set(i, valuesForKeys[9 - i]);
-    }
-
     if (value === 0) {
       ifZerospinWheel();
     }
@@ -33,10 +32,10 @@ const SpinnerWheel: React.FC<{ value: number }> = ({ value }) => {
       const tmp = spinnerMap.get(value);
 
       if (tmp !== undefined) {
-        spinWheel(tmp);
+        spinWheel(tmp + 7200);
       }
     }
-  }, [value]);
+  }, [value, spinner]);
 
   const numberStyle = (i: number, clr: string): React.CSSProperties =>
     ({
