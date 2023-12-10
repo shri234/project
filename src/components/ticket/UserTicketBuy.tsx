@@ -66,6 +66,7 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
 
   const [buy_ticket_warning_dlg, setBuyTicketWarningDlg] = useState(false);
   const [timeLeft, setTimeLeft] = useState({
+    day: "",
     hours: "",
     minutes: "",
     seconds: "",
