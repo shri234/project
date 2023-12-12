@@ -273,7 +273,9 @@ const PaymentRequest = () => {
                         }}
                       >
                         <TableCell component="th" scope="row" align="center">
-                          {row.username}
+                          {row.username.includes(null)
+                            ? row.username.split("(")[0]
+                            : row.username}
                         </TableCell>
                         <TableCell align="center">{row.email}</TableCell>
                         <TableCell align="center">{row.amount}</TableCell>
