@@ -296,7 +296,7 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
             <SpinnerWheel value={tmp_spinner} />
           </Box>
           <TicketBuy ticketcount={ticketcount} name={name} />
-          <CustomizedTables name={name} />
+          <CustomizedTables name={name} timeLeft={timeLeft} />
         </Box>
       </Box>
     )

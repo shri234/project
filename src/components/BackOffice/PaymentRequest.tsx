@@ -249,7 +249,7 @@ const PaymentRequest = () => {
             </Box>
             <TableContainer
               component={Paper}
-              sx={{ maxWidth: { xs: 300, sm: 450 }, overflowX: "scroll" }}
+              sx={{ maxWidth: { xs: 300, sm: 600 }, overflowX: "auto" }}
             >
               <Table sx={{}} size="small" aria-label="a dense table">
                 <CustomTableHead table_head={table_head} />
