@@ -117,7 +117,11 @@ const MasterHistoryTable: FC<{ path: string }> = ({ path }) => {
                     <TableCell component="th" scope="row" align="center">
                       {index + 1}
                     </TableCell>
-                    <TableCell align="center">{row.username}</TableCell>
+                    <TableCell align="center">
+                      {row.username.includes(null)
+                        ? row.username.split("(")[0]
+                        : row.username}
+                    </TableCell>
                     <TableCell align="center" sx={{ display: "flex" }}>
                       {row.ticket.map((value: any) => (
                         <TicketResult value={value} key={value.id} />

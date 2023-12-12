@@ -135,7 +135,9 @@ const AgentHome = () => {
                             {index + 1}
                           </TableCell>
                           <TableCell align="center" sx={{ cursor: "pointer" }}>
-                            {row.username}
+                            {row.username.includes(null)
+                              ? row.username.split("(")[0]
+                              : row.username}
                           </TableCell>
                           <TableCell align="center">
                             {formattedDate(row.CreatedAt)}

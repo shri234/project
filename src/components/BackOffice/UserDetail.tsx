@@ -159,7 +159,9 @@ const BackOfficeUserDetail = () => {
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
                     <TableCell component="th" scope="row" align="center">
-                      {row.username}
+                      {row.username.includes(null)
+                        ? row.username.split("(")[0]
+                        : row.username}
                     </TableCell>
                     <TableCell align="center">{row.email}</TableCell>
                     <TableCell align="center">{row.mobileNumber}</TableCell>
