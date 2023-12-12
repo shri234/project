@@ -10,6 +10,11 @@ import Box from "@mui/material/Box";
 import { useState, useEffect } from "react";
 import { NoDataFoundTable } from "../custom-table/NoDataFound";
 import useTableTicketData from "../../swr/table_ticket_data";
+import {
+  isDailyPublishPossibleAndUserCannotBuyTicket,
+  isMonthlyPublishIsAvailableandUserCannotBuyTicket,
+  isWeeklyPublishPossibleandUserCannotBuyTicket,
+} from "../../utill";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -31,7 +36,13 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export default function CustomizedTables({ name }: { name: string }) {
+export default function CustomizedTables({
+  name,
+  timeLeft,
+}: {
+  name: string;
+  timeLeft: { day: string; hours: string; minutes: string; seconds: string };
+}) {
   const handlePath = (): string => {
     return name === "Daily Spin"
       ? "daily"
@@ -48,13 +59,62 @@ export default function CustomizedTables({ name }: { name: string }) {
   );
 
   useEffect(() => {
-    tableTicketRefetch().then((res) => {
-      if (res !== undefined)
-        if (res.data !== undefined && res.data !== null) {
-          setDigits(res.data);
-        }
-    });
-  }, [table_ticket_isLoading, use_table_tickets_data]);
+    const now = new Date();
+    if (handlePath() === "daily" && now.getHours() < 17 && now.getHours() < 19)
+      tableTicketRefetch().then((res) => {
+        if (res !== undefined)
+          if (res.data !== undefined && res.data !== null) {
+            setDigits(res.data);
+          }
+      });
+    else if (isDailyPublishPossibleAndUserCannotBuyTicket())
+      tableTicketRefetch().then((res) => {
+        if (res !== undefined)
+          if (res.data !== undefined && res.data !== null) {
+            setDigits(res.data);
+          }
+      });
+  }, [table_ticket_isLoading, use_table_tickets_data, timeLeft.hours]);
+
+  useEffect(() => {
+    const now = new Date();
+    if (handlePath() === "daily" && now.getHours() < 18 && now.getHours() < 20)
+      tableTicketRefetch().then((res) => {
+        if (res !== undefined)
+          if (res.data !== undefined && res.data !== null) {
+            setDigits(res.data);
+          }
+      });
+    else if (isWeeklyPublishPossibleandUserCannotBuyTicket())
+      tableTicketRefetch().then((res) => {
+        if (res !== undefined)
+          if (res.data !== undefined && res.data !== null) {
+            setDigits(res.data);
+          }
+      });
+  }, [table_ticket_isLoading, use_table_tickets_data, timeLeft.hours]);
+  useEffect(() => {
+    const now = new Date();
+    if (
+      handlePath() === "monthly" &&
+      now.getHours() < 19 &&
+      now.getHours() < 21
+    )
+      tableTicketRefetch().then((res) => {
+        if (res !== undefined)
+          if (res.data !== undefined && res.data !== null) {
+            setDigits(res.data);
+          }
+      });
+    else if (isMonthlyPublishIsAvailableandUserCannotBuyTicket())
+      tableTicketRefetch().then((res) => {
+        if (res !== undefined)
+          if (res.data !== undefined && res.data !== null) {
+            setDigits(res.data);
+          }
+      });
+  }, [table_ticket_isLoading, use_table_tickets_data, timeLeft.hours]);
+
   return (
     <Box component={"div"} sx={{ display: "flex", justifyContent: "center" }}>
       <TableContainer component={Paper} sx={{ maxWidth: "300px", mt: 2 }}>

@@ -199,9 +199,44 @@ export const WinningPriceTicket: FC<{ path: string }> = ({ path }) => {
         }}
       >
         <Box
+          onClick={() => {
+            if (
+              handlePath() === "daily" &&
+              !is_price_published &&
+              isDailyPublishPossibleAndUserCannotBuyTicket()
+            ) {
+              handlePriceRate();
+            } else if (
+              handlePath() === "weekly" &&
+              !is_price_published &&
+              isWeeklyPublishPossibleandUserCannotBuyTicket()
+            ) {
+              handlePriceRate();
+            }
+          }}
           sx={{
             p: 1.25,
-            background: "#0bb329",
+            background:
+              handlePath() === "daily" &&
+              !is_price_published &&
+              isDailyPublishPossibleAndUserCannotBuyTicket()
+                ? "#0bb329"
+                : handlePath() === "weekly" &&
+                  !is_price_published &&
+                  isWeeklyPublishPossibleandUserCannotBuyTicket()
+                ? "#0bb329"
+                : "grey",
+            cursor:
+              handlePath() === "daily" &&
+              !is_price_published &&
+              isDailyPublishPossibleAndUserCannotBuyTicket()
+                ? "pointer"
+                : handlePath() === "weekly" &&
+                  !is_price_published &&
+                  isWeeklyPublishPossibleandUserCannotBuyTicket()
+                ? "pointer"
+                : "no-drop",
+
             borderRadius: "5px",
             color: "#fff",
             fontWeight: 600,
