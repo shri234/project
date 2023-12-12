@@ -123,7 +123,7 @@ const PlayHistory = () => {
                         }}
                       >
                         <TableCell component="th" scope="row" align="center">
-                          {index + 1}
+                          {row.number}
                         </TableCell>
                         <TableCell align="center">{row.CreatedAt}</TableCell>
                         <TableCell align="center" sx={{ display: "flex" }}>

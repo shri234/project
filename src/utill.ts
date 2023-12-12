@@ -296,7 +296,7 @@ export const isDailyPublishPossibleAndUserCannotBuyTicket = (): boolean => {
   const now = new Date();
   const currentHour = now.getHours();
   const currentMinute = now.getMinutes();
-  if (currentHour === 17 && currentMinute >= 0 && currentMinute <= 59) {
+  if (currentHour === 23 && currentMinute >= 0 && currentMinute <= 59) {
     return true;
   }
   return false;
