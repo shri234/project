@@ -60,32 +60,29 @@ export default function CustomizedTables({
 
   useEffect(() => {
     const now = new Date();
-    if (handlePath() === "daily" && now.getHours() < 17 && now.getHours() < 19)
+    if (handlePath() === "daily" && now.getHours() >= 17 && now.getHours() < 19)
+      return;
+    else if (!isDailyPublishPossibleAndUserCannotBuyTicket()) return;
+    else {
       tableTicketRefetch().then((res) => {
         if (res !== undefined)
           if (res.data !== undefined && res.data !== null) {
             setDigits(res.data);
           }
       });
-    else if (isDailyPublishPossibleAndUserCannotBuyTicket())
-      tableTicketRefetch().then((res) => {
-        if (res !== undefined)
-          if (res.data !== undefined && res.data !== null) {
-            setDigits(res.data);
-          }
-      });
+    }
   }, [table_ticket_isLoading, use_table_tickets_data, timeLeft.hours]);
 
   useEffect(() => {
     const now = new Date();
-    if (handlePath() === "daily" && now.getHours() < 18 && now.getHours() < 20)
-      tableTicketRefetch().then((res) => {
-        if (res !== undefined)
-          if (res.data !== undefined && res.data !== null) {
-            setDigits(res.data);
-          }
-      });
-    else if (isWeeklyPublishPossibleandUserCannotBuyTicket())
+    if (
+      handlePath() === "weekly" &&
+      now.getHours() >= 18 &&
+      now.getHours() < 20
+    )
+      return;
+    else if (isWeeklyPublishPossibleandUserCannotBuyTicket()) return;
+    else
       tableTicketRefetch().then((res) => {
         if (res !== undefined)
           if (res.data !== undefined && res.data !== null) {
@@ -97,16 +94,12 @@ export default function CustomizedTables({
     const now = new Date();
     if (
       handlePath() === "monthly" &&
-      now.getHours() < 19 &&
+      now.getHours() >= 19 &&
       now.getHours() < 21
     )
-      tableTicketRefetch().then((res) => {
-        if (res !== undefined)
-          if (res.data !== undefined && res.data !== null) {
-            setDigits(res.data);
-          }
-      });
-    else if (isMonthlyPublishIsAvailableandUserCannotBuyTicket())
+      return;
+    else if (isMonthlyPublishIsAvailableandUserCannotBuyTicket()) return;
+    else
       tableTicketRefetch().then((res) => {
         if (res !== undefined)
           if (res.data !== undefined && res.data !== null) {
