@@ -64,12 +64,13 @@ export default function CustomizedTables({
       return;
     else if (!isDailyPublishPossibleAndUserCannotBuyTicket()) return;
     else {
-      tableTicketRefetch().then((res) => {
-        if (res !== undefined)
-          if (res.data !== undefined && res.data !== null) {
-            setDigits(res.data);
-          }
-      });
+      if (handlePath() === "daily")
+        tableTicketRefetch().then((res) => {
+          if (res !== undefined)
+            if (res.data !== undefined && res.data !== null) {
+              setDigits(res.data);
+            }
+        });
     }
   }, [table_ticket_isLoading, use_table_tickets_data, timeLeft.hours]);
 
@@ -81,14 +82,16 @@ export default function CustomizedTables({
       now.getHours() < 20
     )
       return;
-    else if (isWeeklyPublishPossibleandUserCannotBuyTicket()) return;
-    else
-      tableTicketRefetch().then((res) => {
-        if (res !== undefined)
-          if (res.data !== undefined && res.data !== null) {
-            setDigits(res.data);
-          }
-      });
+    else if (!isWeeklyPublishPossibleandUserCannotBuyTicket()) return;
+    else {
+      if (handlePath() === "weekly")
+        tableTicketRefetch().then((res) => {
+          if (res !== undefined)
+            if (res.data !== undefined && res.data !== null) {
+              setDigits(res.data);
+            }
+        });
+    }
   }, [table_ticket_isLoading, use_table_tickets_data, timeLeft.hours]);
   useEffect(() => {
     const now = new Date();
@@ -98,14 +101,16 @@ export default function CustomizedTables({
       now.getHours() < 21
     )
       return;
-    else if (isMonthlyPublishIsAvailableandUserCannotBuyTicket()) return;
-    else
-      tableTicketRefetch().then((res) => {
-        if (res !== undefined)
-          if (res.data !== undefined && res.data !== null) {
-            setDigits(res.data);
-          }
-      });
+    else if (!isMonthlyPublishIsAvailableandUserCannotBuyTicket()) return;
+    else {
+      if (handlePath() === "monthly")
+        tableTicketRefetch().then((res) => {
+          if (res !== undefined)
+            if (res.data !== undefined && res.data !== null) {
+              setDigits(res.data);
+            }
+        });
+    }
   }, [table_ticket_isLoading, use_table_tickets_data, timeLeft.hours]);
 
   return (
