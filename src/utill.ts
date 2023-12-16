@@ -411,7 +411,7 @@ export function userCannotBuyMonthlyTicket() {
     0
   ).getDate();
   if (now.getDate() === lastDayOfMonth) {
-    const currentHour = now.getHours();s
+    const currentHour = now.getHours();
 
     if (currentHour >= 19 && currentHour < 21) {
       return true;
