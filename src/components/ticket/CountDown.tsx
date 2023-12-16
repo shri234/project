@@ -49,7 +49,7 @@ export const CountDown: FC<{
               color: "#fff",
             }}
           >
-            {timeLeft.day}
+            {timeLeft.day}D
           </Box>
         )}
         {timeLeft.day.length > 0 && <span>:</span>}
@@ -65,7 +65,7 @@ export const CountDown: FC<{
             color: "#fff",
           }}
         >
-          {timeLeft.hours}
+          {timeLeft.hours}H
         </Box>
         :
         <Box
@@ -80,7 +80,7 @@ export const CountDown: FC<{
             color: "#fff",
           }}
         >
-          {timeLeft.minutes}
+          {timeLeft.minutes}M
         </Box>
         :
         <Box
@@ -95,7 +95,7 @@ export const CountDown: FC<{
             color: "#fff",
           }}
         >
-          {timeLeft.seconds}
+          {timeLeft.seconds}S
         </Box>
       </Box>
     </Box>

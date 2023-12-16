@@ -1,9 +1,9 @@
 import { Box } from "@mui/material";
 import { Dispatch, FC, SetStateAction } from "react";
 import {
-  isDailyPublishPossibleAndUserCannotBuyTicket,
-  isMonthlyPublishIsAvailableandUserCannotBuyTicket,
-  isWeeklyPublishPossibleandUserCannotBuyTicket,
+  userCannotBuyDailyTicket,
+  userCannotBuyMonthlyTicket,
+  userCannotBuyWeeklyTicket,
 } from "../../utill";
 
 export const TicketCountandBuyTicket: FC<{
@@ -55,12 +55,9 @@ export const TicketCountandBuyTicket: FC<{
           const now = new Date();
 
           if (
-            (handlePath() === "daily" &&
-              isDailyPublishPossibleAndUserCannotBuyTicket()) ||
-            (handlePath() === "weekly" &&
-              isWeeklyPublishPossibleandUserCannotBuyTicket()) ||
-            (handlePath() === "monthly" &&
-              isMonthlyPublishIsAvailableandUserCannotBuyTicket())
+            (handlePath() === "daily" && userCannotBuyDailyTicket()) ||
+            (handlePath() === "weekly" && userCannotBuyWeeklyTicket()) ||
+            (handlePath() === "monthly" && userCannotBuyMonthlyTicket())
           ) {
             setBuyTicketWarningDlg((pre) => !pre);
           } else {

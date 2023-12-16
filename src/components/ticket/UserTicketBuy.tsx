@@ -109,7 +109,7 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
     },
   ]);
 
-  const [tmp_spinner, setTmpSpinner] = useState(0);
+  const [tmp_spinner, setTmpSpinner] = useState<null | number>(null);
 
   useEffect(() => {
     (async () => {
@@ -293,7 +293,7 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
               my: 6,
             }}
           >
-            <SpinnerWheel value={tmp_spinner} />
+            <SpinnerWheel value={tmp_spinner} setTmpSpinner={setTmpSpinner} />
           </Box>
           <TicketBuy ticketcount={ticketcount} name={name} />
           <CustomizedTables name={name} timeLeft={timeLeft} />

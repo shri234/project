@@ -59,10 +59,11 @@ export default function CustomizedTables({
   );
 
   useEffect(() => {
-    const now = new Date();
-    if (handlePath() === "daily" && now.getHours() >= 17 && now.getHours() < 19)
+    if (
+      handlePath() === "daily" &&
+      isDailyPublishPossibleAndUserCannotBuyTicket()
+    )
       return;
-    else if (!isDailyPublishPossibleAndUserCannotBuyTicket()) return;
     else {
       if (handlePath() === "daily")
         tableTicketRefetch().then((res) => {
@@ -75,14 +76,11 @@ export default function CustomizedTables({
   }, [table_ticket_isLoading, use_table_tickets_data, timeLeft.hours]);
 
   useEffect(() => {
-    const now = new Date();
     if (
       handlePath() === "weekly" &&
-      now.getHours() >= 18 &&
-      now.getHours() < 20
+      isWeeklyPublishPossibleandUserCannotBuyTicket()
     )
       return;
-    else if (!isWeeklyPublishPossibleandUserCannotBuyTicket()) return;
     else {
       if (handlePath() === "weekly")
         tableTicketRefetch().then((res) => {
@@ -94,14 +92,11 @@ export default function CustomizedTables({
     }
   }, [table_ticket_isLoading, use_table_tickets_data, timeLeft.hours]);
   useEffect(() => {
-    const now = new Date();
     if (
       handlePath() === "monthly" &&
-      now.getHours() >= 19 &&
-      now.getHours() < 21
+      isMonthlyPublishIsAvailableandUserCannotBuyTicket()
     )
       return;
-    else if (!isMonthlyPublishIsAvailableandUserCannotBuyTicket()) return;
     else {
       if (handlePath() === "monthly")
         tableTicketRefetch().then((res) => {

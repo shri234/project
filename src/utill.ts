@@ -179,7 +179,7 @@ export const monthlyCountdown = (): {
 export const spinResult = async (
   result: never[],
   setWinningTicket: Dispatch<SetStateAction<WinningTicketInterface[]>>,
-  setTmpSpinner: Dispatch<SetStateAction<number>>
+  setTmpSpinner: Dispatch<SetStateAction<number | null>>
 ): Promise<void> => {
   for (let prevCount = 0; prevCount <= 3; prevCount++) {
     await new Promise((resolve) => {
@@ -209,7 +209,7 @@ export const spinResult = async (
 export const monthlySpinResult = async (
   result: never[],
   setMonthlyWinningTicket: Dispatch<SetStateAction<WinningTicketInterface[]>>,
-  setTmpSpinner: Dispatch<SetStateAction<number>>
+  setTmpSpinner: Dispatch<SetStateAction<number | null>>
 ): Promise<void> => {
   for (let prevCount = 0; prevCount <= 11; prevCount++) {
     setTmpSpinner(result[prevCount]);
@@ -381,3 +381,30 @@ export const userCannotBuyTicket = (path: string) => {
 
   return "";
 };
+
+export function userCannotBuyDailyTicket() {
+  const now = new Date();
+  const currentHour = now.getHours();
+  if (currentHour >= 17 && currentHour < 19) {
+    return true;
+  }
+  return false;
+}
+
+export function userCannotBuyWeeklyTicket() {
+  const now = new Date();
+  const currentHour = now.getHours();
+  if (currentHour >= 18 && currentHour < 20) {
+    return true;
+  }
+  return false;
+}
+
+export function userCannotBuyMonthlyTicket() {
+  const now = new Date();
+  const currentHour = now.getHours();
+  if (currentHour >= 19 && currentHour < 21) {
+    return true;
+  }
+  return false;
+}
