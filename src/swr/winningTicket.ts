@@ -10,7 +10,7 @@ function useWinningTicket(path: string) {
     fetcher
   );
   
-  if(now.getHours()==18 && now.getMinutes()==45){
+  if(now.getHours()==18 && now.getMinutes()==45)
   return {
     user_winning_ticket: data,
     winningTicketisLoading: !data && !error,
@@ -18,7 +18,7 @@ function useWinningTicket(path: string) {
     isValidating,
     userWinningTicketRefetch: mutate,
   };
-}
+
 }
 
 export default useWinningTicket;
