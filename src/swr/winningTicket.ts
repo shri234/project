@@ -4,13 +4,13 @@ import { fetcher } from "./wallet_ticket_count";
 
 
 function useWinningTicket(path: string) {
-  if(now.getHours()==18 && now.getMinutes()==45)
+
   const { data, mutate, isValidating, error } = useSWR<any>(
     `${process.env.REACT_APP_IP}/ticket/get-${path}-result`,
     fetcher
   );
   
-
+  if(now.getHours()==18 && now.getMinutes()==45)
   return {
     user_winning_ticket: data,
     winningTicketisLoading: !data && !error,
@@ -18,7 +18,7 @@ function useWinningTicket(path: string) {
     isValidating,
     userWinningTicketRefetch: mutate,
   };
-  
+}
 }
 
 export default useWinningTicket;
