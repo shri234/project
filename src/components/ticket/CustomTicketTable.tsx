@@ -15,6 +15,8 @@ import {
   isMonthlyPublishIsAvailableandUserCannotBuyTicket,
   isWeeklyPublishPossibleandUserCannotBuyTicket,
 } from "../../utill";
+import { winning_ticket } from "../../api/winning_result";
+import Loader from "../loader/Loader";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -57,31 +59,75 @@ export default function CustomizedTables({
   const [digits, setDigits] = useState<any[]>(
     use_table_tickets_data !== undefined ? use_table_tickets_data.data : []
   );
+  const [open_loader, setLoader] = useState(false);
+  const [req_count, setRequestCount] = useState({
+    daily: 0,
+    weekly: 0,
+    monthly: 0,
+  });
 
   useEffect(() => {
     if (
       handlePath() === "daily" &&
       isDailyPublishPossibleAndUserCannotBuyTicket()
-    )
-      return;
-    else {
-      if (handlePath() === "daily")
-        tableTicketRefetch().then((res) => {
-          if (res !== undefined)
-            if (res.data !== undefined && res.data !== null) {
-              setDigits(res.data);
-            }
+    ) {
+      setLoader(true);
+      winning_ticket(handlePath())
+        .then((res) => {
+          if (res.data?.data) {
+            setDigits(res.data.data);
+          }
+          setLoader(false);
+          setRequestCount((pre) => ({ ...pre, daily: 1 }));
+        })
+        .catch((error) => {
+          console.log(error);
+          setLoader(false);
+          setRequestCount((pre) => ({ ...pre, daily: 1 }));
         });
+    } else {
+      if (handlePath() === "daily") {
+        setLoader(true);
+        tableTicketRefetch()
+          .then((res) => {
+            if (res !== undefined)
+              if (res.data !== undefined && res.data !== null) {
+                setDigits(res.data);
+              }
+            setLoader(false);
+          })
+          .catch((error) => {
+            setLoader(false);
+          });
+      }
     }
-  }, [table_ticket_isLoading, use_table_tickets_data, timeLeft.hours]);
+  }, [
+    table_ticket_isLoading,
+    use_table_tickets_data,
+    timeLeft.hours,
+    timeLeft.minutes,
+  ]);
 
   useEffect(() => {
     if (
       handlePath() === "weekly" &&
       isWeeklyPublishPossibleandUserCannotBuyTicket()
-    )
-      return;
-    else {
+    ) {
+      setLoader(true);
+      winning_ticket(handlePath())
+        .then((res) => {
+          if (res.data?.data) {
+            setDigits(res.data.data);
+          }
+          setLoader(false);
+          setRequestCount((pre) => ({ ...pre, daily: 1 }));
+        })
+        .catch((error) => {
+          console.log(error);
+          setLoader(false);
+          setRequestCount((pre) => ({ ...pre, daily: 1 }));
+        });
+    } else {
       if (handlePath() === "weekly")
         tableTicketRefetch().then((res) => {
           if (res !== undefined)
@@ -90,7 +136,13 @@ export default function CustomizedTables({
             }
         });
     }
-  }, [table_ticket_isLoading, use_table_tickets_data, timeLeft.hours]);
+  }, [
+    table_ticket_isLoading,
+    use_table_tickets_data,
+    timeLeft.hours,
+    timeLeft.minutes,
+  ]);
+
   useEffect(() => {
     if (
       handlePath() === "monthly" &&
@@ -106,10 +158,16 @@ export default function CustomizedTables({
             }
         });
     }
-  }, [table_ticket_isLoading, use_table_tickets_data, timeLeft.hours]);
+  }, [
+    table_ticket_isLoading,
+    use_table_tickets_data,
+    timeLeft.hours,
+    timeLeft.minutes,
+  ]);
 
   return (
     <Box component={"div"} sx={{ display: "flex", justifyContent: "center" }}>
+      {open_loader && <Loader />}
       <TableContainer component={Paper} sx={{ maxWidth: "300px", mt: 2 }}>
         <Table aria-label="customized table">
           <TableHead>
