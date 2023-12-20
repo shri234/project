@@ -393,18 +393,29 @@ export function userCannotBuyDailyTicket() {
 
 export function userCannotBuyWeeklyTicket() {
   const now = new Date();
-  const currentHour = now.getHours();
-  if (currentHour >= 18 && currentHour < 20) {
-    return true;
+  if (now.getDay() === 5) {
+    const currentHour = now.getHours();
+
+    if (currentHour >= 18 && currentHour < 20) {
+      return true;
+    }
   }
   return false;
 }
 
 export function userCannotBuyMonthlyTicket() {
   const now = new Date();
-  const currentHour = now.getHours();
-  if (currentHour >= 19 && currentHour < 21) {
-    return true;
+  const lastDayOfMonth = new Date(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    0
+  ).getDate();
+  if (now.getDate() === lastDayOfMonth) {
+    const currentHour = now.getHours();
+
+    if (currentHour >= 19 && currentHour < 21) {
+      return true;
+    }
   }
   return false;
 }
