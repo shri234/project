@@ -11,9 +11,11 @@ import { useState, useEffect } from "react";
 import { NoDataFoundTable } from "../custom-table/NoDataFound";
 import useTableTicketData from "../../swr/table_ticket_data";
 import {
+  dailyTicketResultShowTime,
   isDailyPublishPossibleAndUserCannotBuyTicket,
   isMonthlyPublishIsAvailableandUserCannotBuyTicket,
   isWeeklyPublishPossibleandUserCannotBuyTicket,
+  weeklyTicketResultShowTime,
 } from "../../utill";
 import { winning_ticket } from "../../api/winning_result";
 import Loader from "../loader/Loader";
@@ -67,10 +69,7 @@ export default function CustomizedTables({
   });
 
   useEffect(() => {
-    if (
-      handlePath() === "daily" &&
-      isDailyPublishPossibleAndUserCannotBuyTicket()
-    ) {
+    if (handlePath() === "daily" && dailyTicketResultShowTime()) {
       setLoader(true);
       winning_ticket(handlePath())
         .then((res) => {
@@ -109,10 +108,7 @@ export default function CustomizedTables({
   ]);
 
   useEffect(() => {
-    if (
-      handlePath() === "weekly" &&
-      isWeeklyPublishPossibleandUserCannotBuyTicket()
-    ) {
+    if (handlePath() === "weekly" && weeklyTicketResultShowTime()) {
       setLoader(true);
       winning_ticket(handlePath())
         .then((res) => {
@@ -120,12 +116,10 @@ export default function CustomizedTables({
             setDigits(res.data.data);
           }
           setLoader(false);
-          setRequestCount((pre) => ({ ...pre, daily: 1 }));
         })
         .catch((error) => {
           console.log(error);
           setLoader(false);
-          setRequestCount((pre) => ({ ...pre, daily: 1 }));
         });
     } else {
       if (handlePath() === "weekly")
