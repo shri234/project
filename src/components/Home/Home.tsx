@@ -6,7 +6,6 @@ const HomeLand: React.FC = () => {
   const handleLoginType = (type: string, path: string) => {
     // Handle login logic based on the type (Admin, User, or Agent)
     window.location.href = `/${path}`;
-    console.log(`Login as: ${type}`);
   };
 
   return (
