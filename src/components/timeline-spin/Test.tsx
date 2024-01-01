@@ -37,7 +37,6 @@ function ResponsiveAppBar() {
   };
 
   const handleCloseUserMenu = (name: string) => {
-    console.log(name, "Menu");
     if (name === "Profile") {
       window.location.href = "/profile";
     } else if (name === "Logout") {

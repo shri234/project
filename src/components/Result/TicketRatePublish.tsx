@@ -15,6 +15,7 @@ export const TicketRatePublish: FC<{ path: string }> = ({ path }) => {
   const [ticketrate, setTicketRate] = useState<string>("");
   const [status, setStatus] = useState(false);
   const [is_ticket_rate_published, setTicketRatePublished] = useState(false);
+
   const handlePath = () => {
     return path === "Daily"
       ? "daily"
@@ -22,6 +23,7 @@ export const TicketRatePublish: FC<{ path: string }> = ({ path }) => {
       ? "weekly"
       : "monthly";
   };
+
   const handleTicketRate = async () => {
     const body = { ticketRate: ticketrate };
 

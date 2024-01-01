@@ -5,7 +5,7 @@ export const getPlayHistoryData = async (
   current_page: number
 ) => {
   let tmp_username = username.split("(")[0].trim();
-  console.log(tmp_username, "username");
+
   return await axios
     .get(
       `${process.env.REACT_APP_IP}/ticket/getHistory?username=${tmp_username}&pageno=${current_page}`,

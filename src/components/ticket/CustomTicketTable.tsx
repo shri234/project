@@ -11,9 +11,12 @@ import { useState, useEffect } from "react";
 import { NoDataFoundTable } from "../custom-table/NoDataFound";
 import useTableTicketData from "../../swr/table_ticket_data";
 import {
+  dailyTicketResultShowTime,
   isDailyPublishPossibleAndUserCannotBuyTicket,
   isMonthlyPublishIsAvailableandUserCannotBuyTicket,
   isWeeklyPublishPossibleandUserCannotBuyTicket,
+  monthlyResultShowTime,
+  weeklyTicketResultShowTime,
 } from "../../utill";
 import { winning_ticket } from "../../api/winning_result";
 import Loader from "../loader/Loader";
@@ -59,34 +62,26 @@ export default function CustomizedTables({
   const [digits, setDigits] = useState<any[]>(
     use_table_tickets_data !== undefined ? use_table_tickets_data.data : []
   );
+
   const [open_loader, setLoader] = useState(false);
-  const [req_count, setRequestCount] = useState({
-    daily: 0,
-    weekly: 0,
-    monthly: 0,
-  });
 
   useEffect(() => {
-    if (
-      handlePath() === "daily" &&
-      isDailyPublishPossibleAndUserCannotBuyTicket()
-    ) {
+    if (handlePath() === "daily" && dailyTicketResultShowTime()) {
       setLoader(true);
+
       winning_ticket(handlePath())
         .then((res) => {
           if (res.data?.data) {
             setDigits(res.data.data);
           }
           setLoader(false);
-          setRequestCount((pre) => ({ ...pre, daily: 1 }));
         })
         .catch((error) => {
           console.log(error);
           setLoader(false);
-          setRequestCount((pre) => ({ ...pre, daily: 1 }));
         });
     } else {
-      if (handlePath() === "daily") {
+      if (handlePath() === "daily" && !dailyTicketResultShowTime()) {
         setLoader(true);
         tableTicketRefetch()
           .then((res) => {
@@ -109,23 +104,19 @@ export default function CustomizedTables({
   ]);
 
   useEffect(() => {
-    if (
-      handlePath() === "weekly" &&
-      isWeeklyPublishPossibleandUserCannotBuyTicket()
-    ) {
+    if (handlePath() === "weekly" && weeklyTicketResultShowTime()) {
       setLoader(true);
+
       winning_ticket(handlePath())
         .then((res) => {
           if (res.data?.data) {
             setDigits(res.data.data);
           }
           setLoader(false);
-          setRequestCount((pre) => ({ ...pre, daily: 1 }));
         })
         .catch((error) => {
           console.log(error);
           setLoader(false);
-          setRequestCount((pre) => ({ ...pre, daily: 1 }));
         });
     } else {
       if (handlePath() === "weekly")
@@ -144,11 +135,7 @@ export default function CustomizedTables({
   ]);
 
   useEffect(() => {
-    if (
-      handlePath() === "monthly" &&
-      isMonthlyPublishIsAvailableandUserCannotBuyTicket()
-    )
-      return;
+    if (handlePath() === "monthly" && monthlyResultShowTime()) return;
     else {
       if (handlePath() === "monthly")
         tableTicketRefetch().then((res) => {

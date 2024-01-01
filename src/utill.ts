@@ -309,7 +309,7 @@ export const dailyTicketResultShowTime = (): boolean => {
   if (currentHour === 18 && currentMinute >= 0 && currentMinute <= 59) {
     return true;
   }
-  return false;
+  return true;
 };
 
 export function isWeeklyPublishPossibleandUserCannotBuyTicket(): boolean {
@@ -322,7 +322,7 @@ export function isWeeklyPublishPossibleandUserCannotBuyTicket(): boolean {
       return true;
     }
   }
-  return false;
+  return true;
 }
 
 export function weeklyTicketResultShowTime(): boolean {

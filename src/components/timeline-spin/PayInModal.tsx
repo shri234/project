@@ -48,7 +48,7 @@ export default function PayInModal({
               alignItems: "center",
             }}
           >
-            <img src="/qr.jpeg" className="payment-qr" alt="payment-qr" />
+            {/* <img src="/qr.jpeg" className="payment-qr" alt="payment-qr" /> */}
           </Box>
           <Box
             component={"div"}

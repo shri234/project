@@ -360,11 +360,6 @@ const Result: FC<{ title: string }> = ({ title }) => {
                             setLoader((pre) => !pre);
                             handlePublishMonthlyResult();
                           } else {
-                            console.log(
-                              monthly_ticket_1,
-                              monthly_ticket_2,
-                              monthly_ticket_3
-                            );
                             alert("select");
                           }
                         }}

@@ -103,6 +103,7 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
         console.log(error);
       });
   };
+
   const handlePublishMonthlyResult = async () => {
     setLoader(true);
     const body = {
@@ -200,7 +201,7 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
           }
         } else if (res.data.data) {
           const tmp: string[] = res.data.data.result_ticket.split("");
-          console.log("inside", res, tmp, tmp.length);
+
           if (tmp.length > 0) {
             setTicket(
               (pre) =>
@@ -219,7 +220,6 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
       .catch((error) => {});
   }, []);
 
-  console.log(is_result_published);
   return (
     isAuthenticated("master") && (
       <Box>
@@ -387,11 +387,6 @@ const MasterResult: FC<{ title: string }> = ({ title }) => {
                             setLoader((pre) => !pre);
                             handlePublishMonthlyResult();
                           } else {
-                            console.log(
-                              monthly_ticket_1,
-                              monthly_ticket_2,
-                              monthly_ticket_3
-                            );
                             alert("select");
                           }
                         }}
