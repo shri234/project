@@ -20,11 +20,11 @@ const SpinnerWheel: React.FC<{
   setTmpSpinner: Dispatch<SetStateAction<number | null>>;
 }> = ({ value, setTmpSpinner }) => {
   const wheelRef = useRef<HTMLDivElement>(null);
-  const [spinner, setSpinner] = useState(value);
+
   const spinWheel = async (digit: number) => {
-    setTmpSpinner(null);
     if (wheelRef.current) {
       wheelRef.current.style.transform = `rotate(${7200 + digit}deg)`;
+      setTmpSpinner(null);
     }
   };
 
@@ -47,7 +47,7 @@ const SpinnerWheel: React.FC<{
         }
       }
     }
-  }, [value, spinner]);
+  }, [value]);
 
   const numberStyle = (i: number, clr: string): React.CSSProperties =>
     ({
