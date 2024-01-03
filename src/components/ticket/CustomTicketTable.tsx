@@ -12,13 +12,10 @@ import { NoDataFoundTable } from "../custom-table/NoDataFound";
 import useTableTicketData from "../../swr/table_ticket_data";
 import {
   dailyTicketResultShowTime,
-  isDailyPublishPossibleAndUserCannotBuyTicket,
-  isMonthlyPublishIsAvailableandUserCannotBuyTicket,
-  isWeeklyPublishPossibleandUserCannotBuyTicket,
   monthlyResultShowTime,
   weeklyTicketResultShowTime,
 } from "../../utill";
-import { winning_ticket } from "../../api/winning_result";
+import { winning_ticket_result } from "../../api/winning_result";
 import Loader from "../loader/Loader";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -69,7 +66,9 @@ export default function CustomizedTables({
     if (handlePath() === "daily" && dailyTicketResultShowTime()) {
       setLoader(true);
 
-      winning_ticket(handlePath())
+ 
+      winning_ticket_result(handlePath())
+ 
         .then((res) => {
           if (res.data?.data) {
             setDigits(res.data.data);
@@ -107,7 +106,9 @@ export default function CustomizedTables({
     if (handlePath() === "weekly" && weeklyTicketResultShowTime()) {
       setLoader(true);
 
-      winning_ticket(handlePath())
+ 
+      winning_ticket_result(handlePath())
+ 
         .then((res) => {
           if (res.data?.data) {
             setDigits(res.data.data);
@@ -119,7 +120,7 @@ export default function CustomizedTables({
           setLoader(false);
         });
     } else {
-      if (handlePath() === "weekly")
+      if (handlePath() === "weekly" && !weeklyTicketResultShowTime())
         tableTicketRefetch().then((res) => {
           if (res !== undefined)
             if (res.data !== undefined && res.data !== null) {
@@ -135,9 +136,24 @@ export default function CustomizedTables({
   ]);
 
   useEffect(() => {
-    if (handlePath() === "monthly" && monthlyResultShowTime()) return;
-    else {
-      if (handlePath() === "monthly")
+ 
+    if (handlePath() === "monthly" && monthlyResultShowTime()) {
+      setLoader(true);
+
+      winning_ticket_result(handlePath())
+        .then((res) => {
+          if (res.data?.data) {
+            setDigits(res.data.data);
+          }
+          setLoader(false);
+        })
+        .catch((error) => {
+          console.log(error);
+          setLoader(false);
+        });
+    } else {
+      if (handlePath() === "monthly" && !monthlyResultShowTime())
+ 
         tableTicketRefetch().then((res) => {
           if (res !== undefined)
             if (res.data !== undefined && res.data !== null) {
