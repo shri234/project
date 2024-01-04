@@ -164,7 +164,7 @@ export const TicketResult = (value: any) => {
         p: 0.5,
         fontWeight: "bold",
         color: "#fff",
-        background:"white",
+        background:"grey",
         borderRadius: "50%",
       }}
     >
