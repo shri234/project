@@ -105,11 +105,12 @@ export const TicketPublish: FC<{
         <Box
           onClick={() => {
             if (
-              (handlePath() === "daily" &&
+              ((handlePath() === "daily" &&
                 isDailyPublishPossibleAndUserCannotBuyTicket()) ||
-              (handlePath() === "weekly" &&
-                isWeeklyPublishPossibleandUserCannotBuyTicket())
-            )
+                (handlePath() === "weekly" &&
+                  isWeeklyPublishPossibleandUserCannotBuyTicket())) &&
+              !isResultPublished
+            ) {
               if (
                 ticket.firstdigit &&
                 ticket.seconddigit &&
@@ -124,6 +125,8 @@ export const TicketPublish: FC<{
                   setStatus(false);
                 }, dialog_timeout);
               }
+            } else {
+            }
           }}
           sx={{
             p: 1,
@@ -147,7 +150,8 @@ export const TicketPublish: FC<{
             cursor:
               handlePath() === "daily" &&
               isDailyPublishPossibleAndUserCannotBuyTicket() &&
-              isPriceRatePublished
+              isPriceRatePublished &&
+              !isResultPublished
                 ? "pointer"
                 : handlePath() === "weekly" &&
                   isWeeklyPublishPossibleandUserCannotBuyTicket() &&

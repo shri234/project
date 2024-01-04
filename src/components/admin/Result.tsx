@@ -16,6 +16,7 @@ import { MonthlyTicketPublish } from "../Result/MonthlyPublishTicket";
 import { winningTicket } from "../../api/winningTicket";
 import usePriceData from "../../swr/price_data";
 import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
+import useWinningTicket from "../../swr/winningTicket";
 
 const Result: FC<{ title: string }> = ({ title }) => {
   const handlePath = () => {
@@ -28,6 +29,12 @@ const Result: FC<{ title: string }> = ({ title }) => {
   const { price_data, pricedataIsLoading, pricedataRefetch } = usePriceData(
     handlePath()
   );
+  const {
+    userWinningTicketRefetch,
+    user_winning_ticket,
+    winningTicketisLoading,
+  } = useWinningTicket(handlePath());
+
   const [price, setPrice] = useState({
     priceFirstDigit: "",
     priceSecondDigit: "",
@@ -63,6 +70,7 @@ const Result: FC<{ title: string }> = ({ title }) => {
   const [is_result_published, setResultPublished] = useState(false);
   const [loader, setLoader] = useState(false);
   const [open_publish_dlg, setOpenPublishDlg] = useState(false);
+
   const isPriceRatePublished = () => {
     if (
       price.priceFirstDigit &&
@@ -73,6 +81,7 @@ const Result: FC<{ title: string }> = ({ title }) => {
       return true;
     return false;
   };
+
   const handlePublishResult = async () => {
     if (!isPriceRatePublished()) {
       setOpenPublishDlg(true);
@@ -139,76 +148,146 @@ const Result: FC<{ title: string }> = ({ title }) => {
   }, [price_data, pricedataIsLoading]);
 
   useEffect(() => {
-    winningTicket(handlePath())
-      .then((res) => {
-        if (handlePath() === "monthly") {
-          if (res.data?.data?.length > 0) {
-            const tmp_1: string[] =
-              res.data?.data[0].winning_ticket[0].result_ticket_1.split("");
-            if (tmp_1.length > 0) {
-              setMonthlyTicket1(
-                (pre) =>
-                  ({
-                    ...pre,
-                    firstdigit: tmp_1.length > 0 ? tmp_1[0] : "",
-                    seconddigit: tmp_1.length > 0 ? tmp_1[1] : "",
-                    thirddigit: tmp_1.length > 0 ? tmp_1[2] : "",
-                    fourthdigit: tmp_1.length > 0 ? tmp_1[3] : "",
-                  } as Ticket)
-              );
-            }
-            const tmp_2: string[] =
-              res.data?.data[0].winning_ticket[0].result_ticket_2.split("");
-
-            if (tmp_2.length > 0) {
-              setMonthlyTicket2(
-                (pre) =>
-                  ({
-                    ...pre,
-                    firstdigit: tmp_2.length > 0 ? tmp_2[0] : "",
-                    seconddigit: tmp_2.length > 0 ? tmp_2[1] : "",
-                    thirddigit: tmp_2.length > 0 ? tmp_2[2] : "",
-                    fourthdigit: tmp_2.length > 0 ? tmp_2[3] : "",
-                  } as Ticket)
-              );
-            }
-            const tmp_3: string[] =
-              res.data?.data[0].winning_ticket[0].result_ticket_3.split("");
-            if (tmp_3.length > 0) {
-              setMonthlyTicket3(
-                (pre) =>
-                  ({
-                    ...pre,
-                    firstdigit: tmp_3.length > 0 ? tmp_3[0] : "",
-                    seconddigit: tmp_3.length > 0 ? tmp_3[1] : "",
-                    thirddigit: tmp_3.length > 0 ? tmp_3[2] : "",
-                    fourthdigit: tmp_3.length > 0 ? tmp_3[3] : "",
-                  } as Ticket)
-              );
-              setResultPublished(true);
-            }
-          }
-        }
-        if (res.data.data) {
-          const tmp: string[] = res.data.data.result_ticket.split("");
-          if (tmp.length > 0) {
-            setTicket(
+    userWinningTicketRefetch().then((res) => {
+      if (handlePath() === "monthly") {
+        if (res.data?.length > 0) {
+          const tmp_1: string[] =
+            res.data[0].winning_ticket[0].result_ticket_1.split("");
+          if (tmp_1.length > 0) {
+            setMonthlyTicket1(
               (pre) =>
                 ({
                   ...pre,
-                  firstdigit: tmp.length > 0 ? tmp[0] : "",
-                  seconddigit: tmp.length > 0 ? tmp[1] : "",
-                  thirddigit: tmp.length > 0 ? tmp[2] : "",
-                  fourthdigit: tmp.length > 0 ? tmp[3] : "",
+                  firstdigit: tmp_1.length > 0 ? tmp_1[0] : "",
+                  seconddigit: tmp_1.length > 0 ? tmp_1[1] : "",
+                  thirddigit: tmp_1.length > 0 ? tmp_1[2] : "",
+                  fourthdigit: tmp_1.length > 0 ? tmp_1[3] : "",
                 } as Ticket)
             );
+          }
+          const tmp_2: string[] =
+            res.data[0].winning_ticket[0].result_ticket_2.split("");
 
+          if (tmp_2.length > 0) {
+            setMonthlyTicket2(
+              (pre) =>
+                ({
+                  ...pre,
+                  firstdigit: tmp_2.length > 0 ? tmp_2[0] : "",
+                  seconddigit: tmp_2.length > 0 ? tmp_2[1] : "",
+                  thirddigit: tmp_2.length > 0 ? tmp_2[2] : "",
+                  fourthdigit: tmp_2.length > 0 ? tmp_2[3] : "",
+                } as Ticket)
+            );
+          }
+          const tmp_3: string[] =
+            res.data[0].winning_ticket[0].result_ticket_3.split("");
+          if (tmp_3.length > 0) {
+            setMonthlyTicket3(
+              (pre) =>
+                ({
+                  ...pre,
+                  firstdigit: tmp_3.length > 0 ? tmp_3[0] : "",
+                  seconddigit: tmp_3.length > 0 ? tmp_3[1] : "",
+                  thirddigit: tmp_3.length > 0 ? tmp_3[2] : "",
+                  fourthdigit: tmp_3.length > 0 ? tmp_3[3] : "",
+                } as Ticket)
+            );
             setResultPublished(true);
           }
         }
-      })
-      .catch((error) => {});
-  }, []);
+      }
+      if (res?.data) {
+        const tmp: string[] = res.data.result_ticket.split("");
+        if (tmp.length > 0) {
+          setTicket(
+            (pre) =>
+              ({
+                ...pre,
+                firstdigit: tmp.length > 0 ? tmp[0] : "",
+                seconddigit: tmp.length > 0 ? tmp[1] : "",
+                thirddigit: tmp.length > 0 ? tmp[2] : "",
+                fourthdigit: tmp.length > 0 ? tmp[3] : "",
+              } as Ticket)
+          );
+
+          setResultPublished(true);
+        }
+      }
+    });
+  }, [user_winning_ticket, winningTicketisLoading]);
+
+  // useEffect(() => {
+  //   winningTicket(handlePath())
+  //     .then((res) => {
+  //       if (handlePath() === "monthly") {
+  //         if (res.data?.data?.length > 0) {
+  //           const tmp_1: string[] =
+  //             res.data?.data[0].winning_ticket[0].result_ticket_1.split("");
+  //           if (tmp_1.length > 0) {
+  //             setMonthlyTicket1(
+  //               (pre) =>
+  //                 ({
+  //                   ...pre,
+  //                   firstdigit: tmp_1.length > 0 ? tmp_1[0] : "",
+  //                   seconddigit: tmp_1.length > 0 ? tmp_1[1] : "",
+  //                   thirddigit: tmp_1.length > 0 ? tmp_1[2] : "",
+  //                   fourthdigit: tmp_1.length > 0 ? tmp_1[3] : "",
+  //                 } as Ticket)
+  //             );
+  //           }
+  //           const tmp_2: string[] =
+  //             res.data?.data[0].winning_ticket[0].result_ticket_2.split("");
+
+  //           if (tmp_2.length > 0) {
+  //             setMonthlyTicket2(
+  //               (pre) =>
+  //                 ({
+  //                   ...pre,
+  //                   firstdigit: tmp_2.length > 0 ? tmp_2[0] : "",
+  //                   seconddigit: tmp_2.length > 0 ? tmp_2[1] : "",
+  //                   thirddigit: tmp_2.length > 0 ? tmp_2[2] : "",
+  //                   fourthdigit: tmp_2.length > 0 ? tmp_2[3] : "",
+  //                 } as Ticket)
+  //             );
+  //           }
+  //           const tmp_3: string[] =
+  //             res.data?.data[0].winning_ticket[0].result_ticket_3.split("");
+  //           if (tmp_3.length > 0) {
+  //             setMonthlyTicket3(
+  //               (pre) =>
+  //                 ({
+  //                   ...pre,
+  //                   firstdigit: tmp_3.length > 0 ? tmp_3[0] : "",
+  //                   seconddigit: tmp_3.length > 0 ? tmp_3[1] : "",
+  //                   thirddigit: tmp_3.length > 0 ? tmp_3[2] : "",
+  //                   fourthdigit: tmp_3.length > 0 ? tmp_3[3] : "",
+  //                 } as Ticket)
+  //             );
+  //             setResultPublished(true);
+  //           }
+  //         }
+  //       }
+  //       if (res.data.data) {
+  //         const tmp: string[] = res.data.data.result_ticket.split("");
+  //         if (tmp.length > 0) {
+  //           setTicket(
+  //             (pre) =>
+  //               ({
+  //                 ...pre,
+  //                 firstdigit: tmp.length > 0 ? tmp[0] : "",
+  //                 seconddigit: tmp.length > 0 ? tmp[1] : "",
+  //                 thirddigit: tmp.length > 0 ? tmp[2] : "",
+  //                 fourthdigit: tmp.length > 0 ? tmp[3] : "",
+  //               } as Ticket)
+  //           );
+
+  //           setResultPublished(true);
+  //         }
+  //       }
+  //     })
+  //     .catch((error) => {});
+  // }, []);
 
   return (
     isAuthenticated("admin") && (

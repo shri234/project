@@ -10,12 +10,9 @@ import { FC, useEffect, useState } from "react";
 import { ticketPriceData } from "../../api/ticketPriceRate";
 import { publishTicketRate } from "../../api/publishTicketRate";
 import { CustomizedStatusDialogs } from "../custom-table/CustomDialog";
+import useTicketPriceRate from "../../swr/ticket_price_rate";
 
 export const TicketRatePublish: FC<{ path: string }> = ({ path }) => {
-  const [ticketrate, setTicketRate] = useState<string>("");
-  const [status, setStatus] = useState(false);
-  const [is_ticket_rate_published, setTicketRatePublished] = useState(false);
-
   const handlePath = () => {
     return path === "Daily"
       ? "daily"
@@ -23,6 +20,11 @@ export const TicketRatePublish: FC<{ path: string }> = ({ path }) => {
       ? "weekly"
       : "monthly";
   };
+  const [ticketrate, setTicketRate] = useState<string>("");
+  const [status, setStatus] = useState(false);
+  const [is_ticket_rate_published, setTicketRatePublished] = useState(false);
+  const { ticket_price_rate, ticketpriceIsLoading, ticketpriceRefetch } =
+    useTicketPriceRate(handlePath());
 
   const handleTicketRate = async () => {
     const body = { ticketRate: ticketrate };
@@ -30,7 +32,15 @@ export const TicketRatePublish: FC<{ path: string }> = ({ path }) => {
     await publishTicketRate(handlePath(), body)
       .then(() => {
         setStatus(true);
-        handleTicketPrice();
+        ticketpriceRefetch().then((res) => {
+          if (res?.data) {
+            if (res.data.ticketRate !== 0) {
+              setTicketRatePublished(true);
+              setTicketRate(res.data.ticketRate);
+            }
+          }
+        });
+        // handleTicketPrice();
         setTimeout(() => {
           setStatus(false);
         }, dialog_timeout);
@@ -40,25 +50,37 @@ export const TicketRatePublish: FC<{ path: string }> = ({ path }) => {
       });
   };
 
-  const handleTicketPrice = async () => {
-    await ticketPriceData(handlePath())
-      .then((res) => {
-        if (res.data?.data) {
-          if (res.data.data.ticketRate !== 0) {
-            setTicketRatePublished(true);
-            setTicketRate(res.data.data.ticketRate);
-          }
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
   useEffect(() => {
-    (async () => {
-      handleTicketPrice();
-    })();
-  }, []);
+    ticketpriceRefetch().then((res) => {
+      if (res?.data) {
+        if (res.data.ticketRate !== 0) {
+          setTicketRatePublished(true);
+          setTicketRate(res.data.ticketRate);
+        }
+      }
+    });
+  }, [ticket_price_rate, ticketpriceIsLoading]);
+
+  // const handleTicketPrice = async () => {
+  //   await ticketPriceData(handlePath())
+  //     .then((res) => {
+  //       if (res.data?.data) {
+  //         if (res.data.data.ticketRate !== 0) {
+  //           setTicketRatePublished(true);
+  //           setTicketRate(res.data.data.ticketRate);
+  //         }
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // };
+
+  // useEffect(() => {
+  //   (async () => {
+  //     handleTicketPrice();
+  //   })();
+  // }, []);
 
   return (
     <Box
@@ -102,16 +124,17 @@ export const TicketRatePublish: FC<{ path: string }> = ({ path }) => {
       </Box>
       <Box
         onClick={() => {
-          if (handlePath() === "daily") {
-            isDailyPublishPossibleAndUserCannotBuyTicket() &&
-              handleTicketRate();
-          } else if (handlePath() === "weekly") {
-            isWeeklyPublishPossibleandUserCannotBuyTicket() &&
-              handleTicketRate();
-          } else if (handlePath() === "monthly") {
-            isMonthlyPublishIsAvailableandUserCannotBuyTicket() &&
-              handleTicketRate();
-          }
+          if (!is_ticket_rate_published)
+            if (handlePath() === "daily") {
+              isDailyPublishPossibleAndUserCannotBuyTicket() &&
+                handleTicketRate();
+            } else if (handlePath() === "weekly") {
+              isWeeklyPublishPossibleandUserCannotBuyTicket() &&
+                handleTicketRate();
+            } else if (handlePath() === "monthly") {
+              isMonthlyPublishIsAvailableandUserCannotBuyTicket() &&
+                handleTicketRate();
+            }
         }}
         sx={{
           p: 1.25,
