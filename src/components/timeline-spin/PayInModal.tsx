@@ -66,7 +66,7 @@ export default function PayInModal({
             >
               Please send the payment screenshot with your username & mail on
               these number <span style={{ color: "blue" }}>9025134872</span>
-              kindly contact near by agent
+              
             </Box>
           </Box>
           <Box
@@ -84,6 +84,13 @@ export default function PayInModal({
 
             <Box sx={{ textAlign: "justify", fontWeight: "600" }}>
               Any queries text me at whatsapp on the above number
+            </Box>
+             <Box>
+              <img src="/star.svg" alt="star" height={20} width={20} />
+            </Box>
+            
+            <Box sx={{ textAlign: "justify", fontWeight: "600" }}>
+              kindly contact near by agent
             </Box>
           </Box>
         </Box>
