@@ -93,6 +93,24 @@ export default function PayInModal({
               kindly contact near by agent
             </Box>
           </Box>
+          
+            <Box
+            component={"div"}
+            sx={{
+              display: "flex",
+              justifyContent: "start",
+              alignItems: "start",
+              gap: "4px",
+            }}
+          >
+             <Box>
+              <img src="/star.svg" alt="star" height={20} width={20} />
+            </Box>
+            
+            <Box sx={{ textAlign: "justify", fontWeight: "600" }}>
+              kindly contact near by agent
+            </Box>
+          </Box>
         </Box>
       </Modal>
     </div>
