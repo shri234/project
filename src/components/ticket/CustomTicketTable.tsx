@@ -66,7 +66,9 @@ export default function CustomizedTables({
     if (handlePath() === "daily" && dailyTicketResultShowTime()) {
       setLoader(true);
 
+ 
       winning_ticket_result(handlePath())
+ 
         .then((res) => {
           if (res.data?.data) {
             setDigits(res.data.data);
@@ -104,7 +106,9 @@ export default function CustomizedTables({
     if (handlePath() === "weekly" && weeklyTicketResultShowTime()) {
       setLoader(true);
 
+ 
       winning_ticket_result(handlePath())
+ 
         .then((res) => {
           if (res.data?.data) {
             setDigits(res.data.data);
@@ -132,6 +136,7 @@ export default function CustomizedTables({
   ]);
 
   useEffect(() => {
+ 
     if (handlePath() === "monthly" && monthlyResultShowTime()) {
       setLoader(true);
 
@@ -148,6 +153,7 @@ export default function CustomizedTables({
         });
     } else {
       if (handlePath() === "monthly" && !monthlyResultShowTime())
+ 
         tableTicketRefetch().then((res) => {
           if (res !== undefined)
             if (res.data !== undefined && res.data !== null) {

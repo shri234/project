@@ -299,7 +299,17 @@ export const isDailyPublishPossibleAndUserCannotBuyTicket = (): boolean => {
   if (currentHour === 17 && currentMinute >= 0 && currentMinute <= 59) {
     return true;
   }
-  return true;
+  return false;
+};
+
+export const dailyTicketResultShowTime = (): boolean => {
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  if (currentHour === 18 && currentMinute >= 0 && currentMinute <= 59) {
+    return true;
+  }
+  return false;
 };
 
 export function isWeeklyPublishPossibleandUserCannotBuyTicket(): boolean {
@@ -332,16 +342,6 @@ export function isMonthlyPublishIsAvailableandUserCannotBuyTicket(): boolean {
   }
   return false;
 }
-
-export const dailyTicketResultShowTime = (): boolean => {
-  const now = new Date();
-  const currentHour = now.getHours();
-  const currentMinute = now.getMinutes();
-  if (currentHour === 18 && currentMinute >= 0 && currentMinute <= 59) {
-    return true;
-  }
-  return false;
-};
 
 export function weeklyTicketResultShowTime(): boolean {
   const now = new Date();
