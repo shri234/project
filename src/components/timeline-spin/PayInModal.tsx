@@ -29,7 +29,7 @@ export default function PayInModal({
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Box
+          {/* <Box
             sx={{
               color: "#092b61",
               fontWeight: "bold",
@@ -38,17 +38,17 @@ export default function PayInModal({
             }}
           >
             Deposit
-          </Box>
-          <Box
+          </Box> */}
+          {/* <Box
             sx={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
             }}
-          >
-            {/* <img src="/qr.jpeg" className="payment-qr" alt="payment-qr" /> */}
-          </Box>
-          <Box
+          > */}
+          {/* <img src="/qr.jpeg" className="payment-qr" alt="payment-qr" /> */}
+          {/* </Box> */}
+          {/* <Box
             component={"div"}
             sx={{
               display: "flex",
@@ -86,9 +86,9 @@ export default function PayInModal({
               Any queries text me at whatsapp on the above number
             </Box>
            
-          </Box>
-          
-            <Box
+          </Box> */}
+
+          <Box
             component={"div"}
             sx={{
               display: "flex",
@@ -97,10 +97,10 @@ export default function PayInModal({
               gap: "4px",
             }}
           >
-             <Box>
+            <Box>
               <img src="/star.svg" alt="star" height={20} width={20} />
             </Box>
-            
+
             <Box sx={{ textAlign: "justify", fontWeight: "600" }}>
               kindly contact near by agent
             </Box>
