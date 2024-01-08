@@ -31,6 +31,7 @@ import { MonthlyWinningTicket } from "./MonthlyWinningTicket";
 import useUserTicketCount from "../../swr/user_ticket_count";
 import useUserWallet from "../../swr/wallet_data";
 import { winningTicket } from "../../api/winningTicket";
+import { winning_ticket_result } from "../../api/winning_result";
 
 export interface WinningTicketInterface {
   first: null | number;
@@ -227,7 +228,7 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
     } else if (name === "Monthly Spin" && monthlyResultShowTime()) {
       monthlySpinResult(result, setMonthlyWinningTicket, setTmpSpinner);
     }
-  }, [result, name, timeLeft.hours]);
+  }, [result, name, timeLeft.hours, tmp_spinner]);
 
   useEffect(() => {
     userWalletRefetch()

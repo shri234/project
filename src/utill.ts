@@ -182,8 +182,9 @@ export const spinResult = async (
   setTmpSpinner: Dispatch<SetStateAction<number | null>>
 ): Promise<void> => {
   for (let prevCount = 0; prevCount <= 3; prevCount++) {
+    setTmpSpinner(null);
     await new Promise((resolve) => {
-      setTmpSpinner(result[prevCount]);
+      if (result[prevCount] !== undefined) setTmpSpinner(result[prevCount]);
       setTimeout(resolve, 8000);
     });
 
@@ -309,7 +310,7 @@ export const dailyTicketResultShowTime = (): boolean => {
   if (currentHour === 18 && currentMinute >= 0 && currentMinute <= 59) {
     return true;
   }
-  return false;
+  return true;
 };
 
 export function isWeeklyPublishPossibleandUserCannotBuyTicket(): boolean {
