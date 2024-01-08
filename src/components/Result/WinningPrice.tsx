@@ -45,9 +45,11 @@ export const WinningPriceTicket: FC<{ path: string }> = ({ path }) => {
         setTimeout(() => {
           setStatus(false);
         }, dialog_timeout);
+        setIsPricePublished(true);
       })
       .catch((error) => {
         console.log(error);
+        setIsPricePublished(false);
       });
   };
 

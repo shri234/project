@@ -24,7 +24,6 @@ const SpinnerWheel: React.FC<{
   const spinWheel = async (digit: number) => {
     if (wheelRef.current) {
       wheelRef.current.style.transform = `rotate(${7200 + digit}deg)`;
-      setTmpSpinner(null);
     }
   };
 
@@ -35,19 +34,23 @@ const SpinnerWheel: React.FC<{
   };
 
   useEffect(() => {
+    console.log("inside", value);
     if (value === 0) {
       ifZerospinWheel();
+      setTmpSpinner(null);
     }
     {
       if (value !== null) {
-        const tmp = spinnerMap.get(value);
+        let tmp = spinnerMap.get(value);
+        setTmpSpinner(null);
 
         if (tmp !== undefined) {
           spinWheel(tmp + 7200);
+          tmp = undefined;
         }
       }
     }
-  }, [value]);
+  }, [value, setTmpSpinner]);
 
   const numberStyle = (i: number, clr: string): React.CSSProperties =>
     ({

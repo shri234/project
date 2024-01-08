@@ -36,9 +36,11 @@ export default function DepsoitModal({
 
     amountDeposit(body)
       .then(() => {
-        window.location.href = "/user-details";
+        setDepsoitAmount(false);
+        // window.location.href = "/user-details";
       })
       .catch((error) => {
+        setDepsoitAmount(false);
         console.log(error);
       });
   };
