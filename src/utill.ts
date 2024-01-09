@@ -154,28 +154,6 @@ export const monthlyCountdown = (): {
   };
 };
 
-// export const spinnerTimeline = (
-//   name: string,
-//   setTimeLeft: Dispatch<
-//     SetStateAction<{
-//       hours: string;
-//       minutes: string;
-//       seconds: string;
-//     }>
-//   >
-// ) => {
-//   if (name === "Daily Spin") {
-//     sessionStorage.setItem("timeline", "daily");
-//     dailyCountdown();
-//   } else if (name === "Weekly Spin") {
-//     sessionStorage.setItem("timeline", "weekly");
-//     weeklyCountdown();
-//   } else {
-//     sessionStorage.setItem("timeline", "monthly");
-//     monthlyCountdown();
-//   }
-// };
-
 export const spinResult = async (
   result: never[],
   setWinningTicket: Dispatch<SetStateAction<WinningTicketInterface[]>>,
