@@ -278,7 +278,7 @@ export const isDailyPublishPossibleAndUserCannotBuyTicket = (): boolean => {
   if (currentHour === 17 && currentMinute >= 0 && currentMinute <= 59) {
     return true;
   }
-  return false;
+  return true;
 };
 
 export const dailyTicketResultShowTime = (): boolean => {
