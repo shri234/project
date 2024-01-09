@@ -249,7 +249,6 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
           width: "100%",
         }}
       >
-        {/* {open && <Loader />} */}
         {buy_ticket_warning_dlg && (
           <BuyTicketWarningDlg
             setBuyTicketWarningDlg={setBuyTicketWarningDlg}
@@ -305,18 +304,3 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
 };
 
 export default UserTicketBuy;
-
-// useEffect(() => {
-//   (async () => {
-//     await winningTicket(handlePath())
-//       .then((res) => {
-//         if (res.data.data) {
-//           const tmp: [] = res.data.data.result_ticket.split("").map(Number);
-//           setResult(tmp);
-//         }
-//       })
-//       .catch((error) => {
-//         console.log(error);
-//       });
-//   })();
-// }, [name]);

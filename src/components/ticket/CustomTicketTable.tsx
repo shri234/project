@@ -17,6 +17,7 @@ import {
 } from "../../utill";
 import { winning_ticket_result } from "../../api/winning_result";
 import Loader from "../loader/Loader";
+import { TableLoader } from "../custom-table/TableLoader";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -66,9 +67,7 @@ export default function CustomizedTables({
     if (handlePath() === "daily" && dailyTicketResultShowTime()) {
       setLoader(true);
 
- 
       winning_ticket_result(handlePath())
- 
         .then((res) => {
           if (res.data?.data) {
             setDigits(res.data.data);
@@ -106,9 +105,7 @@ export default function CustomizedTables({
     if (handlePath() === "weekly" && weeklyTicketResultShowTime()) {
       setLoader(true);
 
- 
       winning_ticket_result(handlePath())
- 
         .then((res) => {
           if (res.data?.data) {
             setDigits(res.data.data);
@@ -136,7 +133,6 @@ export default function CustomizedTables({
   ]);
 
   useEffect(() => {
- 
     if (handlePath() === "monthly" && monthlyResultShowTime()) {
       setLoader(true);
 
@@ -153,7 +149,6 @@ export default function CustomizedTables({
         });
     } else {
       if (handlePath() === "monthly" && !monthlyResultShowTime())
- 
         tableTicketRefetch().then((res) => {
           if (res !== undefined)
             if (res.data !== undefined && res.data !== null) {
@@ -170,7 +165,6 @@ export default function CustomizedTables({
 
   return (
     <Box component={"div"} sx={{ display: "flex", justifyContent: "center" }}>
-      {open_loader && <Loader />}
       <TableContainer component={Paper} sx={{ maxWidth: "300px", mt: 2 }}>
         <Table aria-label="customized table">
           <TableHead>
@@ -179,7 +173,9 @@ export default function CustomizedTables({
               <StyledTableCell align="center">Your Ticket</StyledTableCell>
             </TableRow>
           </TableHead>
-          {!table_ticket_isLoading && digits.length > 0 ? (
+          {open_loader ? (
+            <TableLoader colSpan={2} />
+          ) : !table_ticket_isLoading && digits.length > 0 ? (
             <TableBody>
               {digits.map((row, index) => (
                 <StyledTableRow key={row.ticketId}>
