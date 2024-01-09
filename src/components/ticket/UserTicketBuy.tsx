@@ -296,7 +296,15 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
             <SpinnerWheel value={tmp_spinner} setTmpSpinner={setTmpSpinner} />
           </Box>
           <TicketBuy ticketcount={ticketcount} name={name} />
-          <CustomizedTables name={name} timeLeft={timeLeft} />
+          <CustomizedTables
+            name={name}
+            timeLeft={timeLeft}
+            winning_ticket={
+              handlePath() === "monthly"
+                ? monthly_winning_ticket[2].fourth
+                : winning_ticket[0].fourth
+            }
+          />
         </Box>
       </Box>
     )
