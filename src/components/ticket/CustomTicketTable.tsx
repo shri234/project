@@ -16,8 +16,9 @@ import {
   weeklyTicketResultShowTime,
 } from "../../utill";
 import { winning_ticket_result } from "../../api/winning_result";
-import Loader from "../loader/Loader";
+
 import { TableLoader } from "../custom-table/TableLoader";
+import { WinningTicketInterface } from "./UserTicketBuy";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -42,9 +43,11 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 export default function CustomizedTables({
   name,
   timeLeft,
+  winning_ticket,
 }: {
   name: string;
   timeLeft: { day: string; hours: string; minutes: string; seconds: string };
+  winning_ticket: number | null;
 }) {
   const handlePath = (): string => {
     return name === "Daily Spin"
@@ -64,7 +67,11 @@ export default function CustomizedTables({
   const [open_loader, setLoader] = useState(false);
 
   useEffect(() => {
-    if (handlePath() === "daily" && dailyTicketResultShowTime()) {
+    if (
+      handlePath() === "daily" &&
+      dailyTicketResultShowTime() &&
+      winning_ticket !== null
+    ) {
       setLoader(true);
 
       winning_ticket_result(handlePath())
@@ -79,7 +86,10 @@ export default function CustomizedTables({
           setLoader(false);
         });
     } else {
-      if (handlePath() === "daily" && !dailyTicketResultShowTime()) {
+      if (
+        handlePath() === "daily" &&
+        (winning_ticket === null || !dailyTicketResultShowTime())
+      ) {
         setLoader(true);
         tableTicketRefetch()
           .then((res) => {
@@ -99,10 +109,15 @@ export default function CustomizedTables({
     use_table_tickets_data,
     timeLeft.hours,
     timeLeft.minutes,
+    winning_ticket,
   ]);
 
   useEffect(() => {
-    if (handlePath() === "weekly" && weeklyTicketResultShowTime()) {
+    if (
+      handlePath() === "weekly" &&
+      weeklyTicketResultShowTime() &&
+      winning_ticket !== null
+    ) {
       setLoader(true);
 
       winning_ticket_result(handlePath())
@@ -117,7 +132,10 @@ export default function CustomizedTables({
           setLoader(false);
         });
     } else {
-      if (handlePath() === "weekly" && !weeklyTicketResultShowTime())
+      if (
+        (handlePath() === "weekly" && winning_ticket === null) ||
+        !weeklyTicketResultShowTime()
+      )
         tableTicketRefetch().then((res) => {
           if (res !== undefined)
             if (res.data !== undefined && res.data !== null) {
@@ -130,10 +148,15 @@ export default function CustomizedTables({
     use_table_tickets_data,
     timeLeft.hours,
     timeLeft.minutes,
+    winning_ticket,
   ]);
 
   useEffect(() => {
-    if (handlePath() === "monthly" && monthlyResultShowTime()) {
+    if (
+      handlePath() === "monthly" &&
+      monthlyResultShowTime() &&
+      winning_ticket !== null
+    ) {
       setLoader(true);
 
       winning_ticket_result(handlePath())
@@ -148,7 +171,10 @@ export default function CustomizedTables({
           setLoader(false);
         });
     } else {
-      if (handlePath() === "monthly" && !monthlyResultShowTime())
+      if (
+        handlePath() === "monthly" &&
+        (winning_ticket === null || !monthlyResultShowTime())
+      )
         tableTicketRefetch().then((res) => {
           if (res !== undefined)
             if (res.data !== undefined && res.data !== null) {
@@ -161,6 +187,7 @@ export default function CustomizedTables({
     use_table_tickets_data,
     timeLeft.hours,
     timeLeft.minutes,
+    winning_ticket,
   ]);
 
   return (
