@@ -154,28 +154,6 @@ export const monthlyCountdown = (): {
   };
 };
 
-// export const spinnerTimeline = (
-//   name: string,
-//   setTimeLeft: Dispatch<
-//     SetStateAction<{
-//       hours: string;
-//       minutes: string;
-//       seconds: string;
-//     }>
-//   >
-// ) => {
-//   if (name === "Daily Spin") {
-//     sessionStorage.setItem("timeline", "daily");
-//     dailyCountdown();
-//   } else if (name === "Weekly Spin") {
-//     sessionStorage.setItem("timeline", "weekly");
-//     weeklyCountdown();
-//   } else {
-//     sessionStorage.setItem("timeline", "monthly");
-//     monthlyCountdown();
-//   }
-// };
-
 export const spinResult = async (
   result: never[],
   setWinningTicket: Dispatch<SetStateAction<WinningTicketInterface[]>>,
@@ -300,7 +278,7 @@ export const isDailyPublishPossibleAndUserCannotBuyTicket = (): boolean => {
   if (currentHour === 17 && currentMinute >= 0 && currentMinute <= 59) {
     return true;
   }
-  return true;
+  return false;
 };
 
 export const dailyTicketResultShowTime = (): boolean => {
@@ -310,7 +288,7 @@ export const dailyTicketResultShowTime = (): boolean => {
   if (currentHour === 18 && currentMinute >= 0 && currentMinute <= 59) {
     return true;
   }
-  return false;
+  return true;
 };
 
 export function isWeeklyPublishPossibleandUserCannotBuyTicket(): boolean {
