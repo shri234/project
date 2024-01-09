@@ -57,7 +57,10 @@ const PlayHistory = () => {
     setOpenTableLoader(true);
     (async () => {
       await getPlayHistoryData(username!, current_page)
-        .then((res) => {})
+        .then((res) => {
+          setPlayHistoryData(res.data.data);
+          setOpenTableLoader(false);
+        })
         .catch((error) => {
           console.log(error);
         });
@@ -164,7 +167,7 @@ export const TicketResult = (value: any) => {
         p: 0.5,
         fontWeight: "bold",
         color: "#fff",
-         background:
+        background:
           value.value.status === "true"
             ? "green"
             : value.value.status === "null"

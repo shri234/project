@@ -150,7 +150,7 @@ const Result: FC<{ title: string }> = ({ title }) => {
   useEffect(() => {
     userWinningTicketRefetch().then((res) => {
       if (handlePath() === "monthly") {
-        if (res.data?.length > 0) {
+        if (res?.data?.length > 0) {
           const tmp_1: string[] =
             res.data[0].winning_ticket[0].result_ticket_1.split("");
           if (tmp_1.length > 0) {
@@ -197,7 +197,7 @@ const Result: FC<{ title: string }> = ({ title }) => {
           }
         }
       }
-      if (res?.data) {
+      if (res?.data?.result_ticket) {
         const tmp: string[] = res.data.result_ticket.split("");
         if (tmp.length > 0) {
           setTicket(
