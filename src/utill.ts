@@ -319,7 +319,7 @@ export function isMonthlyPublishIsAvailableandUserCannotBuyTicket(): boolean {
       return true;
     }
   }
-  return false;
+  return true;
 }
 
 export function weeklyTicketResultShowTime(): boolean {
