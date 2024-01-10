@@ -160,7 +160,6 @@ export const spinResult = async (
   setTmpSpinner: Dispatch<SetStateAction<number | null>>
 ): Promise<void> => {
   for (let prevCount = 0; prevCount <= 3; prevCount++) {
-    setTmpSpinner(null);
     await new Promise((resolve) => {
       if (result[prevCount] !== undefined) setTmpSpinner(result[prevCount]);
       setTimeout(resolve, 8000);

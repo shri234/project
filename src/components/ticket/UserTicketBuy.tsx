@@ -31,7 +31,6 @@ import { MonthlyWinningTicket } from "./MonthlyWinningTicket";
 import useUserTicketCount from "../../swr/user_ticket_count";
 import useUserWallet from "../../swr/wallet_data";
 import { winningTicket } from "../../api/winningTicket";
-import { winning_ticket_result } from "../../api/winning_result";
 
 export interface WinningTicketInterface {
   first: null | number;
@@ -48,12 +47,6 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
       ? "weekly"
       : "monthly";
   };
-
-  const {
-    user_winning_ticket,
-    winningTicketisLoading,
-    userWinningTicketRefetch,
-  } = useWinningTicket(handlePath());
 
   const { userTicketCount, ticketcountIsLoading, ticketcountRefetch } =
     useUserTicketCount(handlePath());
@@ -73,8 +66,6 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
     seconds: "",
   });
 
-  // const [open, setOpen] = React.useState(false);
-
   const [result, setResult] = useState([]);
 
   const [winning_ticket, setWinningTicket] = useState<WinningTicketInterface[]>(
@@ -87,6 +78,7 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
       },
     ]
   );
+
   const [monthly_winning_ticket, setMonthlyWinningTicket] = useState<
     WinningTicketInterface[]
   >([
@@ -151,36 +143,6 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
         });
     })();
   }, []);
-
-  // useEffect(() => {
-  //   userWinningTicketRefetch().then((res) => {
-  //     if (res !== undefined)
-  //       if (res.data !== undefined && res.data !== null) {
-  //         if (handlePath() === "monthly") {
-  //           if (res.data?.length > 0) {
-  //             const tmp_1: [] = res.data[0].winning_ticket[0].result_ticket_1
-  //               .split("")
-  //               .map(Number);
-
-  //             const tmp_2: [] = res.data[0].winning_ticket[0].result_ticket_2
-  //               .split("")
-  //               .map(Number);
-
-  //             const tmp_3: [] = res.data[0].winning_ticket[0].result_ticket_3
-  //               .split("")
-  //               .map(Number);
-  //             const combinedResults = [...tmp_1, ...tmp_2, ...tmp_3];
-  //             setResult(combinedResults);
-  //           }
-  //         } else {
-  //           if (res?.data?.result_ticket !== undefined) {
-  //             const tmp: [] = res.data.result_ticket.split("").map(Number);
-  //             setResult(tmp);
-  //           }
-  //         }
-  //       }
-  //   });
-  // }, [winningTicketisLoading, user_winning_ticket]);
 
   useEffect(() => {
     ticketcountRefetch().then((res) => {
