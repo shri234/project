@@ -201,11 +201,11 @@ export default function CustomizedTables({
             </TableRow>
           </TableHead>
           {open_loader ? (
-            <TableLoader colSpan={2} />
+            <TableLoader colSpan={2} key={"table-loader"} />
           ) : !table_ticket_isLoading && digits.length > 0 ? (
             <TableBody>
               {digits.map((row, index) => (
-                <StyledTableRow key={row.ticketId}>
+                <StyledTableRow key={`row-${index}`}>
                   <StyledTableCell align="center">{index + 1}</StyledTableCell>
                   <StyledTableCell
                     align="center"
@@ -215,10 +215,10 @@ export default function CustomizedTables({
                       gap: "10px",
                     }}
                   >
-                    {row.ticket.map((value: any) => {
+                    {row.ticket.map((value: any, index: number) => {
                       return (
                         <StyledTableCell
-                          key={`${value._id}-ticket`}
+                          key={`${value._id}-ticket-${index}`}
                           component={"div"}
                           align="center"
                           sx={{

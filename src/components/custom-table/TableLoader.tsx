@@ -7,6 +7,7 @@ export const TableLoader: FC<{
 }> = ({ colSpan }) => {
   return (
     <TableRow
+      key={"loader-row-loader"}
       sx={{
         "&:last-child td, &:last-child th": { border: 0 },
       }}

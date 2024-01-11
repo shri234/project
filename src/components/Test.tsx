@@ -23,12 +23,14 @@ const SpinnerWheel: React.FC<{
 
   const spinWheel = async (digit: number) => {
     if (wheelRef.current) {
+      setTmpSpinner(null);
       wheelRef.current.style.transform = `rotate(${digit}deg)`;
     }
   };
 
   const ifZerospinWheel = async () => {
     if (wheelRef.current) {
+      setTmpSpinner(null);
       wheelRef.current.style.transform = `rotate(${7200 + 10}deg)`;
     }
   };
@@ -71,12 +73,11 @@ const SpinnerWheel: React.FC<{
   return (
     <div className="body-spin">
       <Box component={"div"} className="container">
-        {/* onClick={spinWheel} */}
         <Box component={"div"} className="spinBtn"></Box>
         <Box component="div" className="wheel" ref={wheelRef}>
-          {numbers.map((num) => (
+          {numbers.map((num, index) => (
             <Box
-              key={num.i}
+              key={`${num.i}+ ${index}`}
               component="div"
               className="number"
               style={numberStyle(num.i, num.clr)}
