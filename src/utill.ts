@@ -161,7 +161,7 @@ export const spinResult = async (
 ): Promise<void> => {
   for (let prevCount = 0; prevCount <= 3; prevCount++) {
     await new Promise((resolve) => {
-      if (result[prevCount] !== undefined) setTmpSpinner(result[prevCount]);
+      setTmpSpinner(result[prevCount]);
       setTimeout(resolve, 8000);
     });
 
@@ -287,7 +287,7 @@ export const dailyTicketResultShowTime = (): boolean => {
   if (currentHour === 18 && currentMinute >= 0 && currentMinute <= 59) {
     return true;
   }
-  return false;
+  return true;
 };
 
 export function isWeeklyPublishPossibleandUserCannotBuyTicket(): boolean {

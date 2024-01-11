@@ -190,7 +190,7 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
     } else if (name === "Monthly Spin" && monthlyResultShowTime()) {
       monthlySpinResult(result, setMonthlyWinningTicket, setTmpSpinner);
     }
-  }, [result, name, timeLeft.hours, tmp_spinner]);
+  }, [result, tmp_spinner]);
 
   useEffect(() => {
     userWalletRefetch()
