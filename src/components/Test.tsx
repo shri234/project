@@ -16,9 +16,9 @@ for (let i = 9; i >= 0; i--) {
   spinnerMap.set(i, valuesForKeys[9 - i]);
 }
 const SpinnerWheel: React.FC<{
-  value: number | null;
-  setTmpSpinner: Dispatch<SetStateAction<number | null>>;
-}> = ({ value, setTmpSpinner }) => {
+  tmp_spinner: null | number;
+  setTmpSpinner: Dispatch<SetStateAction<null | number>>;
+}> = ({ tmp_spinner, setTmpSpinner }) => {
   const wheelRef = useRef<HTMLDivElement>(null);
 
   const spinWheel = async (digit: number) => {
@@ -36,12 +36,12 @@ const SpinnerWheel: React.FC<{
   };
 
   useEffect(() => {
-    if (value === 0) {
+    if (tmp_spinner === 0) {
       ifZerospinWheel();
     }
     {
-      if (value !== null) {
-        let tmp = spinnerMap.get(value);
+      if (tmp_spinner !== null) {
+        let tmp = spinnerMap.get(tmp_spinner);
 
         if (tmp !== undefined) {
           spinWheel(tmp + 7200);
@@ -49,7 +49,7 @@ const SpinnerWheel: React.FC<{
         }
       }
     }
-  }, [value]);
+  }, [tmp_spinner, setTmpSpinner]);
 
   const numberStyle = (i: number, clr: string): React.CSSProperties =>
     ({

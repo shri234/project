@@ -190,7 +190,7 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
     } else if (name === "Monthly Spin" && monthlyResultShowTime()) {
       monthlySpinResult(result, setMonthlyWinningTicket, setTmpSpinner);
     }
-  }, [result, tmp_spinner]);
+  }, [result]);
 
   useEffect(() => {
     userWalletRefetch()
@@ -255,7 +255,10 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
               my: 6,
             }}
           >
-            <SpinnerWheel value={tmp_spinner} setTmpSpinner={setTmpSpinner} />
+            <SpinnerWheel
+              tmp_spinner={tmp_spinner}
+              setTmpSpinner={setTmpSpinner}
+            />
           </Box>
           <TicketBuy ticketcount={ticketcount} name={name} />
           <CustomizedTables
