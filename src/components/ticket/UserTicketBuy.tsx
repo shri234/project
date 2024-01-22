@@ -102,7 +102,7 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
     },
   ]);
 
-  const [tmp_spinner, setTmpSpinner] = useState<null | number>(null);
+  const [spinner_result, setSpinnerResult] = useState<null | number>(null);
 
   useEffect(() => {
     (async () => {
@@ -184,11 +184,11 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
 
   useEffect(() => {
     if (name === "Daily Spin" && dailyTicketResultShowTime()) {
-      spinResult(result, setWinningTicket, setTmpSpinner);
+      spinResult(result, setWinningTicket, setSpinnerResult);
     } else if (name === "Weekly Spin" && weeklyTicketResultShowTime()) {
-      spinResult(result, setWinningTicket, setTmpSpinner);
+      spinResult(result, setWinningTicket, setSpinnerResult);
     } else if (name === "Monthly Spin" && monthlyResultShowTime()) {
-      monthlySpinResult(result, setMonthlyWinningTicket, setTmpSpinner);
+      monthlySpinResult(result, setMonthlyWinningTicket, setSpinnerResult);
     }
   }, [result]);
 
@@ -256,8 +256,8 @@ const UserTicketBuy: FC<{ name: string; path: string }> = ({ name, path }) => {
             }}
           >
             <SpinnerWheel
-              tmp_spinner={tmp_spinner}
-              setTmpSpinner={setTmpSpinner}
+              tmp_spinner={spinner_result}
+              setTmpSpinner={setSpinnerResult}
             />
           </Box>
           <TicketBuy ticketcount={ticketcount} name={name} />

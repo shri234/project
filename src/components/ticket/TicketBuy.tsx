@@ -19,6 +19,7 @@ export const TicketBuy: FC<{
   const [ticket, setTicket] = useState<any[]>([]);
   const [status_dlg, setOpenStatusDlg] = useState(false);
   const [loader, setLoader] = useState(false);
+
   const [status, setStatus] = useState({
     ticket_buy: false,
     ticket_count: false,
@@ -65,13 +66,14 @@ export const TicketBuy: FC<{
         }
         window.location.href = `/${handlePath()}`;
       })
-      .catch((error) => {
+      .catch(() => {
         setLoader(false);
         setOpenStatusDlg(true);
         setStatus((prevStatus) => ({
           ...prevStatus,
           ticket_buy_error: true,
         }));
+
         setTimeout(() => {
           setOpenStatusDlg(false);
           setStatus((prevStatus) => ({
@@ -233,6 +235,7 @@ export const TicketBuy: FC<{
           status={STATUS.SUCCESS}
         />
       )}
+
       {status_dlg && status.ticket_count && (
         <CustomizedStatusDialogs
           setOpenStatusDlg={setOpenStatusDlg}
@@ -240,6 +243,7 @@ export const TicketBuy: FC<{
           status={STATUS.WARNING}
         />
       )}
+
       {status_dlg && status.ticket_buy_error && (
         <CustomizedStatusDialogs
           setOpenStatusDlg={setOpenStatusDlg}
